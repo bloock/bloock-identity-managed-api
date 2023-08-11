@@ -3,9 +3,10 @@ package main
 import (
 	"bloock-identity-managed-api/internal/platform/config"
 	"bloock-identity-managed-api/internal/platform/repository/sql/connection"
+	"bloock-identity-managed-api/internal/platform/server"
 	"context"
-	"fmt"
 	"github.com/rs/zerolog"
+	"sync"
 )
 
 func main() {
@@ -30,6 +31,24 @@ func main() {
 		panic(err)
 	}
 
+	// Setup registry
 
-	fmt.Println("Hello world")
+
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+
+	// Run API server
+	go func() {
+		defer wg.Done()
+		sr, err := server.NewServer(cfg.APIHost, cfg.APIPort, cfg.WebhookSecretKey, cfg.WebhookEnforceTolerance, logger, cfg.DebugMode)
+		if err != nil {
+			panic(err)
+		}
+		if err = sr.Start(); err != nil {
+			panic(err)
+		}
+	}()
+
+	wg.Wait()
+
 }

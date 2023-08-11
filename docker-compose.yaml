@@ -1,11 +1,12 @@
 services:
   bloock-identity-managed-api:
+    platform: linux/x86_64
     build:
       context: .
       dockerfile: Dockerfile
     container_name: bloock-identity-managed-api
     volumes:
-      - ./config.yml:/go/bin/config.yml:ro
+      - ./config.yaml:/go/bin/config.yaml:ro
     ports:
       - 8080:8080
     environment:

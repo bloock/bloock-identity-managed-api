@@ -1,6 +1,9 @@
 up: cache
 	docker-compose up -d --build
 
+down:
+	docker compose down
+
 schemas:
 	go run -mod=mod entgo.io/ent/cmd/ent generate --target ./internal/platform/repository/sql/ent ./internal/platform/repository/sql/schema
 
