@@ -15,3 +15,6 @@ cache:
 	go mod tidy
 	go mod vendor
 	modvendor -copy='**/*.c **/*.h **/*.a'
+
+mocks:
+	mockgen -source=internal/domain/repository/credential_repository.go -destination=internal/domain/repository/mocks/mock_credential_repository.go
