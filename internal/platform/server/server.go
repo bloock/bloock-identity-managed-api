@@ -1,9 +1,12 @@
 package server
 
 import (
+	"bloock-identity-managed-api/internal/platform/server/handler"
+	"bloock-identity-managed-api/internal/services/create"
+	"bloock-identity-managed-api/internal/services/criteria"
 	"fmt"
-	"github.com/rs/zerolog"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 )
 
 type Server struct {
@@ -14,7 +17,8 @@ type Server struct {
 	logger zerolog.Logger
 }
 
-func NewServer(host string, port string, webhookSecretKey string, enforceTolerance bool, logger zerolog.Logger, debug bool) (*Server, error) {
+func NewServer(host string, port string, c create.Credential, co criteria.CredentialOffer, rc criteria.CredentialRedeem, ci criteria.CredentialById,
+	webhookSecretKey string, enforceTolerance bool, logger zerolog.Logger, debug bool) (*Server, error) {
 	router := gin.Default()
 	if debug {
 		gin.SetMode(gin.DebugMode)
@@ -25,13 +29,19 @@ func NewServer(host string, port string, webhookSecretKey string, enforceToleran
 		return nil, err
 	}
 
-	//v1 := router.Group("/v1/")
+	v1 := router.Group("/v1")
+
+	v1.POST("/:issuer_did/credentials", handler.CreateCredential(c))
+	v1.POST("/credentials/redeem", handler.RedeemCredential(rc))
+
+	v1.GET("/credentials/:credential_id/offer", handler.GetCredentialOffer(co))
+	v1.GET("/:issuer_did/credentials/:credential_id", handler.GetCredentialById(ci))
 
 	return &Server{
-		host: host,
-		port: port,
+		host:   host,
+		port:   port,
 		engine: router,
-		debug: debug,
+		debug:  debug,
 		logger: logger,
 	}, nil
 }

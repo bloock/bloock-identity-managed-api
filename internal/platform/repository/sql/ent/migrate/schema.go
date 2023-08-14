@@ -8,19 +8,32 @@ import (
 )
 
 var (
-	// TodosColumns holds the columns for the "todos" table.
-	TodosColumns = []*schema.Column{
+	// CredentialsColumns holds the columns for the "credentials" table.
+	CredentialsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "credential_id", Type: field.TypeUUID},
+		{Name: "schema_type", Type: field.TypeString},
+		{Name: "issuer_did", Type: field.TypeString},
+		{Name: "holder_did", Type: field.TypeString},
+		{Name: "credential_data", Type: field.TypeJSON},
+		{Name: "proofs", Type: field.TypeJSON},
 	}
-	// TodosTable holds the schema information for the "todos" table.
-	TodosTable = &schema.Table{
-		Name:       "todos",
-		Columns:    TodosColumns,
-		PrimaryKey: []*schema.Column{TodosColumns[0]},
+	// CredentialsTable holds the schema information for the "credentials" table.
+	CredentialsTable = &schema.Table{
+		Name:       "credentials",
+		Columns:    CredentialsColumns,
+		PrimaryKey: []*schema.Column{CredentialsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "credential_credential_id",
+				Unique:  true,
+				Columns: []*schema.Column{CredentialsColumns[1]},
+			},
+		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		TodosTable,
+		CredentialsTable,
 	}
 )
 

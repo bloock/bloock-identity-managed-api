@@ -11,5 +11,7 @@ test:
 	go test -v ./...
 
 cache:
+	go clean --modcache
 	go mod tidy
 	go mod vendor
+	modvendor -copy='**/*.c **/*.h **/*.a'

@@ -17,4 +17,5 @@ services:
       BLOOCK_API_HOST: "0.0.0.0"
       BLOOCK_API_PORT: "8080"
       BLOOCK_ENFORCE_TOLERANCE: false
+      BLOOCK_POLYGON_PROVIDER: ""
       BLOOCK_API_DEBUG_MODE: false

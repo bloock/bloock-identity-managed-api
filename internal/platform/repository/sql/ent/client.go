@@ -10,7 +10,7 @@ import (
 
 	"bloock-identity-managed-api/internal/platform/repository/sql/ent/migrate"
 
-	"bloock-identity-managed-api/internal/platform/repository/sql/ent/todo"
+	"bloock-identity-managed-api/internal/platform/repository/sql/ent/credential"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
@@ -22,8 +22,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// Todo is the client for interacting with the Todo builders.
-	Todo *TodoClient
+	// Credential is the client for interacting with the Credential builders.
+	Credential *CredentialClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -37,7 +37,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.Todo = NewTodoClient(c.config)
+	c.Credential = NewCredentialClient(c.config)
 }
 
 type (
@@ -118,9 +118,9 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Todo:   NewTodoClient(cfg),
+		ctx:        ctx,
+		config:     cfg,
+		Credential: NewCredentialClient(cfg),
 	}, nil
 }
 
@@ -138,16 +138,16 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Todo:   NewTodoClient(cfg),
+		ctx:        ctx,
+		config:     cfg,
+		Credential: NewCredentialClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Todo.
+//		Credential.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -169,111 +169,111 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Todo.Use(hooks...)
+	c.Credential.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Todo.Intercept(interceptors...)
+	c.Credential.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
-	case *TodoMutation:
-		return c.Todo.mutate(ctx, m)
+	case *CredentialMutation:
+		return c.Credential.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
 }
 
-// TodoClient is a client for the Todo schema.
-type TodoClient struct {
+// CredentialClient is a client for the Credential schema.
+type CredentialClient struct {
 	config
 }
 
-// NewTodoClient returns a client for the Todo from the given config.
-func NewTodoClient(c config) *TodoClient {
-	return &TodoClient{config: c}
+// NewCredentialClient returns a client for the Credential from the given config.
+func NewCredentialClient(c config) *CredentialClient {
+	return &CredentialClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `todo.Hooks(f(g(h())))`.
-func (c *TodoClient) Use(hooks ...Hook) {
-	c.hooks.Todo = append(c.hooks.Todo, hooks...)
+// A call to `Use(f, g, h)` equals to `credential.Hooks(f(g(h())))`.
+func (c *CredentialClient) Use(hooks ...Hook) {
+	c.hooks.Credential = append(c.hooks.Credential, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `todo.Intercept(f(g(h())))`.
-func (c *TodoClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Todo = append(c.inters.Todo, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `credential.Intercept(f(g(h())))`.
+func (c *CredentialClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Credential = append(c.inters.Credential, interceptors...)
 }
 
-// Create returns a builder for creating a Todo entity.
-func (c *TodoClient) Create() *TodoCreate {
-	mutation := newTodoMutation(c.config, OpCreate)
-	return &TodoCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a Credential entity.
+func (c *CredentialClient) Create() *CredentialCreate {
+	mutation := newCredentialMutation(c.config, OpCreate)
+	return &CredentialCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Todo entities.
-func (c *TodoClient) CreateBulk(builders ...*TodoCreate) *TodoCreateBulk {
-	return &TodoCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of Credential entities.
+func (c *CredentialClient) CreateBulk(builders ...*CredentialCreate) *CredentialCreateBulk {
+	return &CredentialCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Todo.
-func (c *TodoClient) Update() *TodoUpdate {
-	mutation := newTodoMutation(c.config, OpUpdate)
-	return &TodoUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for Credential.
+func (c *CredentialClient) Update() *CredentialUpdate {
+	mutation := newCredentialMutation(c.config, OpUpdate)
+	return &CredentialUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *TodoClient) UpdateOne(t *Todo) *TodoUpdateOne {
-	mutation := newTodoMutation(c.config, OpUpdateOne, withTodo(t))
-	return &TodoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *CredentialClient) UpdateOne(cr *Credential) *CredentialUpdateOne {
+	mutation := newCredentialMutation(c.config, OpUpdateOne, withCredential(cr))
+	return &CredentialUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *TodoClient) UpdateOneID(id int) *TodoUpdateOne {
-	mutation := newTodoMutation(c.config, OpUpdateOne, withTodoID(id))
-	return &TodoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *CredentialClient) UpdateOneID(id int) *CredentialUpdateOne {
+	mutation := newCredentialMutation(c.config, OpUpdateOne, withCredentialID(id))
+	return &CredentialUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Todo.
-func (c *TodoClient) Delete() *TodoDelete {
-	mutation := newTodoMutation(c.config, OpDelete)
-	return &TodoDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for Credential.
+func (c *CredentialClient) Delete() *CredentialDelete {
+	mutation := newCredentialMutation(c.config, OpDelete)
+	return &CredentialDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *TodoClient) DeleteOne(t *Todo) *TodoDeleteOne {
-	return c.DeleteOneID(t.ID)
+func (c *CredentialClient) DeleteOne(cr *Credential) *CredentialDeleteOne {
+	return c.DeleteOneID(cr.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *TodoClient) DeleteOneID(id int) *TodoDeleteOne {
-	builder := c.Delete().Where(todo.ID(id))
+func (c *CredentialClient) DeleteOneID(id int) *CredentialDeleteOne {
+	builder := c.Delete().Where(credential.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &TodoDeleteOne{builder}
+	return &CredentialDeleteOne{builder}
 }
 
-// Query returns a query builder for Todo.
-func (c *TodoClient) Query() *TodoQuery {
-	return &TodoQuery{
+// Query returns a query builder for Credential.
+func (c *CredentialClient) Query() *CredentialQuery {
+	return &CredentialQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeTodo},
+		ctx:    &QueryContext{Type: TypeCredential},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a Todo entity by its id.
-func (c *TodoClient) Get(ctx context.Context, id int) (*Todo, error) {
-	return c.Query().Where(todo.ID(id)).Only(ctx)
+// Get returns a Credential entity by its id.
+func (c *CredentialClient) Get(ctx context.Context, id int) (*Credential, error) {
+	return c.Query().Where(credential.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *TodoClient) GetX(ctx context.Context, id int) *Todo {
+func (c *CredentialClient) GetX(ctx context.Context, id int) *Credential {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -282,36 +282,36 @@ func (c *TodoClient) GetX(ctx context.Context, id int) *Todo {
 }
 
 // Hooks returns the client hooks.
-func (c *TodoClient) Hooks() []Hook {
-	return c.hooks.Todo
+func (c *CredentialClient) Hooks() []Hook {
+	return c.hooks.Credential
 }
 
 // Interceptors returns the client interceptors.
-func (c *TodoClient) Interceptors() []Interceptor {
-	return c.inters.Todo
+func (c *CredentialClient) Interceptors() []Interceptor {
+	return c.inters.Credential
 }
 
-func (c *TodoClient) mutate(ctx context.Context, m *TodoMutation) (Value, error) {
+func (c *CredentialClient) mutate(ctx context.Context, m *CredentialMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&TodoCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&CredentialCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&TodoUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&CredentialUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&TodoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&CredentialUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&TodoDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&CredentialDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown Todo mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown Credential mutation op: %q", m.Op())
 	}
 }
 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Todo []ent.Hook
+		Credential []ent.Hook
 	}
 	inters struct {
-		Todo []ent.Interceptor
+		Credential []ent.Interceptor
 	}
 )

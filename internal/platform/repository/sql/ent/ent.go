@@ -3,7 +3,7 @@
 package ent
 
 import (
-	"bloock-identity-managed-api/internal/platform/repository/sql/ent/todo"
+	"bloock-identity-managed-api/internal/platform/repository/sql/ent/credential"
 	"context"
 	"errors"
 	"fmt"
@@ -73,7 +73,7 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			todo.Table: todo.ValidColumn,
+			credential.Table: credential.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)
