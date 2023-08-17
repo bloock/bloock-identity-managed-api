@@ -13,6 +13,9 @@ type CredentialRepository interface {
 
 	GetCredentialById(ctx context.Context, id uuid.UUID) (domain.Credential, error)
 	GetCredentialByIssuerAndId(ctx context.Context, issuer *core.DID, id uuid.UUID) (domain.Credential, error)
+	FindCredentialsByAnchorId(ctx context.Context, anchorId int64) ([]domain.Credential, error)
 
-	UpdateCertificationAnchor(ctx context.Context, id uuid.UUID, signatureProof, bloockProof, sparseMtProof json.RawMessage) error
+	UpdateSignatureProof(ctx context.Context, id uuid.UUID, signatureProof json.RawMessage) error
+	UpdateIntegrityProof(ctx context.Context, id uuid.UUID, integrityProof json.RawMessage) error
+	UpdateSparseMtProof(ctx context.Context, id uuid.UUID, sparseMtProof json.RawMessage) error
 }

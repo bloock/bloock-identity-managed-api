@@ -7,6 +7,7 @@ package mock_repository
 import (
 	domain "bloock-identity-managed-api/internal/domain"
 	context "context"
+	json "encoding/json"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -35,6 +36,21 @@ func NewMockCredentialRepository(ctrl *gomock.Controller) *MockCredentialReposit
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockCredentialRepository) EXPECT() *MockCredentialRepositoryMockRecorder {
 	return m.recorder
+}
+
+// FindCredentialsByAnchorId mocks base method.
+func (m *MockCredentialRepository) FindCredentialsByAnchorId(ctx context.Context, anchorId int64) ([]domain.Credential, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindCredentialsByAnchorId", ctx, anchorId)
+	ret0, _ := ret[0].([]domain.Credential)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindCredentialsByAnchorId indicates an expected call of FindCredentialsByAnchorId.
+func (mr *MockCredentialRepositoryMockRecorder) FindCredentialsByAnchorId(ctx, anchorId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindCredentialsByAnchorId", reflect.TypeOf((*MockCredentialRepository)(nil).FindCredentialsByAnchorId), ctx, anchorId)
 }
 
 // GetCredentialById mocks base method.
@@ -81,16 +97,44 @@ func (mr *MockCredentialRepositoryMockRecorder) Save(ctx, c interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Save", reflect.TypeOf((*MockCredentialRepository)(nil).Save), ctx, c)
 }
 
-// UpdateCertificationAnchor mocks base method.
-func (m *MockCredentialRepository) UpdateCertificationAnchor(ctx context.Context, id uuid.UUID, signatureProof, bloockProof, sparseMtProof map[string]interface{}) error {
+// UpdateIntegrityProof mocks base method.
+func (m *MockCredentialRepository) UpdateIntegrityProof(ctx context.Context, id uuid.UUID, integrityProof json.RawMessage) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateCertificationAnchor", ctx, id, signatureProof, bloockProof, sparseMtProof)
+	ret := m.ctrl.Call(m, "UpdateIntegrityProof", ctx, id, integrityProof)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// UpdateCertificationAnchor indicates an expected call of UpdateCertificationAnchor.
-func (mr *MockCredentialRepositoryMockRecorder) UpdateCertificationAnchor(ctx, id, signatureProof, bloockProof, sparseMtProof interface{}) *gomock.Call {
+// UpdateIntegrityProof indicates an expected call of UpdateIntegrityProof.
+func (mr *MockCredentialRepositoryMockRecorder) UpdateIntegrityProof(ctx, id, integrityProof interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCertificationAnchor", reflect.TypeOf((*MockCredentialRepository)(nil).UpdateCertificationAnchor), ctx, id, signatureProof, bloockProof, sparseMtProof)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateIntegrityProof", reflect.TypeOf((*MockCredentialRepository)(nil).UpdateIntegrityProof), ctx, id, integrityProof)
+}
+
+// UpdateSignatureProof mocks base method.
+func (m *MockCredentialRepository) UpdateSignatureProof(ctx context.Context, id uuid.UUID, signatureProof json.RawMessage) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateSignatureProof", ctx, id, signatureProof)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateSignatureProof indicates an expected call of UpdateSignatureProof.
+func (mr *MockCredentialRepositoryMockRecorder) UpdateSignatureProof(ctx, id, signatureProof interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSignatureProof", reflect.TypeOf((*MockCredentialRepository)(nil).UpdateSignatureProof), ctx, id, signatureProof)
+}
+
+// UpdateSparseMtProof mocks base method.
+func (m *MockCredentialRepository) UpdateSparseMtProof(ctx context.Context, id uuid.UUID, sparseMtProof json.RawMessage) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateSparseMtProof", ctx, id, sparseMtProof)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateSparseMtProof indicates an expected call of UpdateSparseMtProof.
+func (mr *MockCredentialRepositoryMockRecorder) UpdateSparseMtProof(ctx, id, sparseMtProof interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSparseMtProof", reflect.TypeOf((*MockCredentialRepository)(nil).UpdateSparseMtProof), ctx, id, sparseMtProof)
 }

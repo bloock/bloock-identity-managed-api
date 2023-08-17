@@ -13,6 +13,8 @@ const (
 	FieldID = "id"
 	// FieldCredentialID holds the string denoting the credential_id field in the database.
 	FieldCredentialID = "credential_id"
+	// FieldAnchorID holds the string denoting the anchor_id field in the database.
+	FieldAnchorID = "anchor_id"
 	// FieldSchemaType holds the string denoting the schema_type field in the database.
 	FieldSchemaType = "schema_type"
 	// FieldIssuerDid holds the string denoting the issuer_did field in the database.
@@ -25,8 +27,8 @@ const (
 	FieldCredentialData = "credential_data"
 	// FieldSignatureProof holds the string denoting the signature_proof field in the database.
 	FieldSignatureProof = "signature_proof"
-	// FieldBloockProof holds the string denoting the bloock_proof field in the database.
-	FieldBloockProof = "bloock_proof"
+	// FieldIntegrityProof holds the string denoting the integrity_proof field in the database.
+	FieldIntegrityProof = "integrity_proof"
 	// FieldSparseMtProof holds the string denoting the sparse_mt_proof field in the database.
 	FieldSparseMtProof = "sparse_mt_proof"
 	// Table holds the table name of the credential in the database.
@@ -37,13 +39,14 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldCredentialID,
+	FieldAnchorID,
 	FieldSchemaType,
 	FieldIssuerDid,
 	FieldHolderDid,
 	FieldProofType,
 	FieldCredentialData,
 	FieldSignatureProof,
-	FieldBloockProof,
+	FieldIntegrityProof,
 	FieldSparseMtProof,
 }
 
@@ -77,6 +80,11 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByCredentialID orders the results by the credential_id field.
 func ByCredentialID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCredentialID, opts...).ToFunc()
+}
+
+// ByAnchorID orders the results by the anchor_id field.
+func ByAnchorID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAnchorID, opts...).ToFunc()
 }
 
 // BySchemaType orders the results by the schema_type field.

@@ -59,6 +59,11 @@ func CredentialID(v uuid.UUID) predicate.Credential {
 	return predicate.Credential(sql.FieldEQ(FieldCredentialID, v))
 }
 
+// AnchorID applies equality check predicate on the "anchor_id" field. It's identical to AnchorIDEQ.
+func AnchorID(v int64) predicate.Credential {
+	return predicate.Credential(sql.FieldEQ(FieldAnchorID, v))
+}
+
 // SchemaType applies equality check predicate on the "schema_type" field. It's identical to SchemaTypeEQ.
 func SchemaType(v string) predicate.Credential {
 	return predicate.Credential(sql.FieldEQ(FieldSchemaType, v))
@@ -112,6 +117,46 @@ func CredentialIDLT(v uuid.UUID) predicate.Credential {
 // CredentialIDLTE applies the LTE predicate on the "credential_id" field.
 func CredentialIDLTE(v uuid.UUID) predicate.Credential {
 	return predicate.Credential(sql.FieldLTE(FieldCredentialID, v))
+}
+
+// AnchorIDEQ applies the EQ predicate on the "anchor_id" field.
+func AnchorIDEQ(v int64) predicate.Credential {
+	return predicate.Credential(sql.FieldEQ(FieldAnchorID, v))
+}
+
+// AnchorIDNEQ applies the NEQ predicate on the "anchor_id" field.
+func AnchorIDNEQ(v int64) predicate.Credential {
+	return predicate.Credential(sql.FieldNEQ(FieldAnchorID, v))
+}
+
+// AnchorIDIn applies the In predicate on the "anchor_id" field.
+func AnchorIDIn(vs ...int64) predicate.Credential {
+	return predicate.Credential(sql.FieldIn(FieldAnchorID, vs...))
+}
+
+// AnchorIDNotIn applies the NotIn predicate on the "anchor_id" field.
+func AnchorIDNotIn(vs ...int64) predicate.Credential {
+	return predicate.Credential(sql.FieldNotIn(FieldAnchorID, vs...))
+}
+
+// AnchorIDGT applies the GT predicate on the "anchor_id" field.
+func AnchorIDGT(v int64) predicate.Credential {
+	return predicate.Credential(sql.FieldGT(FieldAnchorID, v))
+}
+
+// AnchorIDGTE applies the GTE predicate on the "anchor_id" field.
+func AnchorIDGTE(v int64) predicate.Credential {
+	return predicate.Credential(sql.FieldGTE(FieldAnchorID, v))
+}
+
+// AnchorIDLT applies the LT predicate on the "anchor_id" field.
+func AnchorIDLT(v int64) predicate.Credential {
+	return predicate.Credential(sql.FieldLT(FieldAnchorID, v))
+}
+
+// AnchorIDLTE applies the LTE predicate on the "anchor_id" field.
+func AnchorIDLTE(v int64) predicate.Credential {
+	return predicate.Credential(sql.FieldLTE(FieldAnchorID, v))
 }
 
 // SchemaTypeEQ applies the EQ predicate on the "schema_type" field.
@@ -319,14 +364,14 @@ func ProofTypeNotNil() predicate.Credential {
 	return predicate.Credential(sql.FieldNotNull(FieldProofType))
 }
 
-// BloockProofIsNil applies the IsNil predicate on the "bloock_proof" field.
-func BloockProofIsNil() predicate.Credential {
-	return predicate.Credential(sql.FieldIsNull(FieldBloockProof))
+// IntegrityProofIsNil applies the IsNil predicate on the "integrity_proof" field.
+func IntegrityProofIsNil() predicate.Credential {
+	return predicate.Credential(sql.FieldIsNull(FieldIntegrityProof))
 }
 
-// BloockProofNotNil applies the NotNil predicate on the "bloock_proof" field.
-func BloockProofNotNil() predicate.Credential {
-	return predicate.Credential(sql.FieldNotNull(FieldBloockProof))
+// IntegrityProofNotNil applies the NotNil predicate on the "integrity_proof" field.
+func IntegrityProofNotNil() predicate.Credential {
+	return predicate.Credential(sql.FieldNotNull(FieldIntegrityProof))
 }
 
 // SparseMtProofIsNil applies the IsNil predicate on the "sparse_mt_proof" field.

@@ -36,6 +36,19 @@ func (cu *CredentialUpdate) SetCredentialID(u uuid.UUID) *CredentialUpdate {
 	return cu
 }
 
+// SetAnchorID sets the "anchor_id" field.
+func (cu *CredentialUpdate) SetAnchorID(i int64) *CredentialUpdate {
+	cu.mutation.ResetAnchorID()
+	cu.mutation.SetAnchorID(i)
+	return cu
+}
+
+// AddAnchorID adds i to the "anchor_id" field.
+func (cu *CredentialUpdate) AddAnchorID(i int64) *CredentialUpdate {
+	cu.mutation.AddAnchorID(i)
+	return cu
+}
+
 // SetSchemaType sets the "schema_type" field.
 func (cu *CredentialUpdate) SetSchemaType(s string) *CredentialUpdate {
 	cu.mutation.SetSchemaType(s)
@@ -96,21 +109,21 @@ func (cu *CredentialUpdate) AppendSignatureProof(jm json.RawMessage) *Credential
 	return cu
 }
 
-// SetBloockProof sets the "bloock_proof" field.
-func (cu *CredentialUpdate) SetBloockProof(jm json.RawMessage) *CredentialUpdate {
-	cu.mutation.SetBloockProof(jm)
+// SetIntegrityProof sets the "integrity_proof" field.
+func (cu *CredentialUpdate) SetIntegrityProof(jm json.RawMessage) *CredentialUpdate {
+	cu.mutation.SetIntegrityProof(jm)
 	return cu
 }
 
-// AppendBloockProof appends jm to the "bloock_proof" field.
-func (cu *CredentialUpdate) AppendBloockProof(jm json.RawMessage) *CredentialUpdate {
-	cu.mutation.AppendBloockProof(jm)
+// AppendIntegrityProof appends jm to the "integrity_proof" field.
+func (cu *CredentialUpdate) AppendIntegrityProof(jm json.RawMessage) *CredentialUpdate {
+	cu.mutation.AppendIntegrityProof(jm)
 	return cu
 }
 
-// ClearBloockProof clears the value of the "bloock_proof" field.
-func (cu *CredentialUpdate) ClearBloockProof() *CredentialUpdate {
-	cu.mutation.ClearBloockProof()
+// ClearIntegrityProof clears the value of the "integrity_proof" field.
+func (cu *CredentialUpdate) ClearIntegrityProof() *CredentialUpdate {
+	cu.mutation.ClearIntegrityProof()
 	return cu
 }
 
@@ -199,6 +212,12 @@ func (cu *CredentialUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := cu.mutation.CredentialID(); ok {
 		_spec.SetField(credential.FieldCredentialID, field.TypeUUID, value)
 	}
+	if value, ok := cu.mutation.AnchorID(); ok {
+		_spec.SetField(credential.FieldAnchorID, field.TypeInt64, value)
+	}
+	if value, ok := cu.mutation.AddedAnchorID(); ok {
+		_spec.AddField(credential.FieldAnchorID, field.TypeInt64, value)
+	}
 	if value, ok := cu.mutation.SchemaType(); ok {
 		_spec.SetField(credential.FieldSchemaType, field.TypeString, value)
 	}
@@ -235,16 +254,16 @@ func (cu *CredentialUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			sqljson.Append(u, credential.FieldSignatureProof, value)
 		})
 	}
-	if value, ok := cu.mutation.BloockProof(); ok {
-		_spec.SetField(credential.FieldBloockProof, field.TypeJSON, value)
+	if value, ok := cu.mutation.IntegrityProof(); ok {
+		_spec.SetField(credential.FieldIntegrityProof, field.TypeJSON, value)
 	}
-	if value, ok := cu.mutation.AppendedBloockProof(); ok {
+	if value, ok := cu.mutation.AppendedIntegrityProof(); ok {
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, credential.FieldBloockProof, value)
+			sqljson.Append(u, credential.FieldIntegrityProof, value)
 		})
 	}
-	if cu.mutation.BloockProofCleared() {
-		_spec.ClearField(credential.FieldBloockProof, field.TypeJSON)
+	if cu.mutation.IntegrityProofCleared() {
+		_spec.ClearField(credential.FieldIntegrityProof, field.TypeJSON)
 	}
 	if value, ok := cu.mutation.SparseMtProof(); ok {
 		_spec.SetField(credential.FieldSparseMtProof, field.TypeJSON, value)
@@ -280,6 +299,19 @@ type CredentialUpdateOne struct {
 // SetCredentialID sets the "credential_id" field.
 func (cuo *CredentialUpdateOne) SetCredentialID(u uuid.UUID) *CredentialUpdateOne {
 	cuo.mutation.SetCredentialID(u)
+	return cuo
+}
+
+// SetAnchorID sets the "anchor_id" field.
+func (cuo *CredentialUpdateOne) SetAnchorID(i int64) *CredentialUpdateOne {
+	cuo.mutation.ResetAnchorID()
+	cuo.mutation.SetAnchorID(i)
+	return cuo
+}
+
+// AddAnchorID adds i to the "anchor_id" field.
+func (cuo *CredentialUpdateOne) AddAnchorID(i int64) *CredentialUpdateOne {
+	cuo.mutation.AddAnchorID(i)
 	return cuo
 }
 
@@ -343,21 +375,21 @@ func (cuo *CredentialUpdateOne) AppendSignatureProof(jm json.RawMessage) *Creden
 	return cuo
 }
 
-// SetBloockProof sets the "bloock_proof" field.
-func (cuo *CredentialUpdateOne) SetBloockProof(jm json.RawMessage) *CredentialUpdateOne {
-	cuo.mutation.SetBloockProof(jm)
+// SetIntegrityProof sets the "integrity_proof" field.
+func (cuo *CredentialUpdateOne) SetIntegrityProof(jm json.RawMessage) *CredentialUpdateOne {
+	cuo.mutation.SetIntegrityProof(jm)
 	return cuo
 }
 
-// AppendBloockProof appends jm to the "bloock_proof" field.
-func (cuo *CredentialUpdateOne) AppendBloockProof(jm json.RawMessage) *CredentialUpdateOne {
-	cuo.mutation.AppendBloockProof(jm)
+// AppendIntegrityProof appends jm to the "integrity_proof" field.
+func (cuo *CredentialUpdateOne) AppendIntegrityProof(jm json.RawMessage) *CredentialUpdateOne {
+	cuo.mutation.AppendIntegrityProof(jm)
 	return cuo
 }
 
-// ClearBloockProof clears the value of the "bloock_proof" field.
-func (cuo *CredentialUpdateOne) ClearBloockProof() *CredentialUpdateOne {
-	cuo.mutation.ClearBloockProof()
+// ClearIntegrityProof clears the value of the "integrity_proof" field.
+func (cuo *CredentialUpdateOne) ClearIntegrityProof() *CredentialUpdateOne {
+	cuo.mutation.ClearIntegrityProof()
 	return cuo
 }
 
@@ -476,6 +508,12 @@ func (cuo *CredentialUpdateOne) sqlSave(ctx context.Context) (_node *Credential,
 	if value, ok := cuo.mutation.CredentialID(); ok {
 		_spec.SetField(credential.FieldCredentialID, field.TypeUUID, value)
 	}
+	if value, ok := cuo.mutation.AnchorID(); ok {
+		_spec.SetField(credential.FieldAnchorID, field.TypeInt64, value)
+	}
+	if value, ok := cuo.mutation.AddedAnchorID(); ok {
+		_spec.AddField(credential.FieldAnchorID, field.TypeInt64, value)
+	}
 	if value, ok := cuo.mutation.SchemaType(); ok {
 		_spec.SetField(credential.FieldSchemaType, field.TypeString, value)
 	}
@@ -512,16 +550,16 @@ func (cuo *CredentialUpdateOne) sqlSave(ctx context.Context) (_node *Credential,
 			sqljson.Append(u, credential.FieldSignatureProof, value)
 		})
 	}
-	if value, ok := cuo.mutation.BloockProof(); ok {
-		_spec.SetField(credential.FieldBloockProof, field.TypeJSON, value)
+	if value, ok := cuo.mutation.IntegrityProof(); ok {
+		_spec.SetField(credential.FieldIntegrityProof, field.TypeJSON, value)
 	}
-	if value, ok := cuo.mutation.AppendedBloockProof(); ok {
+	if value, ok := cuo.mutation.AppendedIntegrityProof(); ok {
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, credential.FieldBloockProof, value)
+			sqljson.Append(u, credential.FieldIntegrityProof, value)
 		})
 	}
-	if cuo.mutation.BloockProofCleared() {
-		_spec.ClearField(credential.FieldBloockProof, field.TypeJSON)
+	if cuo.mutation.IntegrityProofCleared() {
+		_spec.ClearField(credential.FieldIntegrityProof, field.TypeJSON)
 	}
 	if value, ok := cuo.mutation.SparseMtProof(); ok {
 		_spec.SetField(credential.FieldSparseMtProof, field.TypeJSON, value)

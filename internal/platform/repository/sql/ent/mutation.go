@@ -35,6 +35,8 @@ type CredentialMutation struct {
 	typ                   string
 	id                    *int
 	credential_id         *uuid.UUID
+	anchor_id             *int64
+	addanchor_id          *int64
 	schema_type           *string
 	issuer_did            *string
 	holder_did            *string
@@ -44,8 +46,8 @@ type CredentialMutation struct {
 	appendcredential_data json.RawMessage
 	signature_proof       *json.RawMessage
 	appendsignature_proof json.RawMessage
-	bloock_proof          *json.RawMessage
-	appendbloock_proof    json.RawMessage
+	integrity_proof       *json.RawMessage
+	appendintegrity_proof json.RawMessage
 	sparse_mt_proof       *json.RawMessage
 	appendsparse_mt_proof json.RawMessage
 	clearedFields         map[string]struct{}
@@ -186,6 +188,62 @@ func (m *CredentialMutation) OldCredentialID(ctx context.Context) (v uuid.UUID, 
 // ResetCredentialID resets all changes to the "credential_id" field.
 func (m *CredentialMutation) ResetCredentialID() {
 	m.credential_id = nil
+}
+
+// SetAnchorID sets the "anchor_id" field.
+func (m *CredentialMutation) SetAnchorID(i int64) {
+	m.anchor_id = &i
+	m.addanchor_id = nil
+}
+
+// AnchorID returns the value of the "anchor_id" field in the mutation.
+func (m *CredentialMutation) AnchorID() (r int64, exists bool) {
+	v := m.anchor_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAnchorID returns the old "anchor_id" field's value of the Credential entity.
+// If the Credential object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CredentialMutation) OldAnchorID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAnchorID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAnchorID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAnchorID: %w", err)
+	}
+	return oldValue.AnchorID, nil
+}
+
+// AddAnchorID adds i to the "anchor_id" field.
+func (m *CredentialMutation) AddAnchorID(i int64) {
+	if m.addanchor_id != nil {
+		*m.addanchor_id += i
+	} else {
+		m.addanchor_id = &i
+	}
+}
+
+// AddedAnchorID returns the value that was added to the "anchor_id" field in this mutation.
+func (m *CredentialMutation) AddedAnchorID() (r int64, exists bool) {
+	v := m.addanchor_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetAnchorID resets all changes to the "anchor_id" field.
+func (m *CredentialMutation) ResetAnchorID() {
+	m.anchor_id = nil
+	m.addanchor_id = nil
 }
 
 // SetSchemaType sets the "schema_type" field.
@@ -463,69 +521,69 @@ func (m *CredentialMutation) ResetSignatureProof() {
 	m.appendsignature_proof = nil
 }
 
-// SetBloockProof sets the "bloock_proof" field.
-func (m *CredentialMutation) SetBloockProof(jm json.RawMessage) {
-	m.bloock_proof = &jm
-	m.appendbloock_proof = nil
+// SetIntegrityProof sets the "integrity_proof" field.
+func (m *CredentialMutation) SetIntegrityProof(jm json.RawMessage) {
+	m.integrity_proof = &jm
+	m.appendintegrity_proof = nil
 }
 
-// BloockProof returns the value of the "bloock_proof" field in the mutation.
-func (m *CredentialMutation) BloockProof() (r json.RawMessage, exists bool) {
-	v := m.bloock_proof
+// IntegrityProof returns the value of the "integrity_proof" field in the mutation.
+func (m *CredentialMutation) IntegrityProof() (r json.RawMessage, exists bool) {
+	v := m.integrity_proof
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBloockProof returns the old "bloock_proof" field's value of the Credential entity.
+// OldIntegrityProof returns the old "integrity_proof" field's value of the Credential entity.
 // If the Credential object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CredentialMutation) OldBloockProof(ctx context.Context) (v json.RawMessage, err error) {
+func (m *CredentialMutation) OldIntegrityProof(ctx context.Context) (v json.RawMessage, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBloockProof is only allowed on UpdateOne operations")
+		return v, errors.New("OldIntegrityProof is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBloockProof requires an ID field in the mutation")
+		return v, errors.New("OldIntegrityProof requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBloockProof: %w", err)
+		return v, fmt.Errorf("querying old value for OldIntegrityProof: %w", err)
 	}
-	return oldValue.BloockProof, nil
+	return oldValue.IntegrityProof, nil
 }
 
-// AppendBloockProof adds jm to the "bloock_proof" field.
-func (m *CredentialMutation) AppendBloockProof(jm json.RawMessage) {
-	m.appendbloock_proof = append(m.appendbloock_proof, jm...)
+// AppendIntegrityProof adds jm to the "integrity_proof" field.
+func (m *CredentialMutation) AppendIntegrityProof(jm json.RawMessage) {
+	m.appendintegrity_proof = append(m.appendintegrity_proof, jm...)
 }
 
-// AppendedBloockProof returns the list of values that were appended to the "bloock_proof" field in this mutation.
-func (m *CredentialMutation) AppendedBloockProof() (json.RawMessage, bool) {
-	if len(m.appendbloock_proof) == 0 {
+// AppendedIntegrityProof returns the list of values that were appended to the "integrity_proof" field in this mutation.
+func (m *CredentialMutation) AppendedIntegrityProof() (json.RawMessage, bool) {
+	if len(m.appendintegrity_proof) == 0 {
 		return nil, false
 	}
-	return m.appendbloock_proof, true
+	return m.appendintegrity_proof, true
 }
 
-// ClearBloockProof clears the value of the "bloock_proof" field.
-func (m *CredentialMutation) ClearBloockProof() {
-	m.bloock_proof = nil
-	m.appendbloock_proof = nil
-	m.clearedFields[credential.FieldBloockProof] = struct{}{}
+// ClearIntegrityProof clears the value of the "integrity_proof" field.
+func (m *CredentialMutation) ClearIntegrityProof() {
+	m.integrity_proof = nil
+	m.appendintegrity_proof = nil
+	m.clearedFields[credential.FieldIntegrityProof] = struct{}{}
 }
 
-// BloockProofCleared returns if the "bloock_proof" field was cleared in this mutation.
-func (m *CredentialMutation) BloockProofCleared() bool {
-	_, ok := m.clearedFields[credential.FieldBloockProof]
+// IntegrityProofCleared returns if the "integrity_proof" field was cleared in this mutation.
+func (m *CredentialMutation) IntegrityProofCleared() bool {
+	_, ok := m.clearedFields[credential.FieldIntegrityProof]
 	return ok
 }
 
-// ResetBloockProof resets all changes to the "bloock_proof" field.
-func (m *CredentialMutation) ResetBloockProof() {
-	m.bloock_proof = nil
-	m.appendbloock_proof = nil
-	delete(m.clearedFields, credential.FieldBloockProof)
+// ResetIntegrityProof resets all changes to the "integrity_proof" field.
+func (m *CredentialMutation) ResetIntegrityProof() {
+	m.integrity_proof = nil
+	m.appendintegrity_proof = nil
+	delete(m.clearedFields, credential.FieldIntegrityProof)
 }
 
 // SetSparseMtProof sets the "sparse_mt_proof" field.
@@ -627,9 +685,12 @@ func (m *CredentialMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CredentialMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.credential_id != nil {
 		fields = append(fields, credential.FieldCredentialID)
+	}
+	if m.anchor_id != nil {
+		fields = append(fields, credential.FieldAnchorID)
 	}
 	if m.schema_type != nil {
 		fields = append(fields, credential.FieldSchemaType)
@@ -649,8 +710,8 @@ func (m *CredentialMutation) Fields() []string {
 	if m.signature_proof != nil {
 		fields = append(fields, credential.FieldSignatureProof)
 	}
-	if m.bloock_proof != nil {
-		fields = append(fields, credential.FieldBloockProof)
+	if m.integrity_proof != nil {
+		fields = append(fields, credential.FieldIntegrityProof)
 	}
 	if m.sparse_mt_proof != nil {
 		fields = append(fields, credential.FieldSparseMtProof)
@@ -665,6 +726,8 @@ func (m *CredentialMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case credential.FieldCredentialID:
 		return m.CredentialID()
+	case credential.FieldAnchorID:
+		return m.AnchorID()
 	case credential.FieldSchemaType:
 		return m.SchemaType()
 	case credential.FieldIssuerDid:
@@ -677,8 +740,8 @@ func (m *CredentialMutation) Field(name string) (ent.Value, bool) {
 		return m.CredentialData()
 	case credential.FieldSignatureProof:
 		return m.SignatureProof()
-	case credential.FieldBloockProof:
-		return m.BloockProof()
+	case credential.FieldIntegrityProof:
+		return m.IntegrityProof()
 	case credential.FieldSparseMtProof:
 		return m.SparseMtProof()
 	}
@@ -692,6 +755,8 @@ func (m *CredentialMutation) OldField(ctx context.Context, name string) (ent.Val
 	switch name {
 	case credential.FieldCredentialID:
 		return m.OldCredentialID(ctx)
+	case credential.FieldAnchorID:
+		return m.OldAnchorID(ctx)
 	case credential.FieldSchemaType:
 		return m.OldSchemaType(ctx)
 	case credential.FieldIssuerDid:
@@ -704,8 +769,8 @@ func (m *CredentialMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldCredentialData(ctx)
 	case credential.FieldSignatureProof:
 		return m.OldSignatureProof(ctx)
-	case credential.FieldBloockProof:
-		return m.OldBloockProof(ctx)
+	case credential.FieldIntegrityProof:
+		return m.OldIntegrityProof(ctx)
 	case credential.FieldSparseMtProof:
 		return m.OldSparseMtProof(ctx)
 	}
@@ -723,6 +788,13 @@ func (m *CredentialMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCredentialID(v)
+		return nil
+	case credential.FieldAnchorID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAnchorID(v)
 		return nil
 	case credential.FieldSchemaType:
 		v, ok := value.(string)
@@ -766,12 +838,12 @@ func (m *CredentialMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetSignatureProof(v)
 		return nil
-	case credential.FieldBloockProof:
+	case credential.FieldIntegrityProof:
 		v, ok := value.(json.RawMessage)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBloockProof(v)
+		m.SetIntegrityProof(v)
 		return nil
 	case credential.FieldSparseMtProof:
 		v, ok := value.(json.RawMessage)
@@ -787,13 +859,21 @@ func (m *CredentialMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *CredentialMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addanchor_id != nil {
+		fields = append(fields, credential.FieldAnchorID)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *CredentialMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case credential.FieldAnchorID:
+		return m.AddedAnchorID()
+	}
 	return nil, false
 }
 
@@ -802,6 +882,13 @@ func (m *CredentialMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *CredentialMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case credential.FieldAnchorID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAnchorID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Credential numeric field %s", name)
 }
@@ -813,8 +900,8 @@ func (m *CredentialMutation) ClearedFields() []string {
 	if m.FieldCleared(credential.FieldProofType) {
 		fields = append(fields, credential.FieldProofType)
 	}
-	if m.FieldCleared(credential.FieldBloockProof) {
-		fields = append(fields, credential.FieldBloockProof)
+	if m.FieldCleared(credential.FieldIntegrityProof) {
+		fields = append(fields, credential.FieldIntegrityProof)
 	}
 	if m.FieldCleared(credential.FieldSparseMtProof) {
 		fields = append(fields, credential.FieldSparseMtProof)
@@ -836,8 +923,8 @@ func (m *CredentialMutation) ClearField(name string) error {
 	case credential.FieldProofType:
 		m.ClearProofType()
 		return nil
-	case credential.FieldBloockProof:
-		m.ClearBloockProof()
+	case credential.FieldIntegrityProof:
+		m.ClearIntegrityProof()
 		return nil
 	case credential.FieldSparseMtProof:
 		m.ClearSparseMtProof()
@@ -852,6 +939,9 @@ func (m *CredentialMutation) ResetField(name string) error {
 	switch name {
 	case credential.FieldCredentialID:
 		m.ResetCredentialID()
+		return nil
+	case credential.FieldAnchorID:
+		m.ResetAnchorID()
 		return nil
 	case credential.FieldSchemaType:
 		m.ResetSchemaType()
@@ -871,8 +961,8 @@ func (m *CredentialMutation) ResetField(name string) error {
 	case credential.FieldSignatureProof:
 		m.ResetSignatureProof()
 		return nil
-	case credential.FieldBloockProof:
-		m.ResetBloockProof()
+	case credential.FieldIntegrityProof:
+		m.ResetIntegrityProof()
 		return nil
 	case credential.FieldSparseMtProof:
 		m.ResetSparseMtProof()

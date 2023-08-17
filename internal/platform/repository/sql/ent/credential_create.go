@@ -27,6 +27,12 @@ func (cc *CredentialCreate) SetCredentialID(u uuid.UUID) *CredentialCreate {
 	return cc
 }
 
+// SetAnchorID sets the "anchor_id" field.
+func (cc *CredentialCreate) SetAnchorID(i int64) *CredentialCreate {
+	cc.mutation.SetAnchorID(i)
+	return cc
+}
+
 // SetSchemaType sets the "schema_type" field.
 func (cc *CredentialCreate) SetSchemaType(s string) *CredentialCreate {
 	cc.mutation.SetSchemaType(s)
@@ -63,9 +69,9 @@ func (cc *CredentialCreate) SetSignatureProof(jm json.RawMessage) *CredentialCre
 	return cc
 }
 
-// SetBloockProof sets the "bloock_proof" field.
-func (cc *CredentialCreate) SetBloockProof(jm json.RawMessage) *CredentialCreate {
-	cc.mutation.SetBloockProof(jm)
+// SetIntegrityProof sets the "integrity_proof" field.
+func (cc *CredentialCreate) SetIntegrityProof(jm json.RawMessage) *CredentialCreate {
+	cc.mutation.SetIntegrityProof(jm)
 	return cc
 }
 
@@ -111,6 +117,9 @@ func (cc *CredentialCreate) ExecX(ctx context.Context) {
 func (cc *CredentialCreate) check() error {
 	if _, ok := cc.mutation.CredentialID(); !ok {
 		return &ValidationError{Name: "credential_id", err: errors.New(`ent: missing required field "Credential.credential_id"`)}
+	}
+	if _, ok := cc.mutation.AnchorID(); !ok {
+		return &ValidationError{Name: "anchor_id", err: errors.New(`ent: missing required field "Credential.anchor_id"`)}
 	}
 	if _, ok := cc.mutation.SchemaType(); !ok {
 		return &ValidationError{Name: "schema_type", err: errors.New(`ent: missing required field "Credential.schema_type"`)}
@@ -172,6 +181,10 @@ func (cc *CredentialCreate) createSpec() (*Credential, *sqlgraph.CreateSpec) {
 		_spec.SetField(credential.FieldCredentialID, field.TypeUUID, value)
 		_node.CredentialID = value
 	}
+	if value, ok := cc.mutation.AnchorID(); ok {
+		_spec.SetField(credential.FieldAnchorID, field.TypeInt64, value)
+		_node.AnchorID = value
+	}
 	if value, ok := cc.mutation.SchemaType(); ok {
 		_spec.SetField(credential.FieldSchemaType, field.TypeString, value)
 		_node.SchemaType = value
@@ -196,9 +209,9 @@ func (cc *CredentialCreate) createSpec() (*Credential, *sqlgraph.CreateSpec) {
 		_spec.SetField(credential.FieldSignatureProof, field.TypeJSON, value)
 		_node.SignatureProof = value
 	}
-	if value, ok := cc.mutation.BloockProof(); ok {
-		_spec.SetField(credential.FieldBloockProof, field.TypeJSON, value)
-		_node.BloockProof = value
+	if value, ok := cc.mutation.IntegrityProof(); ok {
+		_spec.SetField(credential.FieldIntegrityProof, field.TypeJSON, value)
+		_node.IntegrityProof = value
 	}
 	if value, ok := cc.mutation.SparseMtProof(); ok {
 		_spec.SetField(credential.FieldSparseMtProof, field.TypeJSON, value)

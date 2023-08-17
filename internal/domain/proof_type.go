@@ -3,16 +3,16 @@ package domain
 type ProofType int32
 
 const (
-	BloockProof ProofType = iota
-	PolygonProof
+	IntegrityProofType ProofType = iota
+	PolygonProofType
 )
 
 func NewProofType(proof string) (ProofType, error) {
 	switch proof {
-	case "bloock_proof":
-		return BloockProof, nil
+	case "integrity_proof":
+		return IntegrityProofType, nil
 	case "polygon_proof":
-		return PolygonProof, nil
+		return PolygonProofType, nil
 	default:
 		return 0, ErrInvalidProofType
 	}
@@ -20,9 +20,9 @@ func NewProofType(proof string) (ProofType, error) {
 
 func (p ProofType) Str() string {
 	switch p {
-	case BloockProof:
-		return "bloock_proof"
-	case PolygonProof:
+	case IntegrityProofType:
+		return "integrity_proof"
+	case PolygonProofType:
 		return "polygon_proof"
 	default:
 		return ""

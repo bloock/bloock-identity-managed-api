@@ -8,13 +8,14 @@ import (
 
 type Credential struct {
 	CredentialId   uuid.UUID
+	AnchorId       int64
 	SchemaType     string
 	IssuerDid      string
 	HolderDid      string
 	ProofType      []string
 	CredentialData json.RawMessage
 	SignatureProof json.RawMessage
-	BloockProof    json.RawMessage
+	IntegrityProof json.RawMessage
 	SparseMtProof  json.RawMessage
 }
 
@@ -35,7 +36,7 @@ func (c Credential) ParseToVerifiableCredential(proofFilter []string) (verifiabl
 		proofs = append(proofs, &signatureProof)
 	}
 
-	if IsProofIncluded(PolygonProof, proofFilter) {
+	if IsProofIncluded(PolygonProofType, proofFilter) {
 		var sparseMtProof verifiable.Iden3SparseMerkleTreeProof
 		if string(c.SparseMtProof) != "null" {
 			if err := json.Unmarshal(c.SparseMtProof, &sparseMtProof); err != nil {
@@ -45,13 +46,13 @@ func (c Credential) ParseToVerifiableCredential(proofFilter []string) (verifiabl
 		}
 	}
 
-	if IsProofIncluded(BloockProof, proofFilter) {
-		var bloockProof IntegrityProof
-		if string(c.BloockProof) != "null" {
-			if err := json.Unmarshal(c.BloockProof, &bloockProof); err != nil {
+	if IsProofIncluded(IntegrityProofType, proofFilter) {
+		var integrityProof IntegrityProof
+		if string(c.IntegrityProof) != "null" {
+			if err := json.Unmarshal(c.IntegrityProof, &integrityProof); err != nil {
 				return verifiable.W3CCredential{}, err
 			}
-			proofs = append(proofs, &bloockProof)
+			proofs = append(proofs, &integrityProof)
 		}
 	}
 	vc.Proof = proofs
