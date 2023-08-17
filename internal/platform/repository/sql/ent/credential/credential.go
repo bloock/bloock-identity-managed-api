@@ -19,10 +19,16 @@ const (
 	FieldIssuerDid = "issuer_did"
 	// FieldHolderDid holds the string denoting the holder_did field in the database.
 	FieldHolderDid = "holder_did"
+	// FieldProofType holds the string denoting the proof_type field in the database.
+	FieldProofType = "proof_type"
 	// FieldCredentialData holds the string denoting the credential_data field in the database.
 	FieldCredentialData = "credential_data"
-	// FieldProofs holds the string denoting the proofs field in the database.
-	FieldProofs = "proofs"
+	// FieldSignatureProof holds the string denoting the signature_proof field in the database.
+	FieldSignatureProof = "signature_proof"
+	// FieldBloockProof holds the string denoting the bloock_proof field in the database.
+	FieldBloockProof = "bloock_proof"
+	// FieldSparseMtProof holds the string denoting the sparse_mt_proof field in the database.
+	FieldSparseMtProof = "sparse_mt_proof"
 	// Table holds the table name of the credential in the database.
 	Table = "credentials"
 )
@@ -34,8 +40,11 @@ var Columns = []string{
 	FieldSchemaType,
 	FieldIssuerDid,
 	FieldHolderDid,
+	FieldProofType,
 	FieldCredentialData,
-	FieldProofs,
+	FieldSignatureProof,
+	FieldBloockProof,
+	FieldSparseMtProof,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

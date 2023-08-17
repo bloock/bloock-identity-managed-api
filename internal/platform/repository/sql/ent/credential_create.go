@@ -5,6 +5,7 @@ package ent
 import (
 	"bloock-identity-managed-api/internal/platform/repository/sql/ent/credential"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -44,15 +45,33 @@ func (cc *CredentialCreate) SetHolderDid(s string) *CredentialCreate {
 	return cc
 }
 
-// SetCredentialData sets the "credential_data" field.
-func (cc *CredentialCreate) SetCredentialData(m map[string]interface{}) *CredentialCreate {
-	cc.mutation.SetCredentialData(m)
+// SetProofType sets the "proof_type" field.
+func (cc *CredentialCreate) SetProofType(s []string) *CredentialCreate {
+	cc.mutation.SetProofType(s)
 	return cc
 }
 
-// SetProofs sets the "proofs" field.
-func (cc *CredentialCreate) SetProofs(m map[string]interface{}) *CredentialCreate {
-	cc.mutation.SetProofs(m)
+// SetCredentialData sets the "credential_data" field.
+func (cc *CredentialCreate) SetCredentialData(jm json.RawMessage) *CredentialCreate {
+	cc.mutation.SetCredentialData(jm)
+	return cc
+}
+
+// SetSignatureProof sets the "signature_proof" field.
+func (cc *CredentialCreate) SetSignatureProof(jm json.RawMessage) *CredentialCreate {
+	cc.mutation.SetSignatureProof(jm)
+	return cc
+}
+
+// SetBloockProof sets the "bloock_proof" field.
+func (cc *CredentialCreate) SetBloockProof(jm json.RawMessage) *CredentialCreate {
+	cc.mutation.SetBloockProof(jm)
+	return cc
+}
+
+// SetSparseMtProof sets the "sparse_mt_proof" field.
+func (cc *CredentialCreate) SetSparseMtProof(jm json.RawMessage) *CredentialCreate {
+	cc.mutation.SetSparseMtProof(jm)
 	return cc
 }
 
@@ -120,8 +139,8 @@ func (cc *CredentialCreate) check() error {
 	if _, ok := cc.mutation.CredentialData(); !ok {
 		return &ValidationError{Name: "credential_data", err: errors.New(`ent: missing required field "Credential.credential_data"`)}
 	}
-	if _, ok := cc.mutation.Proofs(); !ok {
-		return &ValidationError{Name: "proofs", err: errors.New(`ent: missing required field "Credential.proofs"`)}
+	if _, ok := cc.mutation.SignatureProof(); !ok {
+		return &ValidationError{Name: "signature_proof", err: errors.New(`ent: missing required field "Credential.signature_proof"`)}
 	}
 	return nil
 }
@@ -165,13 +184,25 @@ func (cc *CredentialCreate) createSpec() (*Credential, *sqlgraph.CreateSpec) {
 		_spec.SetField(credential.FieldHolderDid, field.TypeString, value)
 		_node.HolderDid = value
 	}
+	if value, ok := cc.mutation.ProofType(); ok {
+		_spec.SetField(credential.FieldProofType, field.TypeJSON, value)
+		_node.ProofType = value
+	}
 	if value, ok := cc.mutation.CredentialData(); ok {
 		_spec.SetField(credential.FieldCredentialData, field.TypeJSON, value)
 		_node.CredentialData = value
 	}
-	if value, ok := cc.mutation.Proofs(); ok {
-		_spec.SetField(credential.FieldProofs, field.TypeJSON, value)
-		_node.Proofs = value
+	if value, ok := cc.mutation.SignatureProof(); ok {
+		_spec.SetField(credential.FieldSignatureProof, field.TypeJSON, value)
+		_node.SignatureProof = value
+	}
+	if value, ok := cc.mutation.BloockProof(); ok {
+		_spec.SetField(credential.FieldBloockProof, field.TypeJSON, value)
+		_node.BloockProof = value
+	}
+	if value, ok := cc.mutation.SparseMtProof(); ok {
+		_spec.SetField(credential.FieldSparseMtProof, field.TypeJSON, value)
+		_node.SparseMtProof = value
 	}
 	return _node, _spec
 }

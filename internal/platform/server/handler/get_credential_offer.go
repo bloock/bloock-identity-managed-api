@@ -53,14 +53,20 @@ func mapToCredentialOfferResponse(r response.GetCredentialOfferResponse) Credent
 
 func GetCredentialOffer(credentialOffer criteria.CredentialOffer) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		proofs := ctx.QueryArray("proof")
+
 		credentialId := ctx.Param("credential_id")
 		if credentialId == "" {
 			ctx.JSON(http.StatusBadRequest, "empty credential id")
 			return
 		}
 
-		res, err := credentialOffer.Get(ctx, credentialId)
+		res, err := credentialOffer.Get(ctx, credentialId, proofs)
 		if err != nil {
+			if errors.Is(domain.ErrInvalidProofType, err) {
+				ctx.JSON(http.StatusBadRequest, NewBadRequestAPIError(err.Error()))
+				return
+			}
 			if errors.Is(domain.ErrInvalidUUID, err) {
 				ctx.JSON(http.StatusBadRequest, NewBadRequestAPIError(err.Error()))
 				return

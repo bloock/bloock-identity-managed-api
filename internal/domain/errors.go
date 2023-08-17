@@ -8,4 +8,5 @@ var (
 	ErrInvalidZkpMessage       = errors.New("invalid zkp message")
 	ErrInvalidCredentialSender = errors.New("credential do not relate to their sender")
 	ErrCredentialNotFound      = errors.New("credential not found")
+	ErrInvalidProofType        = errors.New("invalid proof type provided")
 )

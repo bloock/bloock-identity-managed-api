@@ -309,6 +309,36 @@ func HolderDidContainsFold(v string) predicate.Credential {
 	return predicate.Credential(sql.FieldContainsFold(FieldHolderDid, v))
 }
 
+// ProofTypeIsNil applies the IsNil predicate on the "proof_type" field.
+func ProofTypeIsNil() predicate.Credential {
+	return predicate.Credential(sql.FieldIsNull(FieldProofType))
+}
+
+// ProofTypeNotNil applies the NotNil predicate on the "proof_type" field.
+func ProofTypeNotNil() predicate.Credential {
+	return predicate.Credential(sql.FieldNotNull(FieldProofType))
+}
+
+// BloockProofIsNil applies the IsNil predicate on the "bloock_proof" field.
+func BloockProofIsNil() predicate.Credential {
+	return predicate.Credential(sql.FieldIsNull(FieldBloockProof))
+}
+
+// BloockProofNotNil applies the NotNil predicate on the "bloock_proof" field.
+func BloockProofNotNil() predicate.Credential {
+	return predicate.Credential(sql.FieldNotNull(FieldBloockProof))
+}
+
+// SparseMtProofIsNil applies the IsNil predicate on the "sparse_mt_proof" field.
+func SparseMtProofIsNil() predicate.Credential {
+	return predicate.Credential(sql.FieldIsNull(FieldSparseMtProof))
+}
+
+// SparseMtProofNotNil applies the NotNil predicate on the "sparse_mt_proof" field.
+func SparseMtProofNotNil() predicate.Credential {
+	return predicate.Credential(sql.FieldNotNull(FieldSparseMtProof))
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Credential) predicate.Credential {
 	return predicate.Credential(func(s *sql.Selector) {

@@ -5,12 +5,15 @@ import (
 	"bloock-identity-managed-api/internal/platform/repository/sql/connection"
 	"bloock-identity-managed-api/internal/platform/repository/sql/ent/credential"
 	"context"
+	"encoding/json"
 	"github.com/google/uuid"
 	core "github.com/iden3/go-iden3-core"
 	"github.com/rs/zerolog"
 	"strings"
 	"time"
 )
+
+var emptyProof = []byte("null")
 
 type SQLCredentialRepository struct {
 	connection connection.EntConnection
@@ -23,7 +26,16 @@ func NewSQLCertificationRepository(connection connection.EntConnection, dbTimeou
 }
 
 func (s SQLCredentialRepository) Save(ctx context.Context, c domain.Credential) error {
-	certificationCreate := s.connection.DB().Credential.Create().SetCredentialID(c.CredentialId).SetSchemaType(c.SchemaType).SetIssuerDid(c.IssuerDid).SetHolderDid(c.HolderDid).SetCredentialData(c.CredentialData).SetProofs(c.Proofs)
+	certificationCreate := s.connection.DB().Credential.Create().
+		SetCredentialID(c.CredentialId).
+		SetSchemaType(c.SchemaType).
+		SetIssuerDid(c.IssuerDid).
+		SetHolderDid(c.HolderDid).
+		SetProofType(c.ProofType).
+		SetCredentialData(c.CredentialData).
+		SetSignatureProof(c.SignatureProof).
+		SetBloockProof(c.BloockProof).
+		SetSparseMtProof(c.SparseMtProof)
 
 	if _, err := certificationCreate.Save(ctx); err != nil {
 		s.logger.Error().Err(err).Msg("")
@@ -46,8 +58,11 @@ func (s SQLCredentialRepository) GetCredentialById(ctx context.Context, id uuid.
 		SchemaType:     cs.SchemaType,
 		IssuerDid:      cs.IssuerDid,
 		HolderDid:      cs.HolderDid,
+		ProofType:      cs.ProofType,
 		CredentialData: cs.CredentialData,
-		Proofs:         cs.Proofs,
+		SignatureProof: cs.SignatureProof,
+		BloockProof:    cs.BloockProof,
+		SparseMtProof:  cs.SparseMtProof,
 	}, nil
 }
 
@@ -69,13 +84,19 @@ func (s SQLCredentialRepository) GetCredentialByIssuerAndId(ctx context.Context,
 		SchemaType:     cs.SchemaType,
 		IssuerDid:      cs.IssuerDid,
 		HolderDid:      cs.HolderDid,
+		ProofType:      cs.ProofType,
 		CredentialData: cs.CredentialData,
-		Proofs:         cs.Proofs,
+		SignatureProof: cs.SignatureProof,
+		BloockProof:    cs.BloockProof,
+		SparseMtProof:  cs.SparseMtProof,
 	}, nil
 }
 
-func (s SQLCredentialRepository) UpdateCertificationAnchor(ctx context.Context, id uuid.UUID, proofs map[string]interface{}) error {
-	if _, err := s.connection.DB().Credential.Update().SetProofs(proofs).
+func (s SQLCredentialRepository) UpdateCertificationAnchor(ctx context.Context, id uuid.UUID, signatureProof, bloockProof, sparseMtProof json.RawMessage) error {
+	if _, err := s.connection.DB().Credential.Update().
+		SetSignatureProof(signatureProof).
+		SetBloockProof(bloockProof).
+		SetSparseMtProof(sparseMtProof).
 		Where(credential.CredentialID(id)).
 		Save(ctx); err != nil {
 		s.logger.Error().Err(err).Msg("")

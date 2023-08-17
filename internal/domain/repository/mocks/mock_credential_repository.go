@@ -11,7 +11,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/google/uuid"
-	go_iden3_core "github.com/iden3/go-iden3-core"
+	core "github.com/iden3/go-iden3-core"
 )
 
 // MockCredentialRepository is a mock of CredentialRepository interface.
@@ -53,7 +53,7 @@ func (mr *MockCredentialRepositoryMockRecorder) GetCredentialById(ctx, id interf
 }
 
 // GetCredentialByIssuerAndId mocks base method.
-func (m *MockCredentialRepository) GetCredentialByIssuerAndId(ctx context.Context, issuer *go_iden3_core.DID, id uuid.UUID) (domain.Credential, error) {
+func (m *MockCredentialRepository) GetCredentialByIssuerAndId(ctx context.Context, issuer *core.DID, id uuid.UUID) (domain.Credential, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCredentialByIssuerAndId", ctx, issuer, id)
 	ret0, _ := ret[0].(domain.Credential)
@@ -82,15 +82,15 @@ func (mr *MockCredentialRepositoryMockRecorder) Save(ctx, c interface{}) *gomock
 }
 
 // UpdateCertificationAnchor mocks base method.
-func (m *MockCredentialRepository) UpdateCertificationAnchor(ctx context.Context, id uuid.UUID, proofs map[string]interface{}) error {
+func (m *MockCredentialRepository) UpdateCertificationAnchor(ctx context.Context, id uuid.UUID, signatureProof, bloockProof, sparseMtProof map[string]interface{}) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateCertificationAnchor", ctx, id, proofs)
+	ret := m.ctrl.Call(m, "UpdateCertificationAnchor", ctx, id, signatureProof, bloockProof, sparseMtProof)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // UpdateCertificationAnchor indicates an expected call of UpdateCertificationAnchor.
-func (mr *MockCredentialRepositoryMockRecorder) UpdateCertificationAnchor(ctx, id, proofs interface{}) *gomock.Call {
+func (mr *MockCredentialRepositoryMockRecorder) UpdateCertificationAnchor(ctx, id, signatureProof, bloockProof, sparseMtProof interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCertificationAnchor", reflect.TypeOf((*MockCredentialRepository)(nil).UpdateCertificationAnchor), ctx, id, proofs)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCertificationAnchor", reflect.TypeOf((*MockCredentialRepository)(nil).UpdateCertificationAnchor), ctx, id, signatureProof, bloockProof, sparseMtProof)
 }

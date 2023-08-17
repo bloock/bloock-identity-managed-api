@@ -26,11 +26,17 @@ type Credential struct {
 	IssuerDid string `json:"issuer_did,omitempty"`
 	// HolderDid holds the value of the "holder_did" field.
 	HolderDid string `json:"holder_did,omitempty"`
+	// ProofType holds the value of the "proof_type" field.
+	ProofType []string `json:"proof_type,omitempty"`
 	// CredentialData holds the value of the "credential_data" field.
-	CredentialData map[string]interface{} `json:"credential_data,omitempty"`
-	// Proofs holds the value of the "proofs" field.
-	Proofs       map[string]interface{} `json:"proofs,omitempty"`
-	selectValues sql.SelectValues
+	CredentialData json.RawMessage `json:"credential_data,omitempty"`
+	// SignatureProof holds the value of the "signature_proof" field.
+	SignatureProof json.RawMessage `json:"signature_proof,omitempty"`
+	// BloockProof holds the value of the "bloock_proof" field.
+	BloockProof json.RawMessage `json:"bloock_proof,omitempty"`
+	// SparseMtProof holds the value of the "sparse_mt_proof" field.
+	SparseMtProof json.RawMessage `json:"sparse_mt_proof,omitempty"`
+	selectValues  sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -38,7 +44,7 @@ func (*Credential) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case credential.FieldCredentialData, credential.FieldProofs:
+		case credential.FieldProofType, credential.FieldCredentialData, credential.FieldSignatureProof, credential.FieldBloockProof, credential.FieldSparseMtProof:
 			values[i] = new([]byte)
 		case credential.FieldID:
 			values[i] = new(sql.NullInt64)
@@ -91,6 +97,14 @@ func (c *Credential) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.HolderDid = value.String
 			}
+		case credential.FieldProofType:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field proof_type", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &c.ProofType); err != nil {
+					return fmt.Errorf("unmarshal field proof_type: %w", err)
+				}
+			}
 		case credential.FieldCredentialData:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field credential_data", values[i])
@@ -99,12 +113,28 @@ func (c *Credential) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field credential_data: %w", err)
 				}
 			}
-		case credential.FieldProofs:
+		case credential.FieldSignatureProof:
 			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field proofs", values[i])
+				return fmt.Errorf("unexpected type %T for field signature_proof", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &c.Proofs); err != nil {
-					return fmt.Errorf("unmarshal field proofs: %w", err)
+				if err := json.Unmarshal(*value, &c.SignatureProof); err != nil {
+					return fmt.Errorf("unmarshal field signature_proof: %w", err)
+				}
+			}
+		case credential.FieldBloockProof:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field bloock_proof", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &c.BloockProof); err != nil {
+					return fmt.Errorf("unmarshal field bloock_proof: %w", err)
+				}
+			}
+		case credential.FieldSparseMtProof:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field sparse_mt_proof", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &c.SparseMtProof); err != nil {
+					return fmt.Errorf("unmarshal field sparse_mt_proof: %w", err)
 				}
 			}
 		default:
@@ -155,11 +185,20 @@ func (c *Credential) String() string {
 	builder.WriteString("holder_did=")
 	builder.WriteString(c.HolderDid)
 	builder.WriteString(", ")
+	builder.WriteString("proof_type=")
+	builder.WriteString(fmt.Sprintf("%v", c.ProofType))
+	builder.WriteString(", ")
 	builder.WriteString("credential_data=")
 	builder.WriteString(fmt.Sprintf("%v", c.CredentialData))
 	builder.WriteString(", ")
-	builder.WriteString("proofs=")
-	builder.WriteString(fmt.Sprintf("%v", c.Proofs))
+	builder.WriteString("signature_proof=")
+	builder.WriteString(fmt.Sprintf("%v", c.SignatureProof))
+	builder.WriteString(", ")
+	builder.WriteString("bloock_proof=")
+	builder.WriteString(fmt.Sprintf("%v", c.BloockProof))
+	builder.WriteString(", ")
+	builder.WriteString("sparse_mt_proof=")
+	builder.WriteString(fmt.Sprintf("%v", c.SparseMtProof))
 	builder.WriteByte(')')
 	return builder.String()
 }
