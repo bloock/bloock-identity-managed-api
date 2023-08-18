@@ -36,7 +36,7 @@ func (c Credential) ParseToVerifiableCredential(proofFilter []string) (verifiabl
 		proofs = append(proofs, &signatureProof)
 	}
 
-	if IsProofIncluded(PolygonProofType, proofFilter) {
+	if IsProofIncluded(SparseMtProofType, proofFilter) {
 		var sparseMtProof verifiable.Iden3SparseMerkleTreeProof
 		if string(c.SparseMtProof) != "null" {
 			if err := json.Unmarshal(c.SparseMtProof, &sparseMtProof); err != nil {

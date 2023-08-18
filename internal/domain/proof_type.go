@@ -4,15 +4,15 @@ type ProofType int32
 
 const (
 	IntegrityProofType ProofType = iota
-	PolygonProofType
+	SparseMtProofType
 )
 
 func NewProofType(proof string) (ProofType, error) {
 	switch proof {
 	case "integrity_proof":
 		return IntegrityProofType, nil
-	case "polygon_proof":
-		return PolygonProofType, nil
+	case "sparse_mt_proof":
+		return SparseMtProofType, nil
 	default:
 		return 0, ErrInvalidProofType
 	}
@@ -22,8 +22,8 @@ func (p ProofType) Str() string {
 	switch p {
 	case IntegrityProofType:
 		return "integrity_proof"
-	case PolygonProofType:
-		return "polygon_proof"
+	case SparseMtProofType:
+		return "sparse_mt_proof"
 	default:
 		return ""
 	}

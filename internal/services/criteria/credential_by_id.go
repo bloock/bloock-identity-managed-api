@@ -38,5 +38,5 @@ func (c CredentialById) Get(ctx context.Context, issuerDid, credentialId string)
 		return nil, err
 	}
 
-	return credential.ParseToVerifiableCredential([]string{domain.IntegrityProofType.Str(), domain.PolygonProofType.Str()})
+	return credential.ParseToVerifiableCredential([]string{domain.IntegrityProofType.Str(), domain.SparseMtProofType.Str()})
 }
