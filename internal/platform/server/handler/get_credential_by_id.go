@@ -5,6 +5,7 @@ import (
 	"bloock-identity-managed-api/internal/services/criteria"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/iden3/go-schema-processor/verifiable"
 	"net/http"
 )
 
@@ -39,7 +40,7 @@ func GetCredentialById(credential criteria.CredentialById) gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, NewInternalServerAPIError(err.Error()))
 			return
 		}
-		cred, ok := res.(map[string]interface{})
+		cred, ok := res.(verifiable.W3CCredential)
 		if !ok {
 			ctx.JSON(http.StatusNotFound, domain.ErrCredentialNotFound.Error())
 			return

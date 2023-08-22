@@ -4,6 +4,7 @@ import (
 	"bloock-identity-managed-api/internal/platform/server/handler"
 	"bloock-identity-managed-api/internal/services/create"
 	"bloock-identity-managed-api/internal/services/criteria"
+	"bloock-identity-managed-api/internal/services/update"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -17,7 +18,7 @@ type Server struct {
 	logger zerolog.Logger
 }
 
-func NewServer(host string, port string, c create.Credential, co criteria.CredentialOffer, rc criteria.CredentialRedeem, ci criteria.CredentialById,
+func NewServer(host string, port string, c create.Credential, co criteria.CredentialOffer, rc criteria.CredentialRedeem, ci criteria.CredentialById, bpu update.BloockIntegrityProofUpdate,
 	webhookSecretKey string, enforceTolerance bool, logger zerolog.Logger, debug bool) (*Server, error) {
 	router := gin.Default()
 	if debug {
@@ -36,6 +37,8 @@ func NewServer(host string, port string, c create.Credential, co criteria.Creden
 
 	v1.GET("/credentials/:credential_id/offer", handler.GetCredentialOffer(co))
 	v1.GET("/:issuer_did/credentials/:credential_id", handler.GetCredentialById(ci))
+
+	v1.POST("/integrity/webhook", handler.UpdateIntegrityProof(bpu, webhookSecretKey, enforceTolerance))
 
 	return &Server{
 		host:   host,

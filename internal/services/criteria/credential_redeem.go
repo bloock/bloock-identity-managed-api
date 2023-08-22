@@ -28,7 +28,7 @@ func NewCredentialRedeem(cr repository.CredentialRepository, vr repository.Verif
 	}
 }
 
-func (c CredentialRedeem) Redeem(ctx context.Context, body string) (interface{}, error) {
+func (c CredentialRedeem) Redeem(ctx context.Context, body string, proofs []string) (interface{}, error) {
 	manager := c.verificationRepository.PackageManager()
 	basicMessage, err := manager.UnpackWithType(packers.MediaTypeZKPMessage, []byte(body))
 	if err != nil {
@@ -62,7 +62,11 @@ func (c CredentialRedeem) Redeem(ctx context.Context, body string) (interface{},
 		return nil, err
 	}
 
-	vc := domain.ParseToVerifiableCredential(credential)
+	vc, err := credential.ParseToVerifiableCredential(proofs)
+	if err != nil {
+		c.logger.Error().Err(err).Msg("")
+		return nil, err
+	}
 
 	id, err := uuid.NewUUID()
 	if err != nil {

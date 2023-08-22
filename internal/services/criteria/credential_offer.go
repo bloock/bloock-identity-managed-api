@@ -25,11 +25,18 @@ func NewCredentialOffer(cr repository.CredentialRepository, publicHost string, l
 	}
 }
 
-func (c CredentialOffer) Get(ctx context.Context, credentialId string) (interface{}, error) {
+func (c CredentialOffer) Get(ctx context.Context, credentialId string, proofs []string) (interface{}, error) {
 	credentialUUID, err := uuid.Parse(credentialId)
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
 		return nil, domain.ErrInvalidUUID
+	}
+
+	for _, p := range proofs {
+		if _, err = domain.NewProofType(p); err != nil {
+			c.logger.Error().Err(err).Msg("")
+			return nil, err
+		}
 	}
 
 	credential, err := c.credentialRepository.GetCredentialById(ctx, credentialUUID)
@@ -37,7 +44,7 @@ func (c CredentialOffer) Get(ctx context.Context, credentialId string) (interfac
 		return nil, err
 	}
 
-	url := fmt.Sprintf("%s/v1/claims/redeem", strings.TrimSuffix(c.publicHost, "/"))
+	url := fmt.Sprintf("%s/v1/claims/redeem%s", strings.TrimSuffix(c.publicHost, "/"), getQueryProofs(proofs))
 	id, err := uuid.NewUUID()
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
@@ -57,4 +64,15 @@ func (c CredentialOffer) Get(ctx context.Context, credentialId string) (interfac
 		Typ:  "application/iden3comm-plain-json",
 		Type: "https://iden3-communication.io/credentials/1.0/offer",
 	}, nil
+}
+
+func getQueryProofs(proofs []string) string {
+	var uri string
+	if len(proofs) == 0 {
+		return uri
+	}
+	queryString := strings.Join(proofs, "&proof=")
+	uri = "?proof=" + queryString
+
+	return uri
 }

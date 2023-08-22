@@ -40,6 +40,8 @@ func mapToRedeemCredentialResponse(res response.RedeemCredentialResponse) Redeem
 
 func RedeemCredential(credentialRedeem criteria.CredentialRedeem) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		proofs := ctx.QueryArray("proof")
+
 		bodyBytes, err := io.ReadAll(ctx.Request.Body)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, err.Error())
@@ -51,8 +53,12 @@ func RedeemCredential(credentialRedeem criteria.CredentialRedeem) gin.HandlerFun
 			return
 		}
 
-		res, err := credentialRedeem.Redeem(ctx, bodyString)
+		res, err := credentialRedeem.Redeem(ctx, bodyString, proofs)
 		if err != nil {
+			if errors.Is(domain.ErrInvalidProofType, err) {
+				ctx.JSON(http.StatusBadRequest, NewBadRequestAPIError(err.Error()))
+				return
+			}
 			if errors.Is(domain.ErrInvalidZkpMessage, err) {
 				ctx.JSON(http.StatusBadRequest, NewBadRequestAPIError(err.Error()))
 				return

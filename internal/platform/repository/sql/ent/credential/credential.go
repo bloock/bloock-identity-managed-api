@@ -13,16 +13,24 @@ const (
 	FieldID = "id"
 	// FieldCredentialID holds the string denoting the credential_id field in the database.
 	FieldCredentialID = "credential_id"
+	// FieldAnchorID holds the string denoting the anchor_id field in the database.
+	FieldAnchorID = "anchor_id"
 	// FieldSchemaType holds the string denoting the schema_type field in the database.
 	FieldSchemaType = "schema_type"
 	// FieldIssuerDid holds the string denoting the issuer_did field in the database.
 	FieldIssuerDid = "issuer_did"
 	// FieldHolderDid holds the string denoting the holder_did field in the database.
 	FieldHolderDid = "holder_did"
+	// FieldProofType holds the string denoting the proof_type field in the database.
+	FieldProofType = "proof_type"
 	// FieldCredentialData holds the string denoting the credential_data field in the database.
 	FieldCredentialData = "credential_data"
-	// FieldProofs holds the string denoting the proofs field in the database.
-	FieldProofs = "proofs"
+	// FieldSignatureProof holds the string denoting the signature_proof field in the database.
+	FieldSignatureProof = "signature_proof"
+	// FieldIntegrityProof holds the string denoting the integrity_proof field in the database.
+	FieldIntegrityProof = "integrity_proof"
+	// FieldSparseMtProof holds the string denoting the sparse_mt_proof field in the database.
+	FieldSparseMtProof = "sparse_mt_proof"
 	// Table holds the table name of the credential in the database.
 	Table = "credentials"
 )
@@ -31,11 +39,15 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldCredentialID,
+	FieldAnchorID,
 	FieldSchemaType,
 	FieldIssuerDid,
 	FieldHolderDid,
+	FieldProofType,
 	FieldCredentialData,
-	FieldProofs,
+	FieldSignatureProof,
+	FieldIntegrityProof,
+	FieldSparseMtProof,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -68,6 +80,11 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByCredentialID orders the results by the credential_id field.
 func ByCredentialID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCredentialID, opts...).ToFunc()
+}
+
+// ByAnchorID orders the results by the anchor_id field.
+func ByAnchorID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAnchorID, opts...).ToFunc()
 }
 
 // BySchemaType orders the results by the schema_type field.

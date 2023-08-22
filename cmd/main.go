@@ -11,6 +11,7 @@ import (
 	"bloock-identity-managed-api/internal/platform/zkp/loaders"
 	"bloock-identity-managed-api/internal/services/create"
 	"bloock-identity-managed-api/internal/services/criteria"
+	"bloock-identity-managed-api/internal/services/update"
 	"context"
 	"github.com/rs/zerolog"
 	"sync"
@@ -67,6 +68,7 @@ func main() {
 	co := criteria.NewCredentialOffer(cr, cfg.APIHost, logger)
 	rc := criteria.NewCredentialRedeem(cr, vr, logger)
 	ci := criteria.NewCredentialById(cr, logger)
+	bpu := update.NewIntegrityProofUpdate(cr, ir, logger)
 
 	wg := sync.WaitGroup{}
 	wg.Add(1)
@@ -74,7 +76,7 @@ func main() {
 	// Run API server
 	go func() {
 		defer wg.Done()
-		sr, err := server.NewServer(cfg.APIHost, cfg.APIPort, *cc, *co, *rc, *ci, cfg.WebhookSecretKey, cfg.WebhookEnforceTolerance, logger, cfg.DebugMode)
+		sr, err := server.NewServer(cfg.APIHost, cfg.APIPort, *cc, *co, *rc, *ci, *bpu, cfg.WebhookSecretKey, cfg.WebhookEnforceTolerance, logger, cfg.DebugMode)
 		if err != nil {
 			panic(err)
 		}

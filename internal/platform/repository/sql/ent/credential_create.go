@@ -5,6 +5,7 @@ package ent
 import (
 	"bloock-identity-managed-api/internal/platform/repository/sql/ent/credential"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -26,6 +27,12 @@ func (cc *CredentialCreate) SetCredentialID(u uuid.UUID) *CredentialCreate {
 	return cc
 }
 
+// SetAnchorID sets the "anchor_id" field.
+func (cc *CredentialCreate) SetAnchorID(i int64) *CredentialCreate {
+	cc.mutation.SetAnchorID(i)
+	return cc
+}
+
 // SetSchemaType sets the "schema_type" field.
 func (cc *CredentialCreate) SetSchemaType(s string) *CredentialCreate {
 	cc.mutation.SetSchemaType(s)
@@ -44,15 +51,33 @@ func (cc *CredentialCreate) SetHolderDid(s string) *CredentialCreate {
 	return cc
 }
 
-// SetCredentialData sets the "credential_data" field.
-func (cc *CredentialCreate) SetCredentialData(m map[string]interface{}) *CredentialCreate {
-	cc.mutation.SetCredentialData(m)
+// SetProofType sets the "proof_type" field.
+func (cc *CredentialCreate) SetProofType(s []string) *CredentialCreate {
+	cc.mutation.SetProofType(s)
 	return cc
 }
 
-// SetProofs sets the "proofs" field.
-func (cc *CredentialCreate) SetProofs(m map[string]interface{}) *CredentialCreate {
-	cc.mutation.SetProofs(m)
+// SetCredentialData sets the "credential_data" field.
+func (cc *CredentialCreate) SetCredentialData(jm json.RawMessage) *CredentialCreate {
+	cc.mutation.SetCredentialData(jm)
+	return cc
+}
+
+// SetSignatureProof sets the "signature_proof" field.
+func (cc *CredentialCreate) SetSignatureProof(jm json.RawMessage) *CredentialCreate {
+	cc.mutation.SetSignatureProof(jm)
+	return cc
+}
+
+// SetIntegrityProof sets the "integrity_proof" field.
+func (cc *CredentialCreate) SetIntegrityProof(jm json.RawMessage) *CredentialCreate {
+	cc.mutation.SetIntegrityProof(jm)
+	return cc
+}
+
+// SetSparseMtProof sets the "sparse_mt_proof" field.
+func (cc *CredentialCreate) SetSparseMtProof(jm json.RawMessage) *CredentialCreate {
+	cc.mutation.SetSparseMtProof(jm)
 	return cc
 }
 
@@ -93,6 +118,9 @@ func (cc *CredentialCreate) check() error {
 	if _, ok := cc.mutation.CredentialID(); !ok {
 		return &ValidationError{Name: "credential_id", err: errors.New(`ent: missing required field "Credential.credential_id"`)}
 	}
+	if _, ok := cc.mutation.AnchorID(); !ok {
+		return &ValidationError{Name: "anchor_id", err: errors.New(`ent: missing required field "Credential.anchor_id"`)}
+	}
 	if _, ok := cc.mutation.SchemaType(); !ok {
 		return &ValidationError{Name: "schema_type", err: errors.New(`ent: missing required field "Credential.schema_type"`)}
 	}
@@ -120,8 +148,8 @@ func (cc *CredentialCreate) check() error {
 	if _, ok := cc.mutation.CredentialData(); !ok {
 		return &ValidationError{Name: "credential_data", err: errors.New(`ent: missing required field "Credential.credential_data"`)}
 	}
-	if _, ok := cc.mutation.Proofs(); !ok {
-		return &ValidationError{Name: "proofs", err: errors.New(`ent: missing required field "Credential.proofs"`)}
+	if _, ok := cc.mutation.SignatureProof(); !ok {
+		return &ValidationError{Name: "signature_proof", err: errors.New(`ent: missing required field "Credential.signature_proof"`)}
 	}
 	return nil
 }
@@ -153,6 +181,10 @@ func (cc *CredentialCreate) createSpec() (*Credential, *sqlgraph.CreateSpec) {
 		_spec.SetField(credential.FieldCredentialID, field.TypeUUID, value)
 		_node.CredentialID = value
 	}
+	if value, ok := cc.mutation.AnchorID(); ok {
+		_spec.SetField(credential.FieldAnchorID, field.TypeInt64, value)
+		_node.AnchorID = value
+	}
 	if value, ok := cc.mutation.SchemaType(); ok {
 		_spec.SetField(credential.FieldSchemaType, field.TypeString, value)
 		_node.SchemaType = value
@@ -165,13 +197,25 @@ func (cc *CredentialCreate) createSpec() (*Credential, *sqlgraph.CreateSpec) {
 		_spec.SetField(credential.FieldHolderDid, field.TypeString, value)
 		_node.HolderDid = value
 	}
+	if value, ok := cc.mutation.ProofType(); ok {
+		_spec.SetField(credential.FieldProofType, field.TypeJSON, value)
+		_node.ProofType = value
+	}
 	if value, ok := cc.mutation.CredentialData(); ok {
 		_spec.SetField(credential.FieldCredentialData, field.TypeJSON, value)
 		_node.CredentialData = value
 	}
-	if value, ok := cc.mutation.Proofs(); ok {
-		_spec.SetField(credential.FieldProofs, field.TypeJSON, value)
-		_node.Proofs = value
+	if value, ok := cc.mutation.SignatureProof(); ok {
+		_spec.SetField(credential.FieldSignatureProof, field.TypeJSON, value)
+		_node.SignatureProof = value
+	}
+	if value, ok := cc.mutation.IntegrityProof(); ok {
+		_spec.SetField(credential.FieldIntegrityProof, field.TypeJSON, value)
+		_node.IntegrityProof = value
+	}
+	if value, ok := cc.mutation.SparseMtProof(); ok {
+		_spec.SetField(credential.FieldSparseMtProof, field.TypeJSON, value)
+		_node.SparseMtProof = value
 	}
 	return _node, _spec
 }

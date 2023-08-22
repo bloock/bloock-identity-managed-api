@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"encoding/json"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
@@ -14,11 +15,15 @@ type Credential struct {
 func (Credential) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("credential_id", uuid.UUID{}),
+		field.Int64("anchor_id"),
 		field.String("schema_type").NotEmpty(),
 		field.String("issuer_did").NotEmpty(),
 		field.String("holder_did").NotEmpty(),
-		field.JSON("credential_data", map[string]interface{}{}),
-		field.JSON("proofs", map[string]interface{}{}),
+		field.Strings("proof_type").Optional(),
+		field.JSON("credential_data", json.RawMessage{}),
+		field.JSON("signature_proof", json.RawMessage{}),
+		field.JSON("integrity_proof", json.RawMessage{}).Optional(),
+		field.JSON("sparse_mt_proof", json.RawMessage{}).Optional(),
 	}
 }
 

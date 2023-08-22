@@ -6,11 +6,13 @@ import (
 	"bloock-identity-managed-api/internal/platform/repository/sql/ent/credential"
 	"bloock-identity-managed-api/internal/platform/repository/sql/ent/predicate"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
 )
@@ -34,6 +36,19 @@ func (cu *CredentialUpdate) SetCredentialID(u uuid.UUID) *CredentialUpdate {
 	return cu
 }
 
+// SetAnchorID sets the "anchor_id" field.
+func (cu *CredentialUpdate) SetAnchorID(i int64) *CredentialUpdate {
+	cu.mutation.ResetAnchorID()
+	cu.mutation.SetAnchorID(i)
+	return cu
+}
+
+// AddAnchorID adds i to the "anchor_id" field.
+func (cu *CredentialUpdate) AddAnchorID(i int64) *CredentialUpdate {
+	cu.mutation.AddAnchorID(i)
+	return cu
+}
+
 // SetSchemaType sets the "schema_type" field.
 func (cu *CredentialUpdate) SetSchemaType(s string) *CredentialUpdate {
 	cu.mutation.SetSchemaType(s)
@@ -52,15 +67,81 @@ func (cu *CredentialUpdate) SetHolderDid(s string) *CredentialUpdate {
 	return cu
 }
 
-// SetCredentialData sets the "credential_data" field.
-func (cu *CredentialUpdate) SetCredentialData(m map[string]interface{}) *CredentialUpdate {
-	cu.mutation.SetCredentialData(m)
+// SetProofType sets the "proof_type" field.
+func (cu *CredentialUpdate) SetProofType(s []string) *CredentialUpdate {
+	cu.mutation.SetProofType(s)
 	return cu
 }
 
-// SetProofs sets the "proofs" field.
-func (cu *CredentialUpdate) SetProofs(m map[string]interface{}) *CredentialUpdate {
-	cu.mutation.SetProofs(m)
+// AppendProofType appends s to the "proof_type" field.
+func (cu *CredentialUpdate) AppendProofType(s []string) *CredentialUpdate {
+	cu.mutation.AppendProofType(s)
+	return cu
+}
+
+// ClearProofType clears the value of the "proof_type" field.
+func (cu *CredentialUpdate) ClearProofType() *CredentialUpdate {
+	cu.mutation.ClearProofType()
+	return cu
+}
+
+// SetCredentialData sets the "credential_data" field.
+func (cu *CredentialUpdate) SetCredentialData(jm json.RawMessage) *CredentialUpdate {
+	cu.mutation.SetCredentialData(jm)
+	return cu
+}
+
+// AppendCredentialData appends jm to the "credential_data" field.
+func (cu *CredentialUpdate) AppendCredentialData(jm json.RawMessage) *CredentialUpdate {
+	cu.mutation.AppendCredentialData(jm)
+	return cu
+}
+
+// SetSignatureProof sets the "signature_proof" field.
+func (cu *CredentialUpdate) SetSignatureProof(jm json.RawMessage) *CredentialUpdate {
+	cu.mutation.SetSignatureProof(jm)
+	return cu
+}
+
+// AppendSignatureProof appends jm to the "signature_proof" field.
+func (cu *CredentialUpdate) AppendSignatureProof(jm json.RawMessage) *CredentialUpdate {
+	cu.mutation.AppendSignatureProof(jm)
+	return cu
+}
+
+// SetIntegrityProof sets the "integrity_proof" field.
+func (cu *CredentialUpdate) SetIntegrityProof(jm json.RawMessage) *CredentialUpdate {
+	cu.mutation.SetIntegrityProof(jm)
+	return cu
+}
+
+// AppendIntegrityProof appends jm to the "integrity_proof" field.
+func (cu *CredentialUpdate) AppendIntegrityProof(jm json.RawMessage) *CredentialUpdate {
+	cu.mutation.AppendIntegrityProof(jm)
+	return cu
+}
+
+// ClearIntegrityProof clears the value of the "integrity_proof" field.
+func (cu *CredentialUpdate) ClearIntegrityProof() *CredentialUpdate {
+	cu.mutation.ClearIntegrityProof()
+	return cu
+}
+
+// SetSparseMtProof sets the "sparse_mt_proof" field.
+func (cu *CredentialUpdate) SetSparseMtProof(jm json.RawMessage) *CredentialUpdate {
+	cu.mutation.SetSparseMtProof(jm)
+	return cu
+}
+
+// AppendSparseMtProof appends jm to the "sparse_mt_proof" field.
+func (cu *CredentialUpdate) AppendSparseMtProof(jm json.RawMessage) *CredentialUpdate {
+	cu.mutation.AppendSparseMtProof(jm)
+	return cu
+}
+
+// ClearSparseMtProof clears the value of the "sparse_mt_proof" field.
+func (cu *CredentialUpdate) ClearSparseMtProof() *CredentialUpdate {
+	cu.mutation.ClearSparseMtProof()
 	return cu
 }
 
@@ -131,6 +212,12 @@ func (cu *CredentialUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := cu.mutation.CredentialID(); ok {
 		_spec.SetField(credential.FieldCredentialID, field.TypeUUID, value)
 	}
+	if value, ok := cu.mutation.AnchorID(); ok {
+		_spec.SetField(credential.FieldAnchorID, field.TypeInt64, value)
+	}
+	if value, ok := cu.mutation.AddedAnchorID(); ok {
+		_spec.AddField(credential.FieldAnchorID, field.TypeInt64, value)
+	}
 	if value, ok := cu.mutation.SchemaType(); ok {
 		_spec.SetField(credential.FieldSchemaType, field.TypeString, value)
 	}
@@ -140,11 +227,54 @@ func (cu *CredentialUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := cu.mutation.HolderDid(); ok {
 		_spec.SetField(credential.FieldHolderDid, field.TypeString, value)
 	}
+	if value, ok := cu.mutation.ProofType(); ok {
+		_spec.SetField(credential.FieldProofType, field.TypeJSON, value)
+	}
+	if value, ok := cu.mutation.AppendedProofType(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, credential.FieldProofType, value)
+		})
+	}
+	if cu.mutation.ProofTypeCleared() {
+		_spec.ClearField(credential.FieldProofType, field.TypeJSON)
+	}
 	if value, ok := cu.mutation.CredentialData(); ok {
 		_spec.SetField(credential.FieldCredentialData, field.TypeJSON, value)
 	}
-	if value, ok := cu.mutation.Proofs(); ok {
-		_spec.SetField(credential.FieldProofs, field.TypeJSON, value)
+	if value, ok := cu.mutation.AppendedCredentialData(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, credential.FieldCredentialData, value)
+		})
+	}
+	if value, ok := cu.mutation.SignatureProof(); ok {
+		_spec.SetField(credential.FieldSignatureProof, field.TypeJSON, value)
+	}
+	if value, ok := cu.mutation.AppendedSignatureProof(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, credential.FieldSignatureProof, value)
+		})
+	}
+	if value, ok := cu.mutation.IntegrityProof(); ok {
+		_spec.SetField(credential.FieldIntegrityProof, field.TypeJSON, value)
+	}
+	if value, ok := cu.mutation.AppendedIntegrityProof(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, credential.FieldIntegrityProof, value)
+		})
+	}
+	if cu.mutation.IntegrityProofCleared() {
+		_spec.ClearField(credential.FieldIntegrityProof, field.TypeJSON)
+	}
+	if value, ok := cu.mutation.SparseMtProof(); ok {
+		_spec.SetField(credential.FieldSparseMtProof, field.TypeJSON, value)
+	}
+	if value, ok := cu.mutation.AppendedSparseMtProof(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, credential.FieldSparseMtProof, value)
+		})
+	}
+	if cu.mutation.SparseMtProofCleared() {
+		_spec.ClearField(credential.FieldSparseMtProof, field.TypeJSON)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -172,6 +302,19 @@ func (cuo *CredentialUpdateOne) SetCredentialID(u uuid.UUID) *CredentialUpdateOn
 	return cuo
 }
 
+// SetAnchorID sets the "anchor_id" field.
+func (cuo *CredentialUpdateOne) SetAnchorID(i int64) *CredentialUpdateOne {
+	cuo.mutation.ResetAnchorID()
+	cuo.mutation.SetAnchorID(i)
+	return cuo
+}
+
+// AddAnchorID adds i to the "anchor_id" field.
+func (cuo *CredentialUpdateOne) AddAnchorID(i int64) *CredentialUpdateOne {
+	cuo.mutation.AddAnchorID(i)
+	return cuo
+}
+
 // SetSchemaType sets the "schema_type" field.
 func (cuo *CredentialUpdateOne) SetSchemaType(s string) *CredentialUpdateOne {
 	cuo.mutation.SetSchemaType(s)
@@ -190,15 +333,81 @@ func (cuo *CredentialUpdateOne) SetHolderDid(s string) *CredentialUpdateOne {
 	return cuo
 }
 
-// SetCredentialData sets the "credential_data" field.
-func (cuo *CredentialUpdateOne) SetCredentialData(m map[string]interface{}) *CredentialUpdateOne {
-	cuo.mutation.SetCredentialData(m)
+// SetProofType sets the "proof_type" field.
+func (cuo *CredentialUpdateOne) SetProofType(s []string) *CredentialUpdateOne {
+	cuo.mutation.SetProofType(s)
 	return cuo
 }
 
-// SetProofs sets the "proofs" field.
-func (cuo *CredentialUpdateOne) SetProofs(m map[string]interface{}) *CredentialUpdateOne {
-	cuo.mutation.SetProofs(m)
+// AppendProofType appends s to the "proof_type" field.
+func (cuo *CredentialUpdateOne) AppendProofType(s []string) *CredentialUpdateOne {
+	cuo.mutation.AppendProofType(s)
+	return cuo
+}
+
+// ClearProofType clears the value of the "proof_type" field.
+func (cuo *CredentialUpdateOne) ClearProofType() *CredentialUpdateOne {
+	cuo.mutation.ClearProofType()
+	return cuo
+}
+
+// SetCredentialData sets the "credential_data" field.
+func (cuo *CredentialUpdateOne) SetCredentialData(jm json.RawMessage) *CredentialUpdateOne {
+	cuo.mutation.SetCredentialData(jm)
+	return cuo
+}
+
+// AppendCredentialData appends jm to the "credential_data" field.
+func (cuo *CredentialUpdateOne) AppendCredentialData(jm json.RawMessage) *CredentialUpdateOne {
+	cuo.mutation.AppendCredentialData(jm)
+	return cuo
+}
+
+// SetSignatureProof sets the "signature_proof" field.
+func (cuo *CredentialUpdateOne) SetSignatureProof(jm json.RawMessage) *CredentialUpdateOne {
+	cuo.mutation.SetSignatureProof(jm)
+	return cuo
+}
+
+// AppendSignatureProof appends jm to the "signature_proof" field.
+func (cuo *CredentialUpdateOne) AppendSignatureProof(jm json.RawMessage) *CredentialUpdateOne {
+	cuo.mutation.AppendSignatureProof(jm)
+	return cuo
+}
+
+// SetIntegrityProof sets the "integrity_proof" field.
+func (cuo *CredentialUpdateOne) SetIntegrityProof(jm json.RawMessage) *CredentialUpdateOne {
+	cuo.mutation.SetIntegrityProof(jm)
+	return cuo
+}
+
+// AppendIntegrityProof appends jm to the "integrity_proof" field.
+func (cuo *CredentialUpdateOne) AppendIntegrityProof(jm json.RawMessage) *CredentialUpdateOne {
+	cuo.mutation.AppendIntegrityProof(jm)
+	return cuo
+}
+
+// ClearIntegrityProof clears the value of the "integrity_proof" field.
+func (cuo *CredentialUpdateOne) ClearIntegrityProof() *CredentialUpdateOne {
+	cuo.mutation.ClearIntegrityProof()
+	return cuo
+}
+
+// SetSparseMtProof sets the "sparse_mt_proof" field.
+func (cuo *CredentialUpdateOne) SetSparseMtProof(jm json.RawMessage) *CredentialUpdateOne {
+	cuo.mutation.SetSparseMtProof(jm)
+	return cuo
+}
+
+// AppendSparseMtProof appends jm to the "sparse_mt_proof" field.
+func (cuo *CredentialUpdateOne) AppendSparseMtProof(jm json.RawMessage) *CredentialUpdateOne {
+	cuo.mutation.AppendSparseMtProof(jm)
+	return cuo
+}
+
+// ClearSparseMtProof clears the value of the "sparse_mt_proof" field.
+func (cuo *CredentialUpdateOne) ClearSparseMtProof() *CredentialUpdateOne {
+	cuo.mutation.ClearSparseMtProof()
 	return cuo
 }
 
@@ -299,6 +508,12 @@ func (cuo *CredentialUpdateOne) sqlSave(ctx context.Context) (_node *Credential,
 	if value, ok := cuo.mutation.CredentialID(); ok {
 		_spec.SetField(credential.FieldCredentialID, field.TypeUUID, value)
 	}
+	if value, ok := cuo.mutation.AnchorID(); ok {
+		_spec.SetField(credential.FieldAnchorID, field.TypeInt64, value)
+	}
+	if value, ok := cuo.mutation.AddedAnchorID(); ok {
+		_spec.AddField(credential.FieldAnchorID, field.TypeInt64, value)
+	}
 	if value, ok := cuo.mutation.SchemaType(); ok {
 		_spec.SetField(credential.FieldSchemaType, field.TypeString, value)
 	}
@@ -308,11 +523,54 @@ func (cuo *CredentialUpdateOne) sqlSave(ctx context.Context) (_node *Credential,
 	if value, ok := cuo.mutation.HolderDid(); ok {
 		_spec.SetField(credential.FieldHolderDid, field.TypeString, value)
 	}
+	if value, ok := cuo.mutation.ProofType(); ok {
+		_spec.SetField(credential.FieldProofType, field.TypeJSON, value)
+	}
+	if value, ok := cuo.mutation.AppendedProofType(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, credential.FieldProofType, value)
+		})
+	}
+	if cuo.mutation.ProofTypeCleared() {
+		_spec.ClearField(credential.FieldProofType, field.TypeJSON)
+	}
 	if value, ok := cuo.mutation.CredentialData(); ok {
 		_spec.SetField(credential.FieldCredentialData, field.TypeJSON, value)
 	}
-	if value, ok := cuo.mutation.Proofs(); ok {
-		_spec.SetField(credential.FieldProofs, field.TypeJSON, value)
+	if value, ok := cuo.mutation.AppendedCredentialData(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, credential.FieldCredentialData, value)
+		})
+	}
+	if value, ok := cuo.mutation.SignatureProof(); ok {
+		_spec.SetField(credential.FieldSignatureProof, field.TypeJSON, value)
+	}
+	if value, ok := cuo.mutation.AppendedSignatureProof(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, credential.FieldSignatureProof, value)
+		})
+	}
+	if value, ok := cuo.mutation.IntegrityProof(); ok {
+		_spec.SetField(credential.FieldIntegrityProof, field.TypeJSON, value)
+	}
+	if value, ok := cuo.mutation.AppendedIntegrityProof(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, credential.FieldIntegrityProof, value)
+		})
+	}
+	if cuo.mutation.IntegrityProofCleared() {
+		_spec.ClearField(credential.FieldIntegrityProof, field.TypeJSON)
+	}
+	if value, ok := cuo.mutation.SparseMtProof(); ok {
+		_spec.SetField(credential.FieldSparseMtProof, field.TypeJSON, value)
+	}
+	if value, ok := cuo.mutation.AppendedSparseMtProof(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, credential.FieldSparseMtProof, value)
+		})
+	}
+	if cuo.mutation.SparseMtProofCleared() {
+		_spec.ClearField(credential.FieldSparseMtProof, field.TypeJSON)
 	}
 	_node = &Credential{config: cuo.config}
 	_spec.Assign = _node.assignValues
