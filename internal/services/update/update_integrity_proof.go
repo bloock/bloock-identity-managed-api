@@ -8,27 +8,21 @@ import (
 	"github.com/rs/zerolog"
 )
 
-type BloockIntegrityProofUpdate struct {
+type IntegrityProofUpdate struct {
 	credentialRepository repository.CredentialRepository
 	identityRepository   repository.IdentityRepository
 	logger               zerolog.Logger
 }
 
-func NewIntegrityProofUpdate(cr repository.CredentialRepository, ir repository.IdentityRepository, l zerolog.Logger) *BloockIntegrityProofUpdate {
-	return &BloockIntegrityProofUpdate{
+func NewIntegrityProofUpdate(cr repository.CredentialRepository, ir repository.IdentityRepository, l zerolog.Logger) *IntegrityProofUpdate {
+	return &IntegrityProofUpdate{
 		credentialRepository: cr,
 		identityRepository:   ir,
 		logger:               l,
 	}
 }
 
-func (b BloockIntegrityProofUpdate) Update(ctx context.Context, proof interface{}) error {
-	integrityProof, ok := proof.(domain.IntegrityProof)
-	if !ok {
-		err := domain.ErrInvalidIntegrityProof
-		b.logger.Error().Err(err).Msg("")
-		return err
-	}
+func (b IntegrityProofUpdate) Update(ctx context.Context, integrityProof domain.IntegrityProof) error {
 	integrityProofBytes, err := json.Marshal(integrityProof)
 	if err != nil {
 		b.logger.Error().Err(err).Msg("")

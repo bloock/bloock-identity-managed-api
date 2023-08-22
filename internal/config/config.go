@@ -14,6 +14,8 @@ type Config struct {
 	WebhookURL              string `mapstructure:"BLOOCK_WEBHOOK_URL"`
 	WebhookSecretKey        string `mapstructure:"BLOOCK_WEBHOOK_SECRET_KEY"`
 	WebhookEnforceTolerance bool   `mapstructure:"BLOOCK_ENFORCE_TOLERANCE"`
+	LocalPrivateKey         string `mapstructure:"BLOOCK_LOCAL_PRIVATE_KEY"`
+	ManagedKeyID            string `mapstructure:"BLOOCK_MANAGED_KEY_ID"`
 	PolygonProvider         string `mapstructure:"BLOOCK_POLYGON_PROVIDER"`
 	DebugMode               bool   `mapstructure:"BLOOCK_API_DEBUG_MODE"`
 }
@@ -46,6 +48,8 @@ func setDefaultConfigValues() {
 	viper.SetDefault("bloock_api_host", "0.0.0.0")
 	viper.SetDefault("bloock_api_port", "8080")
 	viper.SetDefault("bloock_webhook_enforce_tolerance", false)
+	viper.SetDefault("bloock_local_private_key", "")
+	viper.SetDefault("bloock_managed_key_id", "")
 	viper.SetDefault("bloock_polygon_provider", "")
 	viper.SetDefault("bloock_api_debug_mode", false)
 }

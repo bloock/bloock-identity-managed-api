@@ -2,6 +2,7 @@ package main
 
 import (
 	"bloock-identity-managed-api/internal/config"
+	"bloock-identity-managed-api/internal/platform/key"
 	"bloock-identity-managed-api/internal/platform/repository"
 	"bloock-identity-managed-api/internal/platform/repository/sql"
 	"bloock-identity-managed-api/internal/platform/repository/sql/connection"
@@ -62,6 +63,10 @@ func main() {
 	// Setup repositories
 	cr := sql.NewSQLCertificationRepository(*conn, 5*time.Second, logger)
 	ir := repository.NewBloockIdentityRepository(cfg.APIKey, logger)
+	kr, err := key.NewKeyRepository(cfg.LocalPrivateKey, cfg.ManagedKeyID, cfg.APIKey, logger)
+	if err != nil {
+		panic(err)
+	}
 
 	// Setup registry
 	cc := create.NewCredential(cr, ir, logger)
@@ -69,6 +74,7 @@ func main() {
 	rc := criteria.NewCredentialRedeem(cr, vr, logger)
 	ci := criteria.NewCredentialById(cr, logger)
 	bpu := update.NewIntegrityProofUpdate(cr, ir, logger)
+	smp := update.NewSparseMtProofUpdate(cr, ir, logger)
 
 	wg := sync.WaitGroup{}
 	wg.Add(1)
@@ -76,7 +82,7 @@ func main() {
 	// Run API server
 	go func() {
 		defer wg.Done()
-		sr, err := server.NewServer(cfg.APIHost, cfg.APIPort, *cc, *co, *rc, *ci, *bpu, cfg.WebhookSecretKey, cfg.WebhookEnforceTolerance, logger, cfg.DebugMode)
+		sr, err := server.NewServer(cfg.APIHost, cfg.APIPort, *cc, *co, *rc, *ci, *bpu, *smp, cfg.WebhookSecretKey, cfg.WebhookEnforceTolerance, logger, cfg.DebugMode)
 		if err != nil {
 			panic(err)
 		}

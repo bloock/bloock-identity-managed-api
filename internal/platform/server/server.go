@@ -1,6 +1,8 @@
 package server
 
 import (
+	handler2 "bloock-identity-managed-api/internal/platform/events/handler"
+	"bloock-identity-managed-api/internal/platform/events/handler/action"
 	"bloock-identity-managed-api/internal/platform/server/handler"
 	"bloock-identity-managed-api/internal/services/create"
 	"bloock-identity-managed-api/internal/services/criteria"
@@ -18,7 +20,7 @@ type Server struct {
 	logger zerolog.Logger
 }
 
-func NewServer(host string, port string, c create.Credential, co criteria.CredentialOffer, rc criteria.CredentialRedeem, ci criteria.CredentialById, bpu update.BloockIntegrityProofUpdate,
+func NewServer(host string, port string, c create.Credential, co criteria.CredentialOffer, rc criteria.CredentialRedeem, ci criteria.CredentialById, bpu update.IntegrityProofUpdate, smp update.SparseMtProofUpdate,
 	webhookSecretKey string, enforceTolerance bool, logger zerolog.Logger, debug bool) (*Server, error) {
 	router := gin.Default()
 	if debug {
@@ -38,7 +40,15 @@ func NewServer(host string, port string, c create.Credential, co criteria.Creden
 	v1.GET("/credentials/:credential_id/offer", handler.GetCredentialOffer(co))
 	v1.GET("/:issuer_did/credentials/:credential_id", handler.GetCredentialById(ci))
 
-	v1.POST("/integrity/webhook", handler.UpdateIntegrityProof(bpu, webhookSecretKey, enforceTolerance))
+	actionHandler := action.NewActionHandle()
+
+	integrityProof := action.NewIntegrityProofConfirmed(bpu, logger)
+	sparseMtProof := action.NewSparseMtProofConfirmed(smp, logger)
+
+	actionHandler.Register(integrityProof.EventType(), integrityProof)
+	actionHandler.Register(sparseMtProof.EventType(), sparseMtProof)
+
+	router.POST("/bloock-events", handler2.BloockWebhook(webhookSecretKey, enforceTolerance, actionHandler))
 
 	return &Server{
 		host:   host,
