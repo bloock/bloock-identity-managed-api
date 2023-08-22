@@ -10,6 +10,7 @@ import (
 	"bloock-identity-managed-api/internal/platform/web3"
 	"bloock-identity-managed-api/internal/platform/zkp"
 	"bloock-identity-managed-api/internal/platform/zkp/loaders"
+	"bloock-identity-managed-api/internal/services/cancel"
 	"bloock-identity-managed-api/internal/services/create"
 	"bloock-identity-managed-api/internal/services/criteria"
 	"bloock-identity-managed-api/internal/services/update"
@@ -72,9 +73,13 @@ func main() {
 	cc := create.NewCredential(cr, ir, logger)
 	co := criteria.NewCredentialOffer(cr, cfg.APIHost, logger)
 	rc := criteria.NewCredentialRedeem(cr, vr, logger)
-	ci := criteria.NewCredentialById(cr, logger)
+	cbi := criteria.NewCredentialById(cr, logger)
 	bpu := update.NewIntegrityProofUpdate(cr, ir, logger)
 	smp := update.NewSparseMtProofUpdate(cr, ir, logger)
+	ci := create.NewIssuer(kr, logger)
+	il := criteria.NewIssuerList(logger)
+	cs := create.NewSchema(logger)
+	crv := cancel.NewCredentialRevocation(logger)
 
 	wg := sync.WaitGroup{}
 	wg.Add(1)
@@ -82,7 +87,7 @@ func main() {
 	// Run API server
 	go func() {
 		defer wg.Done()
-		sr, err := server.NewServer(cfg.APIHost, cfg.APIPort, *cc, *co, *rc, *ci, *bpu, *smp, cfg.WebhookSecretKey, cfg.WebhookEnforceTolerance, logger, cfg.DebugMode)
+		sr, err := server.NewServer(cfg.APIHost, cfg.APIPort, *cc, *co, *rc, *cbi, *bpu, *smp, *ci, *il, *cs, *crv, cfg.WebhookSecretKey, cfg.WebhookEnforceTolerance, logger, cfg.DebugMode)
 		if err != nil {
 			panic(err)
 		}

@@ -4,6 +4,7 @@ import (
 	"bloock-identity-managed-api/internal/domain/repository"
 	"bloock-identity-managed-api/internal/platform/key/local"
 	"bloock-identity-managed-api/internal/platform/key/managed"
+	"context"
 	"errors"
 	"github.com/bloock/bloock-sdk-go/v2"
 	"github.com/rs/zerolog"
@@ -29,4 +30,10 @@ func NewKeyRepository(localPrivateKey, managedKeyID string, apiKey string, l zer
 		provider: keyProvider,
 		logger:   l,
 	}, nil
+}
+
+func (k KeyRepository) CreateKey(ctx context.Context) error {
+	k.provider.Create()
+
+	return nil
 }
