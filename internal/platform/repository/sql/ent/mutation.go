@@ -38,7 +38,6 @@ type CredentialMutation struct {
 	anchor_id             *int64
 	addanchor_id          *int64
 	schema_type           *string
-	issuer_did            *string
 	holder_did            *string
 	proof_type            *[]string
 	appendproof_type      []string
@@ -280,42 +279,6 @@ func (m *CredentialMutation) OldSchemaType(ctx context.Context) (v string, err e
 // ResetSchemaType resets all changes to the "schema_type" field.
 func (m *CredentialMutation) ResetSchemaType() {
 	m.schema_type = nil
-}
-
-// SetIssuerDid sets the "issuer_did" field.
-func (m *CredentialMutation) SetIssuerDid(s string) {
-	m.issuer_did = &s
-}
-
-// IssuerDid returns the value of the "issuer_did" field in the mutation.
-func (m *CredentialMutation) IssuerDid() (r string, exists bool) {
-	v := m.issuer_did
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldIssuerDid returns the old "issuer_did" field's value of the Credential entity.
-// If the Credential object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CredentialMutation) OldIssuerDid(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIssuerDid is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIssuerDid requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIssuerDid: %w", err)
-	}
-	return oldValue.IssuerDid, nil
-}
-
-// ResetIssuerDid resets all changes to the "issuer_did" field.
-func (m *CredentialMutation) ResetIssuerDid() {
-	m.issuer_did = nil
 }
 
 // SetHolderDid sets the "holder_did" field.
@@ -685,7 +648,7 @@ func (m *CredentialMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CredentialMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 9)
 	if m.credential_id != nil {
 		fields = append(fields, credential.FieldCredentialID)
 	}
@@ -694,9 +657,6 @@ func (m *CredentialMutation) Fields() []string {
 	}
 	if m.schema_type != nil {
 		fields = append(fields, credential.FieldSchemaType)
-	}
-	if m.issuer_did != nil {
-		fields = append(fields, credential.FieldIssuerDid)
 	}
 	if m.holder_did != nil {
 		fields = append(fields, credential.FieldHolderDid)
@@ -730,8 +690,6 @@ func (m *CredentialMutation) Field(name string) (ent.Value, bool) {
 		return m.AnchorID()
 	case credential.FieldSchemaType:
 		return m.SchemaType()
-	case credential.FieldIssuerDid:
-		return m.IssuerDid()
 	case credential.FieldHolderDid:
 		return m.HolderDid()
 	case credential.FieldProofType:
@@ -759,8 +717,6 @@ func (m *CredentialMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldAnchorID(ctx)
 	case credential.FieldSchemaType:
 		return m.OldSchemaType(ctx)
-	case credential.FieldIssuerDid:
-		return m.OldIssuerDid(ctx)
 	case credential.FieldHolderDid:
 		return m.OldHolderDid(ctx)
 	case credential.FieldProofType:
@@ -802,13 +758,6 @@ func (m *CredentialMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSchemaType(v)
-		return nil
-	case credential.FieldIssuerDid:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetIssuerDid(v)
 		return nil
 	case credential.FieldHolderDid:
 		v, ok := value.(string)
@@ -945,9 +894,6 @@ func (m *CredentialMutation) ResetField(name string) error {
 		return nil
 	case credential.FieldSchemaType:
 		m.ResetSchemaType()
-		return nil
-	case credential.FieldIssuerDid:
-		m.ResetIssuerDid()
 		return nil
 	case credential.FieldHolderDid:
 		m.ResetHolderDid()

@@ -14,13 +14,15 @@ import (
 type CredentialOffer struct {
 	credentialRepository repository.CredentialRepository
 	publicHost           string
+	issuer               string
 	logger               zerolog.Logger
 }
 
-func NewCredentialOffer(cr repository.CredentialRepository, publicHost string, l zerolog.Logger) *CredentialOffer {
+func NewCredentialOffer(cr repository.CredentialRepository, publicHost, issuer string, l zerolog.Logger) *CredentialOffer {
 	return &CredentialOffer{
 		credentialRepository: cr,
 		publicHost:           publicHost,
+		issuer:               issuer,
 		logger:               l,
 	}
 }
@@ -44,7 +46,7 @@ func (c CredentialOffer) Get(ctx context.Context, credentialId string, proofs []
 		return nil, err
 	}
 
-	url := fmt.Sprintf("%s/v1/claims/redeem%s", strings.TrimSuffix(c.publicHost, "/"), getQueryProofs(proofs))
+	url := fmt.Sprintf("%s/v1/credentials/redeem%s", strings.TrimSuffix(c.publicHost, "/"), getQueryProofs(proofs))
 	id, err := uuid.NewUUID()
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
@@ -59,7 +61,7 @@ func (c CredentialOffer) Get(ctx context.Context, credentialId string, proofs []
 			Description: credential.SchemaType,
 			URL:         url,
 		},
-		From: credential.IssuerDid,
+		From: c.issuer,
 		To:   credential.HolderDid,
 		Typ:  "application/iden3comm-plain-json",
 		Type: "https://iden3-communication.io/credentials/1.0/offer",

@@ -3,10 +3,15 @@ package request
 type CredentialRequest struct {
 	SchemaId          string
 	SchemaType        string
-	IssuerDid         string
 	HolderDid         string
-	CredentialSubject map[string]interface{}
+	CredentialSubject []CredentialSubject
 	Expiration        int64
 	Version           int32
 	Proofs            []string
+}
+
+type CredentialSubject struct {
+	DataType string
+	Key      string
+	Value    interface{}
 }

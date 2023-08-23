@@ -14,7 +14,6 @@ var (
 		{Name: "credential_id", Type: field.TypeUUID},
 		{Name: "anchor_id", Type: field.TypeInt64},
 		{Name: "schema_type", Type: field.TypeString},
-		{Name: "issuer_did", Type: field.TypeString},
 		{Name: "holder_did", Type: field.TypeString},
 		{Name: "proof_type", Type: field.TypeJSON, Nullable: true},
 		{Name: "credential_data", Type: field.TypeJSON},

@@ -39,12 +39,6 @@ func (cc *CredentialCreate) SetSchemaType(s string) *CredentialCreate {
 	return cc
 }
 
-// SetIssuerDid sets the "issuer_did" field.
-func (cc *CredentialCreate) SetIssuerDid(s string) *CredentialCreate {
-	cc.mutation.SetIssuerDid(s)
-	return cc
-}
-
 // SetHolderDid sets the "holder_did" field.
 func (cc *CredentialCreate) SetHolderDid(s string) *CredentialCreate {
 	cc.mutation.SetHolderDid(s)
@@ -129,14 +123,6 @@ func (cc *CredentialCreate) check() error {
 			return &ValidationError{Name: "schema_type", err: fmt.Errorf(`ent: validator failed for field "Credential.schema_type": %w`, err)}
 		}
 	}
-	if _, ok := cc.mutation.IssuerDid(); !ok {
-		return &ValidationError{Name: "issuer_did", err: errors.New(`ent: missing required field "Credential.issuer_did"`)}
-	}
-	if v, ok := cc.mutation.IssuerDid(); ok {
-		if err := credential.IssuerDidValidator(v); err != nil {
-			return &ValidationError{Name: "issuer_did", err: fmt.Errorf(`ent: validator failed for field "Credential.issuer_did": %w`, err)}
-		}
-	}
 	if _, ok := cc.mutation.HolderDid(); !ok {
 		return &ValidationError{Name: "holder_did", err: errors.New(`ent: missing required field "Credential.holder_did"`)}
 	}
@@ -188,10 +174,6 @@ func (cc *CredentialCreate) createSpec() (*Credential, *sqlgraph.CreateSpec) {
 	if value, ok := cc.mutation.SchemaType(); ok {
 		_spec.SetField(credential.FieldSchemaType, field.TypeString, value)
 		_node.SchemaType = value
-	}
-	if value, ok := cc.mutation.IssuerDid(); ok {
-		_spec.SetField(credential.FieldIssuerDid, field.TypeString, value)
-		_node.IssuerDid = value
 	}
 	if value, ok := cc.mutation.HolderDid(); ok {
 		_spec.SetField(credential.FieldHolderDid, field.TypeString, value)

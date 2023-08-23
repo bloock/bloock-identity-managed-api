@@ -2,18 +2,21 @@ package main
 
 import (
 	"bloock-identity-managed-api/internal/config"
+	"bloock-identity-managed-api/internal/platform/identity"
 	"bloock-identity-managed-api/internal/platform/key"
-	"bloock-identity-managed-api/internal/platform/repository"
 	"bloock-identity-managed-api/internal/platform/repository/sql"
 	"bloock-identity-managed-api/internal/platform/repository/sql/connection"
 	"bloock-identity-managed-api/internal/platform/server"
 	"bloock-identity-managed-api/internal/platform/web3"
 	"bloock-identity-managed-api/internal/platform/zkp"
 	"bloock-identity-managed-api/internal/platform/zkp/loaders"
+	"bloock-identity-managed-api/internal/services/cancel"
 	"bloock-identity-managed-api/internal/services/create"
 	"bloock-identity-managed-api/internal/services/criteria"
+	"bloock-identity-managed-api/internal/services/publish"
 	"bloock-identity-managed-api/internal/services/update"
 	"context"
+	"github.com/bloock/bloock-sdk-go/v2"
 	"github.com/rs/zerolog"
 	"sync"
 	"time"
@@ -28,7 +31,10 @@ func main() {
 	logger := zerolog.Logger{}
 	ctx := context.Background()
 
-	// Create ent client
+	bloock.ApiKey = cfg.APIKey
+	bloock.ApiHost = "https://api.bloock.dev"
+
+	// GetBjjIssuerKey ent client
 	entConnector := connection.NewEntConnector(logger)
 	// Setting ent connection
 	conn, err := connection.NewEntConnection(cfg.DBConnectionString, entConnector, logger)
@@ -62,19 +68,31 @@ func main() {
 
 	// Setup repositories
 	cr := sql.NewSQLCertificationRepository(*conn, 5*time.Second, logger)
-	ir := repository.NewBloockIdentityRepository(cfg.APIKey, logger)
-	kr, err := key.NewKeyRepository(cfg.LocalPrivateKey, cfg.ManagedKeyID, cfg.APIKey, logger)
+	kr, err := key.NewKeyRepository(cfg.LocalPrivateKey, cfg.LocalPublicKey, cfg.ManagedKeyID, logger)
 	if err != nil {
 		panic(err)
 	}
+	ir := identity.NewIdentityRepository(cfg.PublicHost, logger)
+
+	// Create Issuer
+	ci := create.NewIssuer(kr, ir, logger)
+	res, err := ci.Create(ctx, cfg.IssuerDidMethod, cfg.IssuerDidBlockchain, cfg.IssuerDidNetwork)
+	if err != nil {
+		panic(err)
+	}
+	issuerDid := res.(string)
 
 	// Setup registry
-	cc := create.NewCredential(cr, ir, logger)
-	co := criteria.NewCredentialOffer(cr, cfg.APIHost, logger)
+	cc := create.NewCredential(cr, ir, kr, issuerDid, logger)
+	co := criteria.NewCredentialOffer(cr, cfg.PublicHost, issuerDid, logger)
 	rc := criteria.NewCredentialRedeem(cr, vr, logger)
-	ci := criteria.NewCredentialById(cr, logger)
+	cbi := criteria.NewCredentialById(cr, logger)
 	bpu := update.NewIntegrityProofUpdate(cr, ir, logger)
 	smp := update.NewSparseMtProofUpdate(cr, ir, logger)
+	cs := create.NewSchema(ir, issuerDid, logger)
+	crv := cancel.NewCredentialRevocation(ir, logger)
+	pi := publish.NewIssuerPublish(kr, ir, issuerDid, logger)
+	gi := criteria.NewIssuer(ir, kr, cfg.IssuerDidMethod, cfg.IssuerDidBlockchain, cfg.IssuerDidNetwork, logger)
 
 	wg := sync.WaitGroup{}
 	wg.Add(1)
@@ -82,7 +100,7 @@ func main() {
 	// Run API server
 	go func() {
 		defer wg.Done()
-		sr, err := server.NewServer(cfg.APIHost, cfg.APIPort, *cc, *co, *rc, *ci, *bpu, *smp, cfg.WebhookSecretKey, cfg.WebhookEnforceTolerance, logger, cfg.DebugMode)
+		sr, err := server.NewServer(cfg.APIHost, cfg.APIPort, *cc, *co, *rc, *cbi, *bpu, *smp, *ci, *gi, *cs, *crv, *pi, cfg.WebhookSecretKey, cfg.WebhookEnforceTolerance, logger, cfg.DebugMode)
 		if err != nil {
 			panic(err)
 		}
