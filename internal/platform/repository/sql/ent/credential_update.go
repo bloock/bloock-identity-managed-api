@@ -55,12 +55,6 @@ func (cu *CredentialUpdate) SetSchemaType(s string) *CredentialUpdate {
 	return cu
 }
 
-// SetIssuerDid sets the "issuer_did" field.
-func (cu *CredentialUpdate) SetIssuerDid(s string) *CredentialUpdate {
-	cu.mutation.SetIssuerDid(s)
-	return cu
-}
-
 // SetHolderDid sets the "holder_did" field.
 func (cu *CredentialUpdate) SetHolderDid(s string) *CredentialUpdate {
 	cu.mutation.SetHolderDid(s)
@@ -184,11 +178,6 @@ func (cu *CredentialUpdate) check() error {
 			return &ValidationError{Name: "schema_type", err: fmt.Errorf(`ent: validator failed for field "Credential.schema_type": %w`, err)}
 		}
 	}
-	if v, ok := cu.mutation.IssuerDid(); ok {
-		if err := credential.IssuerDidValidator(v); err != nil {
-			return &ValidationError{Name: "issuer_did", err: fmt.Errorf(`ent: validator failed for field "Credential.issuer_did": %w`, err)}
-		}
-	}
 	if v, ok := cu.mutation.HolderDid(); ok {
 		if err := credential.HolderDidValidator(v); err != nil {
 			return &ValidationError{Name: "holder_did", err: fmt.Errorf(`ent: validator failed for field "Credential.holder_did": %w`, err)}
@@ -220,9 +209,6 @@ func (cu *CredentialUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := cu.mutation.SchemaType(); ok {
 		_spec.SetField(credential.FieldSchemaType, field.TypeString, value)
-	}
-	if value, ok := cu.mutation.IssuerDid(); ok {
-		_spec.SetField(credential.FieldIssuerDid, field.TypeString, value)
 	}
 	if value, ok := cu.mutation.HolderDid(); ok {
 		_spec.SetField(credential.FieldHolderDid, field.TypeString, value)
@@ -318,12 +304,6 @@ func (cuo *CredentialUpdateOne) AddAnchorID(i int64) *CredentialUpdateOne {
 // SetSchemaType sets the "schema_type" field.
 func (cuo *CredentialUpdateOne) SetSchemaType(s string) *CredentialUpdateOne {
 	cuo.mutation.SetSchemaType(s)
-	return cuo
-}
-
-// SetIssuerDid sets the "issuer_did" field.
-func (cuo *CredentialUpdateOne) SetIssuerDid(s string) *CredentialUpdateOne {
-	cuo.mutation.SetIssuerDid(s)
 	return cuo
 }
 
@@ -463,11 +443,6 @@ func (cuo *CredentialUpdateOne) check() error {
 			return &ValidationError{Name: "schema_type", err: fmt.Errorf(`ent: validator failed for field "Credential.schema_type": %w`, err)}
 		}
 	}
-	if v, ok := cuo.mutation.IssuerDid(); ok {
-		if err := credential.IssuerDidValidator(v); err != nil {
-			return &ValidationError{Name: "issuer_did", err: fmt.Errorf(`ent: validator failed for field "Credential.issuer_did": %w`, err)}
-		}
-	}
 	if v, ok := cuo.mutation.HolderDid(); ok {
 		if err := credential.HolderDidValidator(v); err != nil {
 			return &ValidationError{Name: "holder_did", err: fmt.Errorf(`ent: validator failed for field "Credential.holder_did": %w`, err)}
@@ -516,9 +491,6 @@ func (cuo *CredentialUpdateOne) sqlSave(ctx context.Context) (_node *Credential,
 	}
 	if value, ok := cuo.mutation.SchemaType(); ok {
 		_spec.SetField(credential.FieldSchemaType, field.TypeString, value)
-	}
-	if value, ok := cuo.mutation.IssuerDid(); ok {
-		_spec.SetField(credential.FieldIssuerDid, field.TypeString, value)
 	}
 	if value, ok := cuo.mutation.HolderDid(); ok {
 		_spec.SetField(credential.FieldHolderDid, field.TypeString, value)

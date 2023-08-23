@@ -54,8 +54,8 @@ github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkE
 github.com/benbjohnson/clock v1.3.0 h1:ip6w0uFQkncKQ979AypyG0ER7mqUSBdKLOgAle/AT8A=
 github.com/benbjohnson/clock v1.3.0/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZxNJlLklBHA=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
-github.com/bloock/bloock-sdk-go/v2 v2.5.7 h1:k4ORdxHAdCvfoei1D5Mof5CG0eSSVg1yDnKJhh3MEyQ=
-github.com/bloock/bloock-sdk-go/v2 v2.5.7/go.mod h1:T1ti1TwUXW+gzyjM1MFrL+5cMcs7ejlxTH2JLhQQ2xg=
+github.com/bloock/bloock-sdk-go/v2 v2.6.0-beta.4 h1:BdGYV/eMsE1lKwCb6jQPj/MAXZQmPSeVQhRC9H3YFAE=
+github.com/bloock/bloock-sdk-go/v2 v2.6.0-beta.4/go.mod h1:T1ti1TwUXW+gzyjM1MFrL+5cMcs7ejlxTH2JLhQQ2xg=
 github.com/btcsuite/btcd/btcec/v2 v2.2.0 h1:fzn1qaOt32TuLjFlkzYSsBC35Q3KUjT1SwPxiMSCF5k=
 github.com/btcsuite/btcd/btcec/v2 v2.2.0/go.mod h1:U7MHm051Al6XmscBQ0BoNydpOTsFAn707034b5nY8zU=
 github.com/btcsuite/btcd/chaincfg/chainhash v1.0.1 h1:q0rUy8C/TYNBQS1+CGKw68tLOFYSNEs0TFnxxnS9+4U=

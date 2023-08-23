@@ -1,22 +1,23 @@
 package criteria
 
 import (
+	"bloock-identity-managed-api/internal/domain/repository"
 	"context"
 	"github.com/rs/zerolog"
 )
 
 type IssuerList struct {
-	logger zerolog.Logger
+	identityRepository repository.IdentityRepository
+	logger             zerolog.Logger
 }
 
-func NewIssuerList(l zerolog.Logger) *IssuerList {
+func NewIssuerList(ir repository.IdentityRepository, l zerolog.Logger) *IssuerList {
 	return &IssuerList{
-		logger: l,
+		identityRepository: ir,
+		logger:             l,
 	}
 }
 
 func (i IssuerList) Get(ctx context.Context) (interface{}, error) {
-	//TODO call sdk function get issuer list
-
-	return []string{"did", "did"}, nil
+	return i.identityRepository.GetIssuerList(ctx)
 }

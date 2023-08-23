@@ -17,12 +17,8 @@ func init() {
 	credentialDescSchemaType := credentialFields[2].Descriptor()
 	// credential.SchemaTypeValidator is a validator for the "schema_type" field. It is called by the builders before save.
 	credential.SchemaTypeValidator = credentialDescSchemaType.Validators[0].(func(string) error)
-	// credentialDescIssuerDid is the schema descriptor for issuer_did field.
-	credentialDescIssuerDid := credentialFields[3].Descriptor()
-	// credential.IssuerDidValidator is a validator for the "issuer_did" field. It is called by the builders before save.
-	credential.IssuerDidValidator = credentialDescIssuerDid.Validators[0].(func(string) error)
 	// credentialDescHolderDid is the schema descriptor for holder_did field.
-	credentialDescHolderDid := credentialFields[4].Descriptor()
+	credentialDescHolderDid := credentialFields[3].Descriptor()
 	// credential.HolderDidValidator is a validator for the "holder_did" field. It is called by the builders before save.
 	credential.HolderDidValidator = credentialDescHolderDid.Validators[0].(func(string) error)
 }

@@ -17,7 +17,6 @@ func (Credential) Fields() []ent.Field {
 		field.UUID("credential_id", uuid.UUID{}),
 		field.Int64("anchor_id"),
 		field.String("schema_type").NotEmpty(),
-		field.String("issuer_did").NotEmpty(),
 		field.String("holder_did").NotEmpty(),
 		field.Strings("proof_type").Optional(),
 		field.JSON("credential_data", json.RawMessage{}),

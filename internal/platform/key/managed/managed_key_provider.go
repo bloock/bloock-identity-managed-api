@@ -1,17 +1,29 @@
 package managed
 
-import "github.com/rs/zerolog"
+import (
+	"context"
+	"github.com/bloock/bloock-sdk-go/v2/client"
+	"github.com/bloock/bloock-sdk-go/v2/entity/identityV2"
+)
 
 type ManagedKeyProvider struct {
-	logger zerolog.Logger
+	client client.KeyClient
+	keyID  string
 }
 
-func NewManagedKeyProvider(l zerolog.Logger) ManagedKeyProvider {
+func NewManagedKeyProvider(keyID string) ManagedKeyProvider {
+
 	return ManagedKeyProvider{
-		logger: l,
+		client: client.NewKeyClient(),
+		keyID:  keyID,
 	}
 }
 
-func (m ManagedKeyProvider) Create() {
+func (l ManagedKeyProvider) GetBjjIssuerKey(ctx context.Context) (identityV2.IssuerKey, error) {
+	managedKey, err := l.client.LoadManagedKey(l.keyID)
+	if err != nil {
+		return nil, err
+	}
 
+	return identityV2.NewBjjIssuerKey(identityV2.IssuerKeyArgs{ManagedKey: &managedKey}), nil
 }

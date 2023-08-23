@@ -6,7 +6,6 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/google/uuid"
-	core "github.com/iden3/go-iden3-core"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -25,9 +24,6 @@ func TestSQLCredentialRepository(t *testing.T) {
 	require.NoError(t, err)
 	anchorId := int64(1)
 	schemaType := "DrivingLicense"
-	issuerDid := "did:polygonid:polygon:mumbai:2qNeWsY3DuGhARS3mXsHYw3tmB48tUoVq7pSR5jBmV"
-	issuer, err := core.ParseDID(issuerDid)
-	require.NoError(t, err)
 	proofTypes := []string{"bloock_proof", "polygon_proof"}
 	holderDid := "did:polygonid:polygon:mumbai:2qGg7TzmcoU4Jg3E86wXp4WJcyGUTuafPZxVRxpYQr"
 	cred := `{"@context":["https://www.w3.org/2018/credentials/v1","https://schema.iden3.io/core/jsonld/iden3proofs.jsonld","https://api.bloock.dev/hosting/v1/ipfs/QmZ9BzmMGzLv4y9P6djYUm8sgQt47ZjECGAM8nToFW2qvt"],"credentialSchema":{"id":"https://api.bloock.dev/hosting/v1/ipfs/QmTvHzXiegijCdhGC4kgjps8hSi3FP1K17ezrYPgdMU6Ek","type":"JsonSchema2023"},"credentialStatus":{"id":"https://api.bloock.dev/identity/v1/did:polygonid:polygon:mumbai:2qGUovMWDMyoXKLWiRMBRTyMfKcdrUg958QcCDkC9U/claims/revocation/status/3825417065","revocationNonce":3825417065,"type":"SparseMerkleTreeProof"},"credentialSubject":{"birth_date":921950325,"country":"Spain","name":"Eduard","type":"DrivingLicense","first_surname":"Tomas","id":"did:polygonid:polygon:mumbai:2qGg7TzmcoU4Jg3E86wXp4WJcyGUTuafPZxVRxpYQr","license_type":1,"nif":"54688188M","second_surname":"Escoruela"},"expirationDate":"2028-06-15T07:07:39Z","id":"https://api.bloock.dev/identity/v1/did:polygonid:polygon:mumbai:2qGUovMWDMyoXKLWiRMBRTyMfKcdrUg958QcCDkC9U/claims/5c9b42c2-13c6-4fcf-b76b-57e104ee8f9c","issuer":"did:polygonid:polygon:mumbai:2qGUovMWDMyoXKLWiRMBRTyMfKcdrUg958QcCDkC9U","issuanceDate":"2023-07-24T10:29:25.18351605Z","type":["VerifiableCredential","DrivingLicense"]}`
@@ -47,7 +43,6 @@ func TestSQLCredentialRepository(t *testing.T) {
 	credential := domain.Credential{
 		CredentialId:   credentialId,
 		AnchorId:       anchorId,
-		IssuerDid:      issuerDid,
 		HolderDid:      holderDid,
 		SchemaType:     schemaType,
 		ProofType:      proofTypes,
@@ -64,7 +59,6 @@ func TestSQLCredentialRepository(t *testing.T) {
 	credentialUpdated := domain.Credential{
 		CredentialId:   credentialId,
 		AnchorId:       anchorId,
-		IssuerDid:      issuerDid,
 		HolderDid:      holderDid,
 		SchemaType:     schemaType,
 		ProofType:      proofTypes,
@@ -89,10 +83,6 @@ func TestSQLCredentialRepository(t *testing.T) {
 
 		err = cr.UpdateSparseMtProof(context.Background(), credential.CredentialId, sparseMtProof)
 		assert.NoError(t, err)
-
-		res, err = cr.GetCredentialByIssuerAndId(context.Background(), issuer, credentialId)
-		assert.NoError(t, err)
-		assert.Equal(t, credentialUpdated, res)
 
 		results, err := cr.FindCredentialsByAnchorId(context.Background(), anchorId)
 		assert.NoError(t, err)

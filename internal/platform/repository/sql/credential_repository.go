@@ -7,9 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/google/uuid"
-	core "github.com/iden3/go-iden3-core"
 	"github.com/rs/zerolog"
-	"strings"
 	"time"
 )
 
@@ -30,7 +28,6 @@ func (s SQLCredentialRepository) Save(ctx context.Context, c domain.Credential) 
 		SetCredentialID(c.CredentialId).
 		SetAnchorID(c.AnchorId).
 		SetSchemaType(c.SchemaType).
-		SetIssuerDid(c.IssuerDid).
 		SetHolderDid(c.HolderDid).
 		SetProofType(c.ProofType).
 		SetCredentialData(c.CredentialData).
@@ -58,7 +55,6 @@ func (s SQLCredentialRepository) GetCredentialById(ctx context.Context, id uuid.
 		CredentialId:   cs.CredentialID,
 		AnchorId:       cs.AnchorID,
 		SchemaType:     cs.SchemaType,
-		IssuerDid:      cs.IssuerDid,
 		HolderDid:      cs.HolderDid,
 		ProofType:      cs.ProofType,
 		CredentialData: cs.CredentialData,
@@ -82,7 +78,6 @@ func (s SQLCredentialRepository) FindCredentialsByAnchorId(ctx context.Context, 
 			CredentialId:   entCredential.CredentialID,
 			AnchorId:       entCredential.AnchorID,
 			SchemaType:     entCredential.SchemaType,
-			IssuerDid:      entCredential.IssuerDid,
 			HolderDid:      entCredential.HolderDid,
 			ProofType:      entCredential.ProofType,
 			CredentialData: entCredential.CredentialData,
@@ -93,33 +88,6 @@ func (s SQLCredentialRepository) FindCredentialsByAnchorId(ctx context.Context, 
 	}
 
 	return credentials, nil
-}
-
-func (s SQLCredentialRepository) GetCredentialByIssuerAndId(ctx context.Context, issuer *core.DID, id uuid.UUID) (domain.Credential, error) {
-	cs, err := s.connection.DB().Credential.Query().
-		Where(credential.CredentialID(id), credential.IssuerDid(issuer.String())).First(ctx)
-	if err != nil {
-		if strings.Contains(err.Error(), "not found") {
-			err = domain.ErrCredentialNotFound
-			s.logger.Error().Err(err).Msg("")
-			return domain.Credential{}, err
-		}
-		s.logger.Error().Err(err).Msg("")
-		return domain.Credential{}, err
-	}
-
-	return domain.Credential{
-		CredentialId:   cs.CredentialID,
-		AnchorId:       cs.AnchorID,
-		SchemaType:     cs.SchemaType,
-		IssuerDid:      cs.IssuerDid,
-		HolderDid:      cs.HolderDid,
-		ProofType:      cs.ProofType,
-		CredentialData: cs.CredentialData,
-		SignatureProof: cs.SignatureProof,
-		IntegrityProof: cs.IntegrityProof,
-		SparseMtProof:  cs.SparseMtProof,
-	}, nil
 }
 
 func (s SQLCredentialRepository) UpdateSignatureProof(ctx context.Context, id uuid.UUID, signatureProof json.RawMessage) error {

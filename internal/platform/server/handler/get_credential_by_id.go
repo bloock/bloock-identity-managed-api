@@ -11,25 +11,15 @@ import (
 
 func GetCredentialById(credential criteria.CredentialById) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		issuerDid := ctx.Param("issuer_did")
-		if issuerDid == "" {
-			ctx.JSON(http.StatusBadRequest, "empty issuer did")
-			return
-		}
-
 		credentialId := ctx.Param("credential_id")
 		if credentialId == "" {
 			ctx.JSON(http.StatusBadRequest, "empty credential id")
 			return
 		}
 
-		res, err := credential.Get(ctx, issuerDid, credentialId)
+		res, err := credential.Get(ctx, credentialId)
 		if err != nil {
 			if errors.Is(domain.ErrInvalidUUID, err) {
-				ctx.JSON(http.StatusBadRequest, NewBadRequestAPIError(err.Error()))
-				return
-			}
-			if errors.Is(domain.ErrInvalidDID, err) {
 				ctx.JSON(http.StatusBadRequest, NewBadRequestAPIError(err.Error()))
 				return
 			}

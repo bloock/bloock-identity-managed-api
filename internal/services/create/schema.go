@@ -1,24 +1,26 @@
 package create
 
 import (
+	"bloock-identity-managed-api/internal/domain/repository"
 	"bloock-identity-managed-api/internal/services/create/request"
 	"context"
 	"github.com/rs/zerolog"
 )
 
 type Schema struct {
-	logger zerolog.Logger
+	identityRepository repository.IdentityRepository
+	issuer             string
+	logger             zerolog.Logger
 }
 
-func NewSchema(l zerolog.Logger) *Schema {
+func NewSchema(ir repository.IdentityRepository, issuer string, l zerolog.Logger) *Schema {
 	return &Schema{
-		logger: l,
+		identityRepository: ir,
+		issuer:             issuer,
+		logger:             l,
 	}
 }
 
 func (s Schema) Create(ctx context.Context, req request.CreateSchemaRequest) (interface{}, error) {
-
-	//TODO call create schema sdk function
-
-	return "schema_id", nil
+	return s.identityRepository.CreateSchema(ctx, s.issuer, req)
 }

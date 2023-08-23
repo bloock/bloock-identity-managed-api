@@ -15,8 +15,13 @@ type Config struct {
 	WebhookSecretKey        string `mapstructure:"BLOOCK_WEBHOOK_SECRET_KEY"`
 	WebhookEnforceTolerance bool   `mapstructure:"BLOOCK_ENFORCE_TOLERANCE"`
 	LocalPrivateKey         string `mapstructure:"BLOOCK_LOCAL_PRIVATE_KEY"`
+	LocalPublicKey          string `mapstructure:"BLOOCK_LOCAL_PUBLIC_KEY"`
 	ManagedKeyID            string `mapstructure:"BLOOCK_MANAGED_KEY_ID"`
+	PublicHost              string `mapstructure:"BLOOCK_PUBLIC_HOST"`
 	PolygonProvider         string `mapstructure:"BLOOCK_POLYGON_PROVIDER"`
+	IssuerDidMethod         string `mapstructure:"BLOOCK_ISSUER_DID_METHOD"`
+	IssuerDidBlockchain     string `mapstructure:"BLOOCK_ISSUER_DID_BLOCKCHAIN"`
+	IssuerDidNetwork        string `mapstructure:"BLOOCK_ISSUER_DID_NETWORK"`
 	DebugMode               bool   `mapstructure:"BLOOCK_API_DEBUG_MODE"`
 }
 
@@ -49,7 +54,12 @@ func setDefaultConfigValues() {
 	viper.SetDefault("bloock_api_port", "8080")
 	viper.SetDefault("bloock_webhook_enforce_tolerance", false)
 	viper.SetDefault("bloock_local_private_key", "")
+	viper.SetDefault("bloock_local_public_key", "")
 	viper.SetDefault("bloock_managed_key_id", "")
+	viper.SetDefault("bloock_public_host", "")
 	viper.SetDefault("bloock_polygon_provider", "")
+	viper.SetDefault("bloock_issuer_did_method", "")
+	viper.SetDefault("bloock_issuer_did_blockchain", "")
+	viper.SetDefault("bloock_issuer_did_network", "")
 	viper.SetDefault("bloock_api_debug_mode", false)
 }

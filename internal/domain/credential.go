@@ -10,7 +10,6 @@ type Credential struct {
 	CredentialId   uuid.UUID
 	AnchorId       int64
 	SchemaType     string
-	IssuerDid      string
 	HolderDid      string
 	ProofType      []string
 	CredentialData json.RawMessage

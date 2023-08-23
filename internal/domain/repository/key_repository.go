@@ -1,7 +1,12 @@
 package repository
 
-import "context"
+import (
+	"context"
+	"github.com/bloock/bloock-sdk-go/v2/entity/authenticity"
+	"github.com/bloock/bloock-sdk-go/v2/entity/identityV2"
+)
 
 type KeyRepository interface {
-	CreateKey(ctx context.Context) error
+	LoadBjjKeyIssuer(ctx context.Context) (identityV2.IssuerKey, error)
+	LoadBjjSigner(ctx context.Context) (authenticity.BjjSigner, error)
 }

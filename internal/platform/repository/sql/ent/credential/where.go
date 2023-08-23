@@ -69,11 +69,6 @@ func SchemaType(v string) predicate.Credential {
 	return predicate.Credential(sql.FieldEQ(FieldSchemaType, v))
 }
 
-// IssuerDid applies equality check predicate on the "issuer_did" field. It's identical to IssuerDidEQ.
-func IssuerDid(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldEQ(FieldIssuerDid, v))
-}
-
 // HolderDid applies equality check predicate on the "holder_did" field. It's identical to HolderDidEQ.
 func HolderDid(v string) predicate.Credential {
 	return predicate.Credential(sql.FieldEQ(FieldHolderDid, v))
@@ -222,71 +217,6 @@ func SchemaTypeEqualFold(v string) predicate.Credential {
 // SchemaTypeContainsFold applies the ContainsFold predicate on the "schema_type" field.
 func SchemaTypeContainsFold(v string) predicate.Credential {
 	return predicate.Credential(sql.FieldContainsFold(FieldSchemaType, v))
-}
-
-// IssuerDidEQ applies the EQ predicate on the "issuer_did" field.
-func IssuerDidEQ(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldEQ(FieldIssuerDid, v))
-}
-
-// IssuerDidNEQ applies the NEQ predicate on the "issuer_did" field.
-func IssuerDidNEQ(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldNEQ(FieldIssuerDid, v))
-}
-
-// IssuerDidIn applies the In predicate on the "issuer_did" field.
-func IssuerDidIn(vs ...string) predicate.Credential {
-	return predicate.Credential(sql.FieldIn(FieldIssuerDid, vs...))
-}
-
-// IssuerDidNotIn applies the NotIn predicate on the "issuer_did" field.
-func IssuerDidNotIn(vs ...string) predicate.Credential {
-	return predicate.Credential(sql.FieldNotIn(FieldIssuerDid, vs...))
-}
-
-// IssuerDidGT applies the GT predicate on the "issuer_did" field.
-func IssuerDidGT(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldGT(FieldIssuerDid, v))
-}
-
-// IssuerDidGTE applies the GTE predicate on the "issuer_did" field.
-func IssuerDidGTE(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldGTE(FieldIssuerDid, v))
-}
-
-// IssuerDidLT applies the LT predicate on the "issuer_did" field.
-func IssuerDidLT(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldLT(FieldIssuerDid, v))
-}
-
-// IssuerDidLTE applies the LTE predicate on the "issuer_did" field.
-func IssuerDidLTE(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldLTE(FieldIssuerDid, v))
-}
-
-// IssuerDidContains applies the Contains predicate on the "issuer_did" field.
-func IssuerDidContains(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldContains(FieldIssuerDid, v))
-}
-
-// IssuerDidHasPrefix applies the HasPrefix predicate on the "issuer_did" field.
-func IssuerDidHasPrefix(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldHasPrefix(FieldIssuerDid, v))
-}
-
-// IssuerDidHasSuffix applies the HasSuffix predicate on the "issuer_did" field.
-func IssuerDidHasSuffix(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldHasSuffix(FieldIssuerDid, v))
-}
-
-// IssuerDidEqualFold applies the EqualFold predicate on the "issuer_did" field.
-func IssuerDidEqualFold(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldEqualFold(FieldIssuerDid, v))
-}
-
-// IssuerDidContainsFold applies the ContainsFold predicate on the "issuer_did" field.
-func IssuerDidContainsFold(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldContainsFold(FieldIssuerDid, v))
 }
 
 // HolderDidEQ applies the EQ predicate on the "holder_did" field.

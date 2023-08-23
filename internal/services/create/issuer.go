@@ -1,32 +1,54 @@
 package create
 
 import (
+	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
-	"bloock-identity-managed-api/internal/services/create/request"
 	"context"
+	"github.com/bloock/bloock-sdk-go/v2/entity/identityV2"
 	"github.com/rs/zerolog"
 )
 
 type Issuer struct {
-	keyRepository repository.KeyRepository
-	logger        zerolog.Logger
+	keyRepository      repository.KeyRepository
+	identityRepository repository.IdentityRepository
+	logger             zerolog.Logger
 }
 
-func NewIssuer(kr repository.KeyRepository, l zerolog.Logger) *Issuer {
+func NewIssuer(kr repository.KeyRepository, ir repository.IdentityRepository, l zerolog.Logger) *Issuer {
 	return &Issuer{
-		keyRepository: kr,
-		logger:        l,
+		keyRepository:      kr,
+		identityRepository: ir,
+		logger:             l,
 	}
 }
 
-func (i Issuer) Create(ctx context.Context, req request.CreateIssuerRequest) (interface{}, error) {
-	if req.DidMetadata.Method != "" && req.DidMetadata.Network != "" && req.DidMetadata.Blockchain != "" {
-		//TODO set did issuer params accordingly
+func (i Issuer) Create(ctx context.Context, didMethod, didBlockchain, didNetwork string) (interface{}, error) {
+	params := identityV2.NewIssuerParams()
+	if didMethod != "" && didBlockchain != "" && didNetwork != "" {
+		method, err := domain.NewDidMethod(didMethod)
+		if err != nil {
+			i.logger.Error().Err(err).Msg("")
+			return nil, err
+		}
+		blockchain, err := domain.NewDidBlockchain(didBlockchain)
+		if err != nil {
+			i.logger.Error().Err(err).Msg("")
+			return nil, err
+		}
+		network, err := domain.NewDidNetwork(didNetwork)
+		if err != nil {
+			i.logger.Error().Err(err).Msg("")
+			return nil, err
+		}
+		params.Method = method.ToBloockMethod()
+		params.Blockchain = blockchain.ToBloockBlockchain()
+		params.NetworkId = network.ToBloockNetwork()
 	}
 
-	i.keyRepository.CreateKey(ctx)
+	issuerKey, err := i.keyRepository.LoadBjjKeyIssuer(ctx)
+	if err != nil {
+		return nil, err
+	}
 
-	// Call sdk create issuer
-
-	return "did", nil
+	return i.identityRepository.CreateIssuer(ctx, issuerKey, params)
 }

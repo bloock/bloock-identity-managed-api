@@ -2,7 +2,6 @@ package handler
 
 import (
 	"bloock-identity-managed-api/internal/services/create"
-	"bloock-identity-managed-api/internal/services/create/request"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -35,15 +34,15 @@ func CreateIssuer(issuer create.Issuer) gin.HandlerFunc {
 			return
 		}
 
-		ir := request.CreateIssuerRequest{
+		/*ir := request.CreateIssuerRequest{
 			DidMetadata: request.DidMetadataRequest{
 				Method:     req.DidMetadataRequest.Method,
 				Blockchain: req.DidMetadataRequest.Blockchain,
 				Network:    req.DidMetadataRequest.Network,
 			},
-		}
+		}*/
 
-		res, err := issuer.Create(ctx, ir)
+		res, err := issuer.Create(ctx, req.DidMetadataRequest.Method, req.DidMetadataRequest.Blockchain, req.DidMetadataRequest.Network)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, NewInternalServerAPIError(err.Error()))
 			return

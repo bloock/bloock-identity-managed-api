@@ -1,33 +1,38 @@
 package cancel
 
 import (
+	"bloock-identity-managed-api/internal/domain/repository"
 	"context"
 	"encoding/json"
+	"github.com/bloock/bloock-sdk-go/v2/entity/identityV2"
 	"github.com/iden3/go-schema-processor/verifiable"
 	"github.com/rs/zerolog"
 )
 
 type CredentialRevocation struct {
-	logger zerolog.Logger
+	identityRepository repository.IdentityRepository
+	logger             zerolog.Logger
 }
 
-func NewCredentialRevocation(l zerolog.Logger) *CredentialRevocation {
+func NewCredentialRevocation(ir repository.IdentityRepository, l zerolog.Logger) *CredentialRevocation {
 	return &CredentialRevocation{
-		logger: l,
+		identityRepository: ir,
+		logger:             l,
 	}
 }
 
-func (c CredentialRevocation) Revoke(ctx context.Context, credential verifiable.W3CCredential) (interface{}, error) {
-	credentialBytes, err := json.Marshal(credential)
+func (c CredentialRevocation) Revoke(ctx context.Context, cred verifiable.W3CCredential) error {
+	credentialBytes, err := json.Marshal(cred)
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
-		return nil, err
+		return err
 	}
-	_ = string(credentialBytes)
 
-	//TODO parse credentialString into credential type
+	credential, err := identityV2.NewCredentialFromJson(string(credentialBytes))
+	if err != nil {
+		c.logger.Error().Err(err).Msg("")
+		return err
+	}
 
-	//TODO called sdk revoke credential
-
-	return nil, nil
+	return c.identityRepository.RevokeCredential(ctx, credential)
 }
