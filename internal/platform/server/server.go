@@ -23,7 +23,7 @@ type Server struct {
 }
 
 func NewServer(host string, port string, c create.Credential, co criteria.CredentialOffer, rc criteria.CredentialRedeem, cbi criteria.CredentialById, bpu update.IntegrityProofUpdate, smp update.SparseMtProofUpdate,
-	ci create.Issuer, il criteria.IssuerList, cs create.Schema, crv cancel.CredentialRevocation, pi publish.IssuerPublish, webhookSecretKey string, enforceTolerance bool, logger zerolog.Logger, debug bool) (*Server, error) {
+	ci create.Issuer, gi criteria.Issuer, cs create.Schema, crv cancel.CredentialRevocation, pi publish.IssuerPublish, webhookSecretKey string, enforceTolerance bool, logger zerolog.Logger, debug bool) (*Server, error) {
 	router := gin.Default()
 	if debug {
 		gin.SetMode(gin.DebugMode)
@@ -36,8 +36,7 @@ func NewServer(host string, port string, c create.Credential, co criteria.Creden
 
 	v1 := router.Group("/v1")
 
-	v1.POST("/issuers", handler.CreateIssuer(ci))
-	v1.GET("/issuers", handler.GetIssuerList(il))
+	v1.GET("/issuers", handler.GetIssuer(gi))
 	v1.POST("/issuers/state/publish", handler.PublishIssuerState(pi))
 
 	v1.POST("/schemas", handler.CreateSchema(cs))

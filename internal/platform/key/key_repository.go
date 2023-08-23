@@ -43,6 +43,11 @@ func (k KeyRepository) LoadBjjKeyIssuer(ctx context.Context) (identityV2.IssuerK
 }
 
 func (k KeyRepository) LoadBjjSigner(ctx context.Context) (authenticity.BjjSigner, error) {
-	//TODO fix sdk NewBjjSigner response
-	return authenticity.BjjSigner{}, nil
+	bjjSigner, err := k.provider.GetBjjSigner(ctx)
+	if err != nil {
+		k.logger.Error().Err(err).Msg("")
+		return authenticity.BjjSigner{}, err
+	}
+
+	return bjjSigner, nil
 }

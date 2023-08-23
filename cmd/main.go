@@ -83,16 +83,16 @@ func main() {
 	issuerDid := res.(string)
 
 	// Setup registry
-	cc := create.NewCredential(cr, ir, issuerDid, logger)
-	co := criteria.NewCredentialOffer(cr, cfg.APIHost, issuerDid, logger)
+	cc := create.NewCredential(cr, ir, kr, issuerDid, logger)
+	co := criteria.NewCredentialOffer(cr, cfg.PublicHost, issuerDid, logger)
 	rc := criteria.NewCredentialRedeem(cr, vr, logger)
 	cbi := criteria.NewCredentialById(cr, logger)
 	bpu := update.NewIntegrityProofUpdate(cr, ir, logger)
 	smp := update.NewSparseMtProofUpdate(cr, ir, logger)
-	il := criteria.NewIssuerList(ir, logger)
 	cs := create.NewSchema(ir, issuerDid, logger)
 	crv := cancel.NewCredentialRevocation(ir, logger)
 	pi := publish.NewIssuerPublish(kr, ir, issuerDid, logger)
+	gi := criteria.NewIssuer(ir, kr, cfg.IssuerDidMethod, cfg.IssuerDidBlockchain, cfg.IssuerDidNetwork, logger)
 
 	wg := sync.WaitGroup{}
 	wg.Add(1)
@@ -100,7 +100,7 @@ func main() {
 	// Run API server
 	go func() {
 		defer wg.Done()
-		sr, err := server.NewServer(cfg.APIHost, cfg.APIPort, *cc, *co, *rc, *cbi, *bpu, *smp, *ci, *il, *cs, *crv, *pi, cfg.WebhookSecretKey, cfg.WebhookEnforceTolerance, logger, cfg.DebugMode)
+		sr, err := server.NewServer(cfg.APIHost, cfg.APIPort, *cc, *co, *rc, *cbi, *bpu, *smp, *ci, *gi, *cs, *crv, *pi, cfg.WebhookSecretKey, cfg.WebhookEnforceTolerance, logger, cfg.DebugMode)
 		if err != nil {
 			panic(err)
 		}

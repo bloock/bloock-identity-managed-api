@@ -1,5 +1,7 @@
 package domain
 
+import "github.com/bloock/bloock-sdk-go/v2/entity/identityV2"
+
 type ProofType int32
 
 const (
@@ -27,6 +29,22 @@ func (p ProofType) Str() string {
 	default:
 		return ""
 	}
+}
+
+func MapToBloockProofTypes(proofs []ProofType) ([]identityV2.ProofType, error) {
+	var proofTypes []identityV2.ProofType
+	for _, p := range proofs {
+		switch p {
+		case IntegrityProofType:
+			proofTypes = append(proofTypes, identityV2.IntegrityProofType)
+		case SparseMtProofType:
+			proofTypes = append(proofTypes, identityV2.SparseMtProofType)
+		default:
+			return nil, ErrInvalidProofType
+		}
+	}
+
+	return proofTypes, nil
 }
 
 func IsProofIncluded(_type ProofType, proofs []string) bool {

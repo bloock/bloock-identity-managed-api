@@ -6,17 +6,17 @@ import (
 	"net/http"
 )
 
-type GetIssuerListResponse struct {
-	Issuers []string `json:"issuers"`
+type GetIssuerResponse struct {
+	IssuerDid string `json:"issuer_did"`
 }
 
-func mapToGetIssuerListResponse(issuers []string) GetIssuerListResponse {
-	return GetIssuerListResponse{
-		Issuers: issuers,
+func mapToGetIssuerResponse(did string) GetIssuerResponse {
+	return GetIssuerResponse{
+		IssuerDid: did,
 	}
 }
 
-func GetIssuerList(issuer criteria.IssuerList) gin.HandlerFunc {
+func GetIssuer(issuer criteria.Issuer) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		res, err := issuer.Get(ctx)
 		if err != nil {
@@ -24,6 +24,6 @@ func GetIssuerList(issuer criteria.IssuerList) gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusCreated, mapToGetIssuerListResponse(res.([]string)))
+		ctx.JSON(http.StatusOK, mapToGetIssuerResponse(res.(string)))
 	}
 }
