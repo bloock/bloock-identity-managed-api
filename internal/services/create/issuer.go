@@ -24,6 +24,7 @@ func NewIssuer(kr repository.KeyRepository, ir repository.IdentityRepository, l 
 func (i Issuer) Create(ctx context.Context, didMethod, didBlockchain, didNetwork string) (interface{}, error) {
 	params, err := domain.GetIssuerParams(didMethod, didBlockchain, didNetwork)
 	if err != nil {
+		i.logger.Error().Err(err).Msg("")
 		return nil, err
 	}
 

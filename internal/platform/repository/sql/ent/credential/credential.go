@@ -15,8 +15,8 @@ const (
 	FieldCredentialID = "credential_id"
 	// FieldAnchorID holds the string denoting the anchor_id field in the database.
 	FieldAnchorID = "anchor_id"
-	// FieldSchemaType holds the string denoting the schema_type field in the database.
-	FieldSchemaType = "schema_type"
+	// FieldCredentialType holds the string denoting the credential_type field in the database.
+	FieldCredentialType = "credential_type"
 	// FieldHolderDid holds the string denoting the holder_did field in the database.
 	FieldHolderDid = "holder_did"
 	// FieldProofType holds the string denoting the proof_type field in the database.
@@ -38,7 +38,7 @@ var Columns = []string{
 	FieldID,
 	FieldCredentialID,
 	FieldAnchorID,
-	FieldSchemaType,
+	FieldCredentialType,
 	FieldHolderDid,
 	FieldProofType,
 	FieldCredentialData,
@@ -58,8 +58,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// SchemaTypeValidator is a validator for the "schema_type" field. It is called by the builders before save.
-	SchemaTypeValidator func(string) error
+	// CredentialTypeValidator is a validator for the "credential_type" field. It is called by the builders before save.
+	CredentialTypeValidator func(string) error
 	// HolderDidValidator is a validator for the "holder_did" field. It is called by the builders before save.
 	HolderDidValidator func(string) error
 )
@@ -82,9 +82,9 @@ func ByAnchorID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAnchorID, opts...).ToFunc()
 }
 
-// BySchemaType orders the results by the schema_type field.
-func BySchemaType(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldSchemaType, opts...).ToFunc()
+// ByCredentialType orders the results by the credential_type field.
+func ByCredentialType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCredentialType, opts...).ToFunc()
 }
 
 // ByHolderDid orders the results by the holder_did field.

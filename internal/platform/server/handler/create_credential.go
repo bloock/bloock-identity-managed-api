@@ -11,7 +11,6 @@ import (
 
 type CreateCredentialRequest struct {
 	SchemaId          string              `json:"schema_id" binding:"required"`
-	SchemaType        string              `json:"schema_type" binding:"required"`
 	HolderDid         string              `json:"holder_did" binding:"required"`
 	CredentialSubject []CredentialSubject `json:"credential_subject" binding:"required"`
 	Expiration        int64               `json:"expiration" binding:"required"`
@@ -19,9 +18,8 @@ type CreateCredentialRequest struct {
 }
 
 type CredentialSubject struct {
-	DataType string      `json:"data_type" binding:"required"`
-	Key      string      `json:"key" binding:"required"`
-	Value    interface{} `json:"value" binding:"required"`
+	Key   string      `json:"key" binding:"required"`
+	Value interface{} `json:"value" binding:"required"`
 }
 
 type CreateCredentialResponse struct {
@@ -39,7 +37,7 @@ func CreateCredential(credential create.Credential) gin.HandlerFunc {
 		proofs := ctx.QueryArray("proof")
 
 		var req CreateCredentialRequest
-		if err := ctx.ShouldBindJSON(&req); err != nil {
+		if err := ctx.ShouldBind(&req); err != nil {
 			ctx.JSON(http.StatusBadRequest, NewBadRequestAPIError(err.Error()))
 			return
 		}
@@ -47,14 +45,12 @@ func CreateCredential(credential create.Credential) gin.HandlerFunc {
 		credentialSubject := make([]request.CredentialSubject, 0)
 		for _, cs := range req.CredentialSubject {
 			credentialSubject = append(credentialSubject, request.CredentialSubject{
-				DataType: cs.DataType,
-				Key:      cs.Key,
-				Value:    cs.Value,
+				Key:   cs.Key,
+				Value: cs.Value,
 			})
 		}
 		cr := request.CredentialRequest{
 			SchemaId:          req.SchemaId,
-			SchemaType:        req.SchemaType,
 			HolderDid:         req.HolderDid,
 			CredentialSubject: credentialSubject,
 			Expiration:        req.Expiration,

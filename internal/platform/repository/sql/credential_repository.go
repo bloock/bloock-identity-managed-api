@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-var emptyProof = []byte("null")
-
 type SQLCredentialRepository struct {
 	connection connection.EntConnection
 	dbTimeout  time.Duration
@@ -20,14 +18,18 @@ type SQLCredentialRepository struct {
 }
 
 func NewSQLCertificationRepository(connection connection.EntConnection, dbTimeout time.Duration, logger zerolog.Logger) *SQLCredentialRepository {
-	return &SQLCredentialRepository{connection: connection, dbTimeout: dbTimeout, logger: logger}
+	return &SQLCredentialRepository{
+		connection: connection,
+		dbTimeout:  dbTimeout,
+		logger:     logger,
+	}
 }
 
 func (s SQLCredentialRepository) Save(ctx context.Context, c domain.Credential) error {
 	certificationCreate := s.connection.DB().Credential.Create().
 		SetCredentialID(c.CredentialId).
 		SetAnchorID(c.AnchorId).
-		SetSchemaType(c.SchemaType).
+		SetCredentialType(c.CredentialType).
 		SetHolderDid(c.HolderDid).
 		SetProofType(c.ProofType).
 		SetCredentialData(c.CredentialData).
@@ -54,7 +56,7 @@ func (s SQLCredentialRepository) GetCredentialById(ctx context.Context, id uuid.
 	return domain.Credential{
 		CredentialId:   cs.CredentialID,
 		AnchorId:       cs.AnchorID,
-		SchemaType:     cs.SchemaType,
+		CredentialType: cs.CredentialType,
 		HolderDid:      cs.HolderDid,
 		ProofType:      cs.ProofType,
 		CredentialData: cs.CredentialData,
@@ -77,7 +79,7 @@ func (s SQLCredentialRepository) FindCredentialsByAnchorId(ctx context.Context, 
 		credentials = append(credentials, domain.Credential{
 			CredentialId:   entCredential.CredentialID,
 			AnchorId:       entCredential.AnchorID,
-			SchemaType:     entCredential.SchemaType,
+			CredentialType: entCredential.CredentialType,
 			HolderDid:      entCredential.HolderDid,
 			ProofType:      entCredential.ProofType,
 			CredentialData: entCredential.CredentialData,

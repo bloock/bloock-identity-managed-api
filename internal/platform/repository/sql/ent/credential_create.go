@@ -33,9 +33,9 @@ func (cc *CredentialCreate) SetAnchorID(i int64) *CredentialCreate {
 	return cc
 }
 
-// SetSchemaType sets the "schema_type" field.
-func (cc *CredentialCreate) SetSchemaType(s string) *CredentialCreate {
-	cc.mutation.SetSchemaType(s)
+// SetCredentialType sets the "credential_type" field.
+func (cc *CredentialCreate) SetCredentialType(s string) *CredentialCreate {
+	cc.mutation.SetCredentialType(s)
 	return cc
 }
 
@@ -115,12 +115,12 @@ func (cc *CredentialCreate) check() error {
 	if _, ok := cc.mutation.AnchorID(); !ok {
 		return &ValidationError{Name: "anchor_id", err: errors.New(`ent: missing required field "Credential.anchor_id"`)}
 	}
-	if _, ok := cc.mutation.SchemaType(); !ok {
-		return &ValidationError{Name: "schema_type", err: errors.New(`ent: missing required field "Credential.schema_type"`)}
+	if _, ok := cc.mutation.CredentialType(); !ok {
+		return &ValidationError{Name: "credential_type", err: errors.New(`ent: missing required field "Credential.credential_type"`)}
 	}
-	if v, ok := cc.mutation.SchemaType(); ok {
-		if err := credential.SchemaTypeValidator(v); err != nil {
-			return &ValidationError{Name: "schema_type", err: fmt.Errorf(`ent: validator failed for field "Credential.schema_type": %w`, err)}
+	if v, ok := cc.mutation.CredentialType(); ok {
+		if err := credential.CredentialTypeValidator(v); err != nil {
+			return &ValidationError{Name: "credential_type", err: fmt.Errorf(`ent: validator failed for field "Credential.credential_type": %w`, err)}
 		}
 	}
 	if _, ok := cc.mutation.HolderDid(); !ok {
@@ -171,9 +171,9 @@ func (cc *CredentialCreate) createSpec() (*Credential, *sqlgraph.CreateSpec) {
 		_spec.SetField(credential.FieldAnchorID, field.TypeInt64, value)
 		_node.AnchorID = value
 	}
-	if value, ok := cc.mutation.SchemaType(); ok {
-		_spec.SetField(credential.FieldSchemaType, field.TypeString, value)
-		_node.SchemaType = value
+	if value, ok := cc.mutation.CredentialType(); ok {
+		_spec.SetField(credential.FieldCredentialType, field.TypeString, value)
+		_node.CredentialType = value
 	}
 	if value, ok := cc.mutation.HolderDid(); ok {
 		_spec.SetField(credential.FieldHolderDid, field.TypeString, value)

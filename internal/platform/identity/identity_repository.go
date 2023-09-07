@@ -9,6 +9,8 @@ import (
 	"github.com/bloock/bloock-sdk-go/v2/entity/authenticity"
 	"github.com/bloock/bloock-sdk-go/v2/entity/identityV2"
 	"github.com/rs/zerolog"
+	"math"
+	"time"
 )
 
 type IdentityRepository struct {
@@ -17,7 +19,6 @@ type IdentityRepository struct {
 }
 
 func NewIdentityRepository(publicHost string, log zerolog.Logger) *IdentityRepository {
-
 	return &IdentityRepository{
 		identityClient: client.NewIdentityV2Client(publicHost),
 		logger:         log,
@@ -44,33 +45,12 @@ func (i IdentityRepository) GetIssuerByKey(ctx context.Context, issuerKey identi
 	return did, nil
 }
 
-func (i IdentityRepository) CreateSchema(ctx context.Context, issuerId string, req request.CreateSchemaRequest) (string, error) {
-	builder := i.identityClient.BuildSchema(req.DisplayName, req.SchemaType, req.Version, req.Description, issuerId)
-	var err error
-
-	for _, attr := range req.Attributes {
-		builder, err = addAttributeToBuilder(builder, attr)
-		if err != nil {
-			i.logger.Error().Err(err).Msg("")
-			return "", err
-		}
-	}
-
-	schema, err := builder.Build()
-	if err != nil {
-		i.logger.Error().Err(err).Msg("")
-		return "", err
-	}
-
-	return schema.Id, nil
-}
-
 func (i IdentityRepository) CreateCredential(ctx context.Context, issuerId string, proofs []domain.ProofType, signer authenticity.BjjSigner, req request.CredentialRequest) (identityV2.CredentialReceipt, error) {
-	builder := i.identityClient.BuildCredential(req.SchemaId, req.SchemaType, issuerId, req.HolderDid, req.Expiration, req.Version)
+	builder := i.identityClient.BuildCredential(req.SchemaId, issuerId, req.HolderDid, req.Expiration, req.Version)
 	var err error
 
 	for _, attr := range req.CredentialSubject {
-		builder, err = addCredentialSubjectToBuilder(builder, attr)
+		builder, err = buildCredentialSubject(builder, attr)
 		if err != nil {
 			i.logger.Error().Err(err).Msg("")
 			return identityV2.CredentialReceipt{}, err
@@ -117,36 +97,36 @@ func (i IdentityRepository) PublishIssuerState(ctx context.Context, issuerDid st
 	return receipt.TxHash, nil
 }
 
-func addAttributeToBuilder(builder identityV2.SchemaBuilder, attr request.AttributeSchema) (identityV2.SchemaBuilder, error) {
-	switch attr.DataType {
-	case "string":
-		return builder.AddStringAttribute(attr.Name, attr.Id, attr.Description, attr.Required), nil
-	case "integer":
-		return builder.AddNumberAttribute(attr.Name, attr.Id, attr.Description, attr.Required), nil
-	case "date":
-		return builder.AddDateAttribute(attr.Name, attr.Id, attr.Description, attr.Required), nil
-	case "datetime":
-		return builder.AddDatetimeAttribute(attr.Name, attr.Id, attr.Description, attr.Required), nil
-	case "boolean":
-		return builder.AddBooleanAttribute(attr.Name, attr.Id, attr.Description, attr.Required), nil
-	default:
-		return identityV2.SchemaBuilder{}, domain.ErrInvalidDataType
-	}
-}
-
-func addCredentialSubjectToBuilder(builder identityV2.CredentialBuilder, cs request.CredentialSubject) (identityV2.CredentialBuilder, error) {
-	switch cs.DataType {
-	case "string":
-		return builder.WithStringAttribute(cs.Key, cs.Value.(string)), nil
-	case "integer":
-		return builder.WithNumberAttribute(cs.Key, int64(cs.Value.(float64))), nil
-	case "date":
-		return builder.WithDateAttribute(cs.Key, int64(cs.Value.(float64))), nil
-	case "datetime":
-		return builder.WithDatetimeAttribute(cs.Key, int64(cs.Value.(float64))), nil
-	case "boolean":
+func buildCredentialSubject(builder identityV2.CredentialBuilder, cs request.CredentialSubject) (identityV2.CredentialBuilder, error) {
+	switch cs.Value.(type) {
+	case string:
+		return parseStringType(cs, builder), nil
+	case float64:
+		value := cs.Value.(float64)
+		if value == math.Trunc(value) {
+			return builder.WithIntegerAttribute(cs.Key, int64(value)), nil
+		} else {
+			return builder.WithDecimalAttribute(cs.Key, cs.Value.(float64)), nil
+		}
+	case bool:
 		return builder.WithBooleanAttribute(cs.Key, cs.Value.(bool)), nil
 	default:
 		return identityV2.CredentialBuilder{}, domain.ErrInvalidDataType
 	}
+}
+
+func parseStringType(cs request.CredentialSubject, builder identityV2.CredentialBuilder) identityV2.CredentialBuilder {
+	input := cs.Value.(string)
+	var parsedTime time.Time
+	var err error
+	parsedTime, err = time.Parse("2006-01-02", input)
+	if err == nil {
+		return builder.WithDateAttribute(cs.Key, parsedTime)
+	}
+	parsedTime, err = time.Parse(time.RFC3339, input)
+	if err == nil {
+		return builder.WithDatetimeAttribute(cs.Key, parsedTime)
+	}
+
+	return builder.WithStringAttribute(cs.Key, input)
 }

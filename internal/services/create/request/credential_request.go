@@ -2,7 +2,6 @@ package request
 
 type CredentialRequest struct {
 	SchemaId          string
-	SchemaType        string
 	HolderDid         string
 	CredentialSubject []CredentialSubject
 	Expiration        int64
@@ -11,7 +10,6 @@ type CredentialRequest struct {
 }
 
 type CredentialSubject struct {
-	DataType string
-	Key      string
-	Value    interface{}
+	Key   string
+	Value interface{}
 }

@@ -1,0 +1,28 @@
+services:
+  postgres:
+    platform: linux/x86_64
+    container_name: postgres
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: admin
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      timeout: 5s
+      retries: 5
+
+  bloock-identity-managed-api:
+    platform: linux/x86_64
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bloock-identity-managed-api
+    volumes:
+      - ./config.yml:/go/bin/config.yml:ro
+    ports:
+      - 8080:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      BLOOCK_DB_CONNECTION_STRING: "postgres://postgres:admin@tcp(postgres:5432)/identity-managed"

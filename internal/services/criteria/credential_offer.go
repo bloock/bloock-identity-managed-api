@@ -46,7 +46,7 @@ func (c CredentialOffer) Get(ctx context.Context, credentialId string, proofs []
 		return nil, err
 	}
 
-	url := fmt.Sprintf("%s/v1/credentials/redeem%s", strings.TrimSuffix(c.publicHost, "/"), getQueryProofs(proofs))
+	url := fmt.Sprintf("%s/v1/claims/redeem%s", strings.TrimSuffix(c.publicHost, "/"), getQueryProofs(proofs))
 	id, err := uuid.NewUUID()
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
@@ -58,7 +58,7 @@ func (c CredentialOffer) Get(ctx context.Context, credentialId string, proofs []
 		ThreadID: id.String(),
 		Body: response.GetCredentialOfferBodyResponse{
 			ID:          credential.CredentialId.String(),
-			Description: credential.SchemaType,
+			Description: credential.CredentialType,
 			URL:         url,
 		},
 		From: c.issuer,

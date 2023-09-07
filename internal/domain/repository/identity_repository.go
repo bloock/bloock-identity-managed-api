@@ -13,8 +13,6 @@ type IdentityRepository interface {
 	GetIssuerByKey(ctx context.Context, issuerKey identityV2.IssuerKey, params identityV2.IssuerParams) (string, error)
 	PublishIssuerState(ctx context.Context, issuerDid string, signer authenticity.BjjSigner) (string, error)
 
-	CreateSchema(ctx context.Context, issuerId string, req request.CreateSchemaRequest) (string, error)
-
 	CreateCredential(ctx context.Context, issuerId string, proofs []domain.ProofType, signer authenticity.BjjSigner, req request.CredentialRequest) (identityV2.CredentialReceipt, error)
 	RevokeCredential(ctx context.Context, credential identityV2.Credential) error
 }
