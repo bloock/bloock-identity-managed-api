@@ -1,4 +1,4 @@
-name: deploy_docker
+name: Deploy
 
 on:
   push:
@@ -9,37 +9,20 @@ on:
       - 'master'
 
 jobs:
-  qa:
-    name: "QA Check"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-        with:
-          fetch-depth: 1
-      - uses: actions/setup-go@v3
-        with:
-          go-version: 1.18
-      - name: Setup
-        run: |
-          go install entgo.io/ent/cmd/ent@latest
-          go install github.com/goware/modvendor@v0.5.0
-          make cache
-      - uses: dominikh/staticcheck-action@v1.2.0
-        with:
-          version: "2022.1.1"
-          install-go: false
   test:
     runs-on: ubuntu-latest
     name: Test
     env:
       GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
     steps:
+
       - name: Checkout
         uses: actions/checkout@v3
       - name: Set up go
         uses: actions/setup-go@v3
         with:
           go-version: 1.18
+
       - name: Setup
         run: |
           go install github.com/golang/mock/mockgen@v1.6.0
@@ -52,7 +35,7 @@ jobs:
 
   push:
     runs-on: ubuntu-latest
-    needs: [ qa, test ]
+    needs: [test]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -79,3 +62,9 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+      - name: Update repo description
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: bloock/identity-managed-api

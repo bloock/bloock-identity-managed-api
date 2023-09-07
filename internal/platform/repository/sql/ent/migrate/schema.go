@@ -13,7 +13,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "credential_id", Type: field.TypeUUID},
 		{Name: "anchor_id", Type: field.TypeInt64},
-		{Name: "schema_type", Type: field.TypeString},
+		{Name: "credential_type", Type: field.TypeString},
 		{Name: "holder_did", Type: field.TypeString},
 		{Name: "proof_type", Type: field.TypeJSON, Nullable: true},
 		{Name: "credential_data", Type: field.TypeJSON},

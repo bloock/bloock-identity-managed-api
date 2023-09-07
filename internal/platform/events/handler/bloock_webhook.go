@@ -10,9 +10,9 @@ import (
 	"net/http"
 )
 
-func BloockWebhook(webhookSecret string, enforceTolerance bool, e action.ActionHandle) gin.HandlerFunc {
+func BloockWebhook(webhookSecret string, e action.ActionHandle) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		event, err := obtainEvent(ctx, webhookSecret, enforceTolerance)
+		event, err := obtainEvent(ctx, webhookSecret)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, err.Error())
 			return
@@ -25,7 +25,7 @@ func BloockWebhook(webhookSecret string, enforceTolerance bool, e action.ActionH
 	}
 }
 
-func obtainEvent(ctx *gin.Context, secretKey string, enforceTolerance bool) (action.BloockEvent, error) {
+func obtainEvent(ctx *gin.Context, secretKey string) (action.BloockEvent, error) {
 	bloockSignature := ctx.GetHeader("Bloock-Signature")
 	buf, err := io.ReadAll(ctx.Request.Body)
 	if err != nil {
@@ -33,7 +33,7 @@ func obtainEvent(ctx *gin.Context, secretKey string, enforceTolerance bool) (act
 	}
 
 	webhookClient := client.NewWebhookClient()
-	ok, err := webhookClient.VerifyWebhookSignature(buf, bloockSignature, secretKey, enforceTolerance)
+	ok, err := webhookClient.VerifyWebhookSignature(buf, bloockSignature, secretKey, false)
 	if err != nil {
 		return action.BloockEvent{}, err
 	}

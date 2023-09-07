@@ -37,7 +37,7 @@ type CredentialMutation struct {
 	credential_id         *uuid.UUID
 	anchor_id             *int64
 	addanchor_id          *int64
-	schema_type           *string
+	credential_type       *string
 	holder_did            *string
 	proof_type            *[]string
 	appendproof_type      []string
@@ -245,40 +245,40 @@ func (m *CredentialMutation) ResetAnchorID() {
 	m.addanchor_id = nil
 }
 
-// SetSchemaType sets the "schema_type" field.
-func (m *CredentialMutation) SetSchemaType(s string) {
-	m.schema_type = &s
+// SetCredentialType sets the "credential_type" field.
+func (m *CredentialMutation) SetCredentialType(s string) {
+	m.credential_type = &s
 }
 
-// SchemaType returns the value of the "schema_type" field in the mutation.
-func (m *CredentialMutation) SchemaType() (r string, exists bool) {
-	v := m.schema_type
+// CredentialType returns the value of the "credential_type" field in the mutation.
+func (m *CredentialMutation) CredentialType() (r string, exists bool) {
+	v := m.credential_type
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldSchemaType returns the old "schema_type" field's value of the Credential entity.
+// OldCredentialType returns the old "credential_type" field's value of the Credential entity.
 // If the Credential object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CredentialMutation) OldSchemaType(ctx context.Context) (v string, err error) {
+func (m *CredentialMutation) OldCredentialType(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSchemaType is only allowed on UpdateOne operations")
+		return v, errors.New("OldCredentialType is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSchemaType requires an ID field in the mutation")
+		return v, errors.New("OldCredentialType requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSchemaType: %w", err)
+		return v, fmt.Errorf("querying old value for OldCredentialType: %w", err)
 	}
-	return oldValue.SchemaType, nil
+	return oldValue.CredentialType, nil
 }
 
-// ResetSchemaType resets all changes to the "schema_type" field.
-func (m *CredentialMutation) ResetSchemaType() {
-	m.schema_type = nil
+// ResetCredentialType resets all changes to the "credential_type" field.
+func (m *CredentialMutation) ResetCredentialType() {
+	m.credential_type = nil
 }
 
 // SetHolderDid sets the "holder_did" field.
@@ -655,8 +655,8 @@ func (m *CredentialMutation) Fields() []string {
 	if m.anchor_id != nil {
 		fields = append(fields, credential.FieldAnchorID)
 	}
-	if m.schema_type != nil {
-		fields = append(fields, credential.FieldSchemaType)
+	if m.credential_type != nil {
+		fields = append(fields, credential.FieldCredentialType)
 	}
 	if m.holder_did != nil {
 		fields = append(fields, credential.FieldHolderDid)
@@ -688,8 +688,8 @@ func (m *CredentialMutation) Field(name string) (ent.Value, bool) {
 		return m.CredentialID()
 	case credential.FieldAnchorID:
 		return m.AnchorID()
-	case credential.FieldSchemaType:
-		return m.SchemaType()
+	case credential.FieldCredentialType:
+		return m.CredentialType()
 	case credential.FieldHolderDid:
 		return m.HolderDid()
 	case credential.FieldProofType:
@@ -715,8 +715,8 @@ func (m *CredentialMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldCredentialID(ctx)
 	case credential.FieldAnchorID:
 		return m.OldAnchorID(ctx)
-	case credential.FieldSchemaType:
-		return m.OldSchemaType(ctx)
+	case credential.FieldCredentialType:
+		return m.OldCredentialType(ctx)
 	case credential.FieldHolderDid:
 		return m.OldHolderDid(ctx)
 	case credential.FieldProofType:
@@ -752,12 +752,12 @@ func (m *CredentialMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAnchorID(v)
 		return nil
-	case credential.FieldSchemaType:
+	case credential.FieldCredentialType:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetSchemaType(v)
+		m.SetCredentialType(v)
 		return nil
 	case credential.FieldHolderDid:
 		v, ok := value.(string)
@@ -892,8 +892,8 @@ func (m *CredentialMutation) ResetField(name string) error {
 	case credential.FieldAnchorID:
 		m.ResetAnchorID()
 		return nil
-	case credential.FieldSchemaType:
-		m.ResetSchemaType()
+	case credential.FieldCredentialType:
+		m.ResetCredentialType()
 		return nil
 	case credential.FieldHolderDid:
 		m.ResetHolderDid()

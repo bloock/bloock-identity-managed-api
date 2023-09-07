@@ -22,8 +22,8 @@ type Credential struct {
 	CredentialID uuid.UUID `json:"credential_id,omitempty"`
 	// AnchorID holds the value of the "anchor_id" field.
 	AnchorID int64 `json:"anchor_id,omitempty"`
-	// SchemaType holds the value of the "schema_type" field.
-	SchemaType string `json:"schema_type,omitempty"`
+	// CredentialType holds the value of the "credential_type" field.
+	CredentialType string `json:"credential_type,omitempty"`
 	// HolderDid holds the value of the "holder_did" field.
 	HolderDid string `json:"holder_did,omitempty"`
 	// ProofType holds the value of the "proof_type" field.
@@ -48,7 +48,7 @@ func (*Credential) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case credential.FieldID, credential.FieldAnchorID:
 			values[i] = new(sql.NullInt64)
-		case credential.FieldSchemaType, credential.FieldHolderDid:
+		case credential.FieldCredentialType, credential.FieldHolderDid:
 			values[i] = new(sql.NullString)
 		case credential.FieldCredentialID:
 			values[i] = new(uuid.UUID)
@@ -85,11 +85,11 @@ func (c *Credential) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.AnchorID = value.Int64
 			}
-		case credential.FieldSchemaType:
+		case credential.FieldCredentialType:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field schema_type", values[i])
+				return fmt.Errorf("unexpected type %T for field credential_type", values[i])
 			} else if value.Valid {
-				c.SchemaType = value.String
+				c.CredentialType = value.String
 			}
 		case credential.FieldHolderDid:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -179,8 +179,8 @@ func (c *Credential) String() string {
 	builder.WriteString("anchor_id=")
 	builder.WriteString(fmt.Sprintf("%v", c.AnchorID))
 	builder.WriteString(", ")
-	builder.WriteString("schema_type=")
-	builder.WriteString(c.SchemaType)
+	builder.WriteString("credential_type=")
+	builder.WriteString(c.CredentialType)
 	builder.WriteString(", ")
 	builder.WriteString("holder_did=")
 	builder.WriteString(c.HolderDid)

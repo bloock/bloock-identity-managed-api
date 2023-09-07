@@ -49,9 +49,9 @@ func (cu *CredentialUpdate) AddAnchorID(i int64) *CredentialUpdate {
 	return cu
 }
 
-// SetSchemaType sets the "schema_type" field.
-func (cu *CredentialUpdate) SetSchemaType(s string) *CredentialUpdate {
-	cu.mutation.SetSchemaType(s)
+// SetCredentialType sets the "credential_type" field.
+func (cu *CredentialUpdate) SetCredentialType(s string) *CredentialUpdate {
+	cu.mutation.SetCredentialType(s)
 	return cu
 }
 
@@ -173,9 +173,9 @@ func (cu *CredentialUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (cu *CredentialUpdate) check() error {
-	if v, ok := cu.mutation.SchemaType(); ok {
-		if err := credential.SchemaTypeValidator(v); err != nil {
-			return &ValidationError{Name: "schema_type", err: fmt.Errorf(`ent: validator failed for field "Credential.schema_type": %w`, err)}
+	if v, ok := cu.mutation.CredentialType(); ok {
+		if err := credential.CredentialTypeValidator(v); err != nil {
+			return &ValidationError{Name: "credential_type", err: fmt.Errorf(`ent: validator failed for field "Credential.credential_type": %w`, err)}
 		}
 	}
 	if v, ok := cu.mutation.HolderDid(); ok {
@@ -207,8 +207,8 @@ func (cu *CredentialUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := cu.mutation.AddedAnchorID(); ok {
 		_spec.AddField(credential.FieldAnchorID, field.TypeInt64, value)
 	}
-	if value, ok := cu.mutation.SchemaType(); ok {
-		_spec.SetField(credential.FieldSchemaType, field.TypeString, value)
+	if value, ok := cu.mutation.CredentialType(); ok {
+		_spec.SetField(credential.FieldCredentialType, field.TypeString, value)
 	}
 	if value, ok := cu.mutation.HolderDid(); ok {
 		_spec.SetField(credential.FieldHolderDid, field.TypeString, value)
@@ -301,9 +301,9 @@ func (cuo *CredentialUpdateOne) AddAnchorID(i int64) *CredentialUpdateOne {
 	return cuo
 }
 
-// SetSchemaType sets the "schema_type" field.
-func (cuo *CredentialUpdateOne) SetSchemaType(s string) *CredentialUpdateOne {
-	cuo.mutation.SetSchemaType(s)
+// SetCredentialType sets the "credential_type" field.
+func (cuo *CredentialUpdateOne) SetCredentialType(s string) *CredentialUpdateOne {
+	cuo.mutation.SetCredentialType(s)
 	return cuo
 }
 
@@ -438,9 +438,9 @@ func (cuo *CredentialUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (cuo *CredentialUpdateOne) check() error {
-	if v, ok := cuo.mutation.SchemaType(); ok {
-		if err := credential.SchemaTypeValidator(v); err != nil {
-			return &ValidationError{Name: "schema_type", err: fmt.Errorf(`ent: validator failed for field "Credential.schema_type": %w`, err)}
+	if v, ok := cuo.mutation.CredentialType(); ok {
+		if err := credential.CredentialTypeValidator(v); err != nil {
+			return &ValidationError{Name: "credential_type", err: fmt.Errorf(`ent: validator failed for field "Credential.credential_type": %w`, err)}
 		}
 	}
 	if v, ok := cuo.mutation.HolderDid(); ok {
@@ -489,8 +489,8 @@ func (cuo *CredentialUpdateOne) sqlSave(ctx context.Context) (_node *Credential,
 	if value, ok := cuo.mutation.AddedAnchorID(); ok {
 		_spec.AddField(credential.FieldAnchorID, field.TypeInt64, value)
 	}
-	if value, ok := cuo.mutation.SchemaType(); ok {
-		_spec.SetField(credential.FieldSchemaType, field.TypeString, value)
+	if value, ok := cuo.mutation.CredentialType(); ok {
+		_spec.SetField(credential.FieldCredentialType, field.TypeString, value)
 	}
 	if value, ok := cuo.mutation.HolderDid(); ok {
 		_spec.SetField(credential.FieldHolderDid, field.TypeString, value)

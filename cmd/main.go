@@ -18,6 +18,7 @@ import (
 	"context"
 	"github.com/bloock/bloock-sdk-go/v2"
 	"github.com/rs/zerolog"
+	"os"
 	"sync"
 	"time"
 )
@@ -28,11 +29,8 @@ func main() {
 		panic(err)
 	}
 
-	logger := zerolog.Logger{}
+	logger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).With().Timestamp().Logger()
 	ctx := context.Background()
-
-	bloock.ApiKey = cfg.APIKey
-	bloock.ApiHost = "https://api.bloock.dev"
 
 	// GetBjjIssuerKey ent client
 	entConnector := connection.NewEntConnector(logger)
@@ -47,11 +45,13 @@ func main() {
 		panic(err)
 	}
 
+	bloock.ApiKey = cfg.APIKey
+
 	// Setup circuits loaders
 	cls := loaders.NewCircuits("./internal/platform/zkp/credentials/circuits")
 
 	// Setup Web3Client
-	wc, err := web3.NewClientWeb3(cfg.PolygonProvider, config.PolygonSmartContract, logger)
+	wc, err := web3.NewClientWeb3(config.PolygonProvider, config.PolygonSmartContract, logger)
 	if err != nil {
 		panic(err)
 	}
@@ -74,7 +74,7 @@ func main() {
 	}
 	ir := identity.NewIdentityRepository(cfg.PublicHost, logger)
 
-	// Create Issuer
+	// Create or Retrieve Issuer
 	ci := create.NewIssuer(kr, ir, logger)
 	res, err := ci.Create(ctx, cfg.IssuerDidMethod, cfg.IssuerDidBlockchain, cfg.IssuerDidNetwork)
 	if err != nil {
@@ -89,7 +89,6 @@ func main() {
 	cbi := criteria.NewCredentialById(cr, logger)
 	bpu := update.NewIntegrityProofUpdate(cr, ir, logger)
 	smp := update.NewSparseMtProofUpdate(cr, ir, logger)
-	cs := create.NewSchema(ir, issuerDid, logger)
 	crv := cancel.NewCredentialRevocation(ir, logger)
 	pi := publish.NewIssuerPublish(kr, ir, issuerDid, logger)
 	gi := criteria.NewIssuer(ir, kr, cfg.IssuerDidMethod, cfg.IssuerDidBlockchain, cfg.IssuerDidNetwork, logger)
@@ -100,7 +99,7 @@ func main() {
 	// Run API server
 	go func() {
 		defer wg.Done()
-		sr, err := server.NewServer(cfg.APIHost, cfg.APIPort, *cc, *co, *rc, *cbi, *bpu, *smp, *ci, *gi, *cs, *crv, *pi, cfg.WebhookSecretKey, cfg.WebhookEnforceTolerance, logger, cfg.DebugMode)
+		sr, err := server.NewServer(cfg.APIHost, cfg.APIPort, *cc, *co, *rc, *cbi, *bpu, *smp, *gi, *crv, *pi, cfg.WebhookSecretKey, logger, cfg.DebugMode)
 		if err != nil {
 			panic(err)
 		}
@@ -110,5 +109,4 @@ func main() {
 	}()
 
 	wg.Wait()
-
 }

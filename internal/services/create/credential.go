@@ -29,13 +29,6 @@ func NewCredential(cr repository.CredentialRepository, ir repository.IdentityRep
 }
 
 func (c Credential) Create(ctx context.Context, req request.CredentialRequest) (interface{}, error) {
-	for _, p := range req.Proofs {
-		_, err := domain.NewProofType(p)
-		if err != nil {
-			c.logger.Error().Err(err).Msg("")
-			return nil, err
-		}
-	}
 	proofs := make([]domain.ProofType, 0)
 	for _, pr := range req.Proofs {
 		proof, err := domain.NewProofType(pr)
@@ -47,7 +40,6 @@ func (c Credential) Create(ctx context.Context, req request.CredentialRequest) (
 	}
 	signer, err := c.keyRepository.LoadBjjSigner(ctx)
 	if err != nil {
-		c.logger.Error().Err(err).Msg("")
 		return nil, err
 	}
 
@@ -61,21 +53,28 @@ func (c Credential) Create(ctx context.Context, req request.CredentialRequest) (
 		c.logger.Error().Err(err).Msg("")
 		return nil, err
 	}
+
 	credentialString, err := credentialReceipt.Credential.ToJson()
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
 		return nil, err
 	}
 	var credentialData json.RawMessage
-	_ = json.Unmarshal([]byte(credentialString), &credentialData)
+	if err = json.Unmarshal([]byte(credentialString), &credentialData); err != nil {
+		c.logger.Error().Err(err).Msg("")
+		return nil, err
+	}
 	var signatureProof json.RawMessage
-	_ = json.Unmarshal([]byte(credentialReceipt.Credential.Proof.SignatureProof), &signatureProof)
+	if err = json.Unmarshal([]byte(credentialReceipt.Credential.Proof.SignatureProof), &signatureProof); err != nil {
+		c.logger.Error().Err(err).Msg("")
+		return nil, err
+	}
 
 	credential := domain.Credential{
 		CredentialId:   credentialUUID,
 		AnchorId:       credentialReceipt.AnchorID,
 		HolderDid:      req.HolderDid,
-		SchemaType:     req.SchemaType,
+		CredentialType: credentialReceipt.CredentialType,
 		ProofType:      req.Proofs,
 		CredentialData: credentialData,
 		SignatureProof: signatureProof,

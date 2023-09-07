@@ -64,9 +64,9 @@ func AnchorID(v int64) predicate.Credential {
 	return predicate.Credential(sql.FieldEQ(FieldAnchorID, v))
 }
 
-// SchemaType applies equality check predicate on the "schema_type" field. It's identical to SchemaTypeEQ.
-func SchemaType(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldEQ(FieldSchemaType, v))
+// CredentialType applies equality check predicate on the "credential_type" field. It's identical to CredentialTypeEQ.
+func CredentialType(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldEQ(FieldCredentialType, v))
 }
 
 // HolderDid applies equality check predicate on the "holder_did" field. It's identical to HolderDidEQ.
@@ -154,69 +154,69 @@ func AnchorIDLTE(v int64) predicate.Credential {
 	return predicate.Credential(sql.FieldLTE(FieldAnchorID, v))
 }
 
-// SchemaTypeEQ applies the EQ predicate on the "schema_type" field.
-func SchemaTypeEQ(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldEQ(FieldSchemaType, v))
+// CredentialTypeEQ applies the EQ predicate on the "credential_type" field.
+func CredentialTypeEQ(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldEQ(FieldCredentialType, v))
 }
 
-// SchemaTypeNEQ applies the NEQ predicate on the "schema_type" field.
-func SchemaTypeNEQ(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldNEQ(FieldSchemaType, v))
+// CredentialTypeNEQ applies the NEQ predicate on the "credential_type" field.
+func CredentialTypeNEQ(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldNEQ(FieldCredentialType, v))
 }
 
-// SchemaTypeIn applies the In predicate on the "schema_type" field.
-func SchemaTypeIn(vs ...string) predicate.Credential {
-	return predicate.Credential(sql.FieldIn(FieldSchemaType, vs...))
+// CredentialTypeIn applies the In predicate on the "credential_type" field.
+func CredentialTypeIn(vs ...string) predicate.Credential {
+	return predicate.Credential(sql.FieldIn(FieldCredentialType, vs...))
 }
 
-// SchemaTypeNotIn applies the NotIn predicate on the "schema_type" field.
-func SchemaTypeNotIn(vs ...string) predicate.Credential {
-	return predicate.Credential(sql.FieldNotIn(FieldSchemaType, vs...))
+// CredentialTypeNotIn applies the NotIn predicate on the "credential_type" field.
+func CredentialTypeNotIn(vs ...string) predicate.Credential {
+	return predicate.Credential(sql.FieldNotIn(FieldCredentialType, vs...))
 }
 
-// SchemaTypeGT applies the GT predicate on the "schema_type" field.
-func SchemaTypeGT(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldGT(FieldSchemaType, v))
+// CredentialTypeGT applies the GT predicate on the "credential_type" field.
+func CredentialTypeGT(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldGT(FieldCredentialType, v))
 }
 
-// SchemaTypeGTE applies the GTE predicate on the "schema_type" field.
-func SchemaTypeGTE(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldGTE(FieldSchemaType, v))
+// CredentialTypeGTE applies the GTE predicate on the "credential_type" field.
+func CredentialTypeGTE(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldGTE(FieldCredentialType, v))
 }
 
-// SchemaTypeLT applies the LT predicate on the "schema_type" field.
-func SchemaTypeLT(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldLT(FieldSchemaType, v))
+// CredentialTypeLT applies the LT predicate on the "credential_type" field.
+func CredentialTypeLT(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldLT(FieldCredentialType, v))
 }
 
-// SchemaTypeLTE applies the LTE predicate on the "schema_type" field.
-func SchemaTypeLTE(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldLTE(FieldSchemaType, v))
+// CredentialTypeLTE applies the LTE predicate on the "credential_type" field.
+func CredentialTypeLTE(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldLTE(FieldCredentialType, v))
 }
 
-// SchemaTypeContains applies the Contains predicate on the "schema_type" field.
-func SchemaTypeContains(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldContains(FieldSchemaType, v))
+// CredentialTypeContains applies the Contains predicate on the "credential_type" field.
+func CredentialTypeContains(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldContains(FieldCredentialType, v))
 }
 
-// SchemaTypeHasPrefix applies the HasPrefix predicate on the "schema_type" field.
-func SchemaTypeHasPrefix(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldHasPrefix(FieldSchemaType, v))
+// CredentialTypeHasPrefix applies the HasPrefix predicate on the "credential_type" field.
+func CredentialTypeHasPrefix(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldHasPrefix(FieldCredentialType, v))
 }
 
-// SchemaTypeHasSuffix applies the HasSuffix predicate on the "schema_type" field.
-func SchemaTypeHasSuffix(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldHasSuffix(FieldSchemaType, v))
+// CredentialTypeHasSuffix applies the HasSuffix predicate on the "credential_type" field.
+func CredentialTypeHasSuffix(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldHasSuffix(FieldCredentialType, v))
 }
 
-// SchemaTypeEqualFold applies the EqualFold predicate on the "schema_type" field.
-func SchemaTypeEqualFold(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldEqualFold(FieldSchemaType, v))
+// CredentialTypeEqualFold applies the EqualFold predicate on the "credential_type" field.
+func CredentialTypeEqualFold(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldEqualFold(FieldCredentialType, v))
 }
 
-// SchemaTypeContainsFold applies the ContainsFold predicate on the "schema_type" field.
-func SchemaTypeContainsFold(v string) predicate.Credential {
-	return predicate.Credential(sql.FieldContainsFold(FieldSchemaType, v))
+// CredentialTypeContainsFold applies the ContainsFold predicate on the "credential_type" field.
+func CredentialTypeContainsFold(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldContainsFold(FieldCredentialType, v))
 }
 
 // HolderDidEQ applies the EQ predicate on the "holder_did" field.
