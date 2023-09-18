@@ -16,7 +16,6 @@ import (
 	"bloock-identity-managed-api/internal/services/publish"
 	"bloock-identity-managed-api/internal/services/update"
 	"context"
-	"fmt"
 	"github.com/bloock/bloock-sdk-go/v2"
 	"github.com/rs/zerolog"
 	"os"
@@ -47,13 +46,13 @@ func main() {
 	}
 
 	bloock.ApiKey = cfg.APIKey
+	bloock.ApiHost = "https://api.bloock.dev"
 
 	// Setup circuits loaders
 	cls := loaders.NewCircuits("./internal/platform/zkp/credentials/circuits")
 
 	// Setup Web3Client
-	polygonProvider := fmt.Sprintf("https://polygon.bloock.dev?apiKey=%s", cfg.APIKey)
-	wc, err := web3.NewClientWeb3(polygonProvider, config.PolygonSmartContract, logger)
+	wc, err := web3.NewClientWeb3(ctx, config.PolygonProvider, cfg.APIKey, config.PolygonSmartContract, logger)
 	if err != nil {
 		panic(err)
 	}

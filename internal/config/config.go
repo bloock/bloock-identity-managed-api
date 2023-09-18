@@ -4,7 +4,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-const PolygonSmartContract = "134B1BE34911E39A8397ec6289782989729807a4"
+const (
+	PolygonSmartContract = "134B1BE34911E39A8397ec6289782989729807a4"
+	PolygonProvider = "https://polygon.bloock.dev"
+)
 
 type Config struct {
 	DBConnectionString  string `mapstructure:"BLOOCK_DB_CONNECTION_STRING"`
