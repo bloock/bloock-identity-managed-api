@@ -16,6 +16,7 @@ import (
 	"bloock-identity-managed-api/internal/services/publish"
 	"bloock-identity-managed-api/internal/services/update"
 	"context"
+	"fmt"
 	"github.com/bloock/bloock-sdk-go/v2"
 	"github.com/rs/zerolog"
 	"os"
@@ -51,7 +52,8 @@ func main() {
 	cls := loaders.NewCircuits("./internal/platform/zkp/credentials/circuits")
 
 	// Setup Web3Client
-	wc, err := web3.NewClientWeb3(config.PolygonProvider, config.PolygonSmartContract, logger)
+	polygonProvider := fmt.Sprintf("https://polygon.bloock.dev?apiKey=%s", cfg.APIKey)
+	wc, err := web3.NewClientWeb3(polygonProvider, config.PolygonSmartContract, logger)
 	if err != nil {
 		panic(err)
 	}

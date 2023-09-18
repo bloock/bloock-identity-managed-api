@@ -5,7 +5,6 @@ import (
 )
 
 const PolygonSmartContract = "134B1BE34911E39A8397ec6289782989729807a4"
-const PolygonProvider = "https://polygon-mumbai.g.alchemy.com/v2/B8mtcGrQ9ImSGh_1cNhEYJ-XDGUVqRpw"
 
 type Config struct {
 	DBConnectionString  string `mapstructure:"BLOOCK_DB_CONNECTION_STRING"`
