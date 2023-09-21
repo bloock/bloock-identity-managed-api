@@ -3,7 +3,7 @@ module bloock-identity-managed-api
 go 1.18
 
 require (
-	entgo.io/ent v0.12.3
+	entgo.io/ent v0.12.4
 	github.com/bloock/bloock-sdk-go/v2 v2.6.0-beta.9
 	github.com/ethereum/go-ethereum v1.11.5
 	github.com/gin-gonic/gin v1.9.1
@@ -25,7 +25,7 @@ require (
 )
 
 require (
-	ariga.io/atlas v0.10.2-0.20230427182402-87a07dfb83bf // indirect
+	ariga.io/atlas v0.14.1-0.20230918065911-83ad451a4935 // indirect
 	github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
