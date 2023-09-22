@@ -42,13 +42,13 @@ This option is straightforward and ideal if you want to get started quickly. Fol
 
     - Open your terminal or command prompt.
 
-    - Run the following command to pull the Docker image from [DockerHub](https://hub.docker.com/repository/docker/bloock/managed-api/general):
+    - Run the following command to pull the Docker image from [DockerHub](https://hub.docker.com/r/bloock/identity-managed-api):
 
       ```bash
       docker pull bloock/managed-api
       ```
 
-      This command fetches the latest version of the Identity Bloock Managed API image from [DockerHub](https://hub.docker.com/repository/docker/bloock/managed-api/general). We maintain a Docker repository with the latest releases of this repository.
+      This command fetches the latest version of the Identity Bloock Managed API image from [DockerHub](https://hub.docker.com/r/bloock/identity-managed-api). We maintain a Docker repository with the latest releases of this repository.
 
 
 2. **Create a `.env` File:**
@@ -111,7 +111,7 @@ If you need a more complex setup, such as using a specific database like **MySQL
 
 1. **Choose the Docker Compose File:**
 
-    - In our [repository](https://github.com/bloock/bloock-managed-api), you will find Docker Compose files for different database types:
+    - In our [repository](https://github.com/bloock/bloock-identity-managed-api), you will find Docker Compose files for different database types:
 
         - `docker-compose-mysql.yaml` for MySQL
         - `docker-compose-postgres.yaml` for PostgreSQL
@@ -206,7 +206,7 @@ To deploy the API as a standalone application, follow these steps:
 
    1.2 **Download the Latest Release:**
 
-    - Visit the [repository's releases page](https://github.com/bloock/bloock-managed-api/releases) on GitHub.
+    - Visit the [repository's releases page](https://github.com/bloock/bloock-identity-managed-api/releases) on GitHub.
 
     - Look for the latest release version and select it.
 
