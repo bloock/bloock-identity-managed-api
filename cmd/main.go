@@ -77,7 +77,7 @@ func main() {
 
 	// Create or Retrieve Issuer
 	ci := create.NewIssuer(kr, ir, logger)
-	res, err := ci.Create(ctx, cfg.IssuerDidMethod, cfg.IssuerDidBlockchain, cfg.IssuerDidNetwork)
+	res, err := ci.Create(ctx, "", "", "")
 	if err != nil {
 		panic(err)
 	}
@@ -92,7 +92,7 @@ func main() {
 	smp := update.NewSparseMtProofUpdate(cr, ir, logger)
 	crv := cancel.NewCredentialRevocation(ir, logger)
 	pi := publish.NewIssuerPublish(kr, ir, issuerDid, logger)
-	gi := criteria.NewIssuer(ir, kr, cfg.IssuerDidMethod, cfg.IssuerDidBlockchain, cfg.IssuerDidNetwork, logger)
+	gi := criteria.NewIssuer(ir, kr, "", "", "", logger)
 
 	wg := sync.WaitGroup{}
 	wg.Add(1)

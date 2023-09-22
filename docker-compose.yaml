@@ -1,11 +1,13 @@
 services:
   bloock-identity-managed-api:
-    platform: linux/x86_64
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: bloock/identity-managed-api:latest
     container_name: bloock-identity-managed-api
     volumes:
       - ./config.yaml:/go/bin/config.yaml:ro
     ports:
       - 8080:8080
+    environment:
+      BLOOCK_API_KEY: ""
+      BLOOCK_WEBHOOK_SECRET_KEY: ""
+      BLOOCK_PUBLIC_HOST: ""
+      BLOOCK_MANAGED_KEY_ID: ""
