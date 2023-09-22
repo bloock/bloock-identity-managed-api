@@ -26,3 +26,6 @@ services:
     environment:
       BLOOCK_DB_CONNECTION_STRING: "postgresql://postgres:admin@postgres/identity-managed?sslmode=disable"
       BLOOCK_API_KEY: ""
+      BLOOCK_WEBHOOK_SECRET_KEY: ""
+      BLOOCK_PUBLIC_HOST: ""
+      BLOOCK_MANAGED_KEY_ID: ""

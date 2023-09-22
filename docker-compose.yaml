@@ -8,3 +8,6 @@ services:
       - 8080:8080
     environment:
       BLOOCK_API_KEY: ""
+      BLOOCK_WEBHOOK_SECRET_KEY: ""
+      BLOOCK_PUBLIC_HOST: ""
+      BLOOCK_MANAGED_KEY_ID: ""
