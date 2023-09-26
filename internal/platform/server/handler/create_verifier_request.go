@@ -10,7 +10,7 @@ import (
 
 func GetVerification(verification criteria.VerificationBySchemaId) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		schemaID := ctx.Param("schema_id")
+		schemaID := ctx.Param("id")
 		if schemaID == "" {
 			ctx.JSON(http.StatusBadRequest, "empty schema id")
 			return
@@ -28,7 +28,8 @@ func GetVerification(verification criteria.VerificationBySchemaId) gin.HandlerFu
 			return
 		}
 
+		ctx.Writer.Header().Set("Content-Type", "application/json")
 		_, _ = ctx.Writer.Write(res.([]byte))
-		ctx.Writer.Header().Add("Content-Type", "application/json")
+
 	}
 }

@@ -39,7 +39,7 @@ func (c VerificationBySchemaId) Get(ctx context.Context, schemaID string, proof 
 		return nil, err
 	}
 
-	schema, err := c.identityRepository.GetSchema(ctx, schemaID)
+	_, err = c.identityRepository.GetSchema(ctx, schemaID)
 	if err != nil {
 		return nil, err
 	}
@@ -71,10 +71,9 @@ func (c VerificationBySchemaId) Get(ctx context.Context, schemaID string, proof 
 	mtpProofRequest.ID = utils.RandInt32()
 	mtpProofRequest.CircuitID = string(proofCircuit)
 	mtpProofRequest.Query = map[string]interface{}{
-		"allowedIssuers":    []string{c.issuerDid},
-		"credentialSubject": map[string]interface{}{},
-		"context":           buildHostingContext(schema.Id), //TODO schema.CidJsonLd
-		"type":              schema.Json,                    //TODO schema.schemaType
+		"allowedIssuers": []string{c.issuerDid},
+		"context":        buildHostingContext("QmZxvtGRdjKanag3EdY3ogmotTuVWX4WhD5EZ5b5YnddQn"), //TODO schema.CidJsonLd
+		"type":           "DrivingLicense",                                                      //TODO schema.schemaType
 	}
 	request.Body.Scope = append(request.Body.Scope, mtpProofRequest)
 

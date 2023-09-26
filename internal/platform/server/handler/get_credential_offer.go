@@ -55,7 +55,7 @@ func GetCredentialOffer(credentialOffer criteria.CredentialOffer) gin.HandlerFun
 	return func(ctx *gin.Context) {
 		proofs := ctx.QueryArray("proof")
 
-		credentialId := ctx.Param("credential_id")
+		credentialId := ctx.Param("id")
 		if credentialId == "" {
 			ctx.JSON(http.StatusBadRequest, "empty credential id")
 			return

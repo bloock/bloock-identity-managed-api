@@ -54,9 +54,8 @@ func main() {
 	bloock.ApiHost = "https://api.bloock.dev"
 
 	// Setup circuits loaders
-	keyDir := "./internal/platform/zkp/credentials/circuits"
-	cls := loaders.NewCircuits(keyDir)
-	verificationKeyLoader := verificationLoader.FSKeyLoader{Dir: keyDir}
+	cls := loaders.NewCircuits("./internal/platform/zkp/credentials/circuits")
+	verificationKeyLoader := verificationLoader.FSKeyLoader{Dir: "./internal/platform/zkp/credentials/keys"}
 
 	// Setup resolvers
 	resolver := utils.NewBloockNodeResolver(config.PolygonProvider, cfg.APIKey, config.PolygonSmartContract)
@@ -87,7 +86,8 @@ func main() {
 	}
 
 	// Setup Sync Map
-	syncMap := utils.NewSyncMap()
+	syncMap := utils.NewSyncMap(30 * time.Minute)
+	syncMap.CleaningBackground(1 * time.Hour)
 
 	// Setup repositories
 	cr := sql.NewSQLCertificationRepository(*conn, 5*time.Second, logger)

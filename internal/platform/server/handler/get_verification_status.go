@@ -27,11 +27,11 @@ func GetVerificationStatus(verification criteria.VerificationStatus) gin.Handler
 				return
 			}
 			if errors.Is(domain.ErrNotVerified, err) {
-				ctx.JSON(http.StatusUnauthorized, NewBadRequestAPIError(err.Error()))
+				ctx.JSON(http.StatusUnauthorized, NewUnauthorizedAPIError(err.Error()))
 				return
 			}
 			if errors.Is(domain.ErrVerificationFailed, err) {
-				ctx.JSON(http.StatusUnauthorized, NewBadRequestAPIError(err.Error()))
+				ctx.JSON(http.StatusUnauthorized, NewUnauthorizedAPIError(err.Error()))
 				return
 			}
 			ctx.JSON(http.StatusInternalServerError, NewInternalServerAPIError(err.Error()))

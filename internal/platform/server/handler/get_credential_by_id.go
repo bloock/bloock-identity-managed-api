@@ -11,7 +11,7 @@ import (
 
 func GetCredentialById(credential criteria.CredentialById) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		credentialId := ctx.Param("credential_id")
+		credentialId := ctx.Param("id")
 		if credentialId == "" {
 			ctx.JSON(http.StatusBadRequest, "empty credential id")
 			return

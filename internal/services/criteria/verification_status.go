@@ -39,6 +39,5 @@ func (v VerificationStatus) Get(ctx context.Context, sessionId string) (interfac
 		return nil, err
 	}
 
-	v.syncMap.Delete(sessionId)
 	return nil, nil
 }

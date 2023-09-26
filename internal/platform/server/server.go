@@ -44,11 +44,11 @@ func NewServer(host string, port string, c create.Credential, co criteria.Creden
 	v1.POST("/claims", handler.CreateCredential(c))
 	v1.POST("/claims/redeem", handler.RedeemCredential(rc))
 
-	v1.GET("/claims/:credential_id/offer", handler.GetCredentialOffer(co))
-	v1.GET("/claims/:credential_id", handler.GetCredentialById(cbi))
-	v1.PUT("/claims/:credential_id/revoke", handler.RevokeCredential(cbi, crv))
+	v1.GET("/claims/:id/offer", handler.GetCredentialOffer(co))
+	v1.GET("/claims/:id", handler.GetCredentialById(cbi))
+	v1.PUT("/claims/:id/revoke", handler.RevokeCredential(cbi, crv))
 
-	v1.GET("/claims/:schema_id/verification", handler.GetVerification(vbs))
+	v1.GET("/schemas/:id/verification", handler.GetVerification(vbs))
 	v1.POST("/verification/callback", handler.VerificationCallback(vc))
 	v1.GET("/verification/status", handler.GetVerificationStatus(vs))
 
