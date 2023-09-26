@@ -7,6 +7,7 @@ import (
 const (
 	PolygonSmartContract = "134B1BE34911E39A8397ec6289782989729807a4"
 	PolygonProvider      = "https://polygon.bloock.dev"
+	ResolverPrefix       = "polygon:mumbai"
 )
 
 type Config struct {

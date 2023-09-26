@@ -9,6 +9,7 @@ import (
 	"bloock-identity-managed-api/internal/services/criteria"
 	"bloock-identity-managed-api/internal/services/publish"
 	"bloock-identity-managed-api/internal/services/update"
+	"bloock-identity-managed-api/internal/services/verify"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -23,7 +24,8 @@ type Server struct {
 }
 
 func NewServer(host string, port string, c create.Credential, co criteria.CredentialOffer, rc criteria.CredentialRedeem, cbi criteria.CredentialById, bpu update.IntegrityProofUpdate, smp update.SparseMtProofUpdate,
-	gi criteria.Issuer, crv cancel.CredentialRevocation, pi publish.IssuerPublish, webhookSecretKey string, logger zerolog.Logger, debug bool) (*Server, error) {
+	gi criteria.Issuer, crv cancel.CredentialRevocation, pi publish.IssuerPublish, vbs criteria.VerificationBySchemaId, vc verify.VerificationCallback, vs criteria.VerificationStatus,
+	webhookSecretKey string, logger zerolog.Logger, debug bool) (*Server, error) {
 	router := gin.Default()
 	if debug {
 		gin.SetMode(gin.DebugMode)
@@ -45,6 +47,10 @@ func NewServer(host string, port string, c create.Credential, co criteria.Creden
 	v1.GET("/claims/:credential_id/offer", handler.GetCredentialOffer(co))
 	v1.GET("/claims/:credential_id", handler.GetCredentialById(cbi))
 	v1.PUT("/claims/:credential_id/revoke", handler.RevokeCredential(cbi, crv))
+
+	v1.GET("/claims/:schema_id/verification", handler.GetVerification(vbs))
+	v1.POST("/verification/callback", handler.VerificationCallback(vc))
+	v1.GET("/verification/status", handler.GetVerificationStatus(vs))
 
 	actionHandler := action.NewActionHandle()
 

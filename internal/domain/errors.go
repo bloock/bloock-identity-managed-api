@@ -12,4 +12,7 @@ var (
 	ErrInvalidMethodProvided     = errors.New("invalid method provided")
 	ErrInvalidBlockchainProvided = errors.New("invalid blockchain provided")
 	ErrInvalidDataType           = errors.New("invalid data type provided")
+	ErrSessionIdNotFound         = errors.New("session id not found")
+	ErrNotVerified               = errors.New("not verified")
+	ErrVerificationFailed        = errors.New("verification failed")
 )
