@@ -10,8 +10,6 @@ This is an API for those who want to create, emit and offer verifiable credentia
     - [Docker Setup Guide](#docker-setup-guide)
         - [Option 1: Pull and Run the Docker Image](#option-1-pull-and-run-the-docker-image)
         - [Option 2: Use Docker Compose with Database Containers](#option-2-use-docker-compose-with-database-containers)
-    - [Standalone Setup](#standalone-setup)
-        - [Option 3: Clone the GitHub Repository](#option-3-clone-the-github-repository)
 - [Configuration](#configuration)
     - [Variables](#variables)
     - [Configuration File](#configuration-file)
@@ -23,10 +21,9 @@ This is an API for those who want to create, emit and offer verifiable credentia
 
 ## Installation
 
-You have two primary methods to set up and run the Identity Bloock Managed API:
+You have one primary method to set up and run the Identity Bloock Managed API:
 
 1. [Docker Setup Guide](#docker-setup-guide)
-2. [Standalone Setup](#standalone-setup)
 
 Each method has its advantages and use cases.
 
@@ -173,83 +170,6 @@ If you need a more complex setup, such as using a specific database like **MySQL
     - After running the Docker Compose command, the Identity Bloock Managed API will be accessible at http://localhost:8080. You can make API requests to interact with the service.
 
 By following these steps, you can quickly set up the Identity Bloock Managed API with your chosen database type using the provided Docker Compose files.
-
-### Standalone Setup
-
-Running the API as a standalone application provides more control and flexibility, allowing you to customize and integrate it into your specific environment. Choose this option if you have specific requirements or if you want to modify the API's source code.
-
-### Option 3: Clone the GitHub Repository
-
-You can also run this service as a common Golang binary if you need it.
-
-#### Standalone Requirements
-
-- Makefile toolchain
-- Unix-based operating system (e.g. Debian, Arch, Mac OS X)
-- [Go](https://go.dev/) 1.20
-
-To deploy the API as a standalone application, follow these steps:
-
-1. **Clone the Repository or Download the Latest Release:**
-
-   1.1. **Clone the Repository:**
-
-    - Open your terminal and navigate to the directory where you want to clone the [repository]((https://github.com/bloock/bloock-identity-managed-api)).
-
-    - Run the following command to clone the [repository]((https://github.com/bloock/bloock-identity-managed-api)):
-
-    ```bash
-     git clone https://github.com/bloock/managed-api.git
-     ```
-
-   Instead of cloning the repository, it's recommended to download the latest release to ensure you have the most stable and up-to-date version of the Identity Bloock Managed API.
-
-   1.2 **Download the Latest Release:**
-
-    - Visit the [repository's releases page](https://github.com/bloock/bloock-identity-managed-api/releases) on GitHub.
-
-    - Look for the latest release version and select it.
-
-    - Under the Assets section, you will find downloadable files. Choose the appropriate file for your operating system (e.g., Windows, macOS, Linux).
-
-    - Download the selected release file to your local machine.
-
-2. **Navigate to the Repository:**
-
-    - Change your current directory to the cloned repository or downloaded the release file:
-
-    ```bash
-     cd managed-api
-     ```
-
-3. **Set Up Configuration:**
-
-    - Inside the repository, you'll find a `config.yaml` file.
-
-    - Open `config.yaml` in a text editor and configure the environment variables as needed, following the format described in the [Variables](#variables) section. For example:
-
-    ```yaml
-      BLOOCK_DB_CONNECTION_STRING: "file:bloock?mode=memory&cache=shared&_fk=1"
-      BLOOCK_API_KEY: "your_api_key"
-      BLOOCK_WEBHOOK_SECRET_KEY: "your_webhook_secret_key"
-      BLOOCK_PUBLIC_HOST: "https://bloock.com/"
-      BLOOCK_MANAGED_KEY_ID: "your_managed_key_id"
-      ```
-
-4. **Run the Application:**
-
-    - To run the application, execute the following command:
-
-    ```bash
-     go run cmd/main.go
-     ```
-
-   This command will start the Identity Bloock Managed API as a standalone application, and it will use the configuration provided in the config.yaml file.
-
-
-5. **Access the API:**
-
-    - After running the application, the Identity Bloock Managed API will be accessible at http://localhost:8080. You can make API requests to interact with the service.
 
 ---
 
