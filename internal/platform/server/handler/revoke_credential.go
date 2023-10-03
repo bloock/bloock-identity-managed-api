@@ -16,7 +16,7 @@ type RevokeCredentialResponse struct {
 
 func RevokeCredential(credential criteria.CredentialById, revocation cancel.CredentialRevocation) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		credentialId := ctx.Param("credential_id")
+		credentialId := ctx.Param("id")
 		if credentialId == "" {
 			ctx.JSON(http.StatusBadRequest, "empty credential id")
 			return

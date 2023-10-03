@@ -97,6 +97,10 @@ func (i IdentityRepository) PublishIssuerState(ctx context.Context, issuerDid st
 	return receipt.TxHash, nil
 }
 
+func (i IdentityRepository) GetSchema(ctx context.Context, schemaID string) (identityV2.Schema, error) {
+	return identityV2.Schema{}, nil
+}
+
 func buildCredentialSubject(builder identityV2.CredentialBuilder, cs request.CredentialSubject) (identityV2.CredentialBuilder, error) {
 	switch cs.Value.(type) {
 	case string:

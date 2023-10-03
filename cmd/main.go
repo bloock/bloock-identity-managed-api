@@ -7,6 +7,7 @@ import (
 	"bloock-identity-managed-api/internal/platform/repository/sql"
 	"bloock-identity-managed-api/internal/platform/repository/sql/connection"
 	"bloock-identity-managed-api/internal/platform/server"
+	"bloock-identity-managed-api/internal/platform/utils"
 	"bloock-identity-managed-api/internal/platform/web3"
 	"bloock-identity-managed-api/internal/platform/zkp"
 	"bloock-identity-managed-api/internal/platform/zkp/loaders"
@@ -15,8 +16,12 @@ import (
 	"bloock-identity-managed-api/internal/services/criteria"
 	"bloock-identity-managed-api/internal/services/publish"
 	"bloock-identity-managed-api/internal/services/update"
+	"bloock-identity-managed-api/internal/services/verify"
 	"context"
 	"github.com/bloock/bloock-sdk-go/v2"
+	auth "github.com/iden3/go-iden3-auth/v2"
+	verificationLoader "github.com/iden3/go-iden3-auth/v2/loaders"
+	"github.com/iden3/go-iden3-auth/v2/pubsignals"
 	"github.com/rs/zerolog"
 	"os"
 	"sync"
@@ -50,6 +55,19 @@ func main() {
 
 	// Setup circuits loaders
 	cls := loaders.NewCircuits("./internal/platform/zkp/credentials/circuits")
+	verificationKeyLoader := verificationLoader.FSKeyLoader{Dir: "./internal/platform/zkp/credentials/keys"}
+
+	// Setup resolvers
+	resolver := utils.NewBloockNodeResolver(config.PolygonProvider, cfg.APIKey, config.PolygonSmartContract)
+	resolvers := map[string]pubsignals.StateResolver{
+		config.ResolverPrefix: resolver,
+	}
+
+	// Setup verifier
+	verifier, err := auth.NewVerifier(verificationKeyLoader, resolvers, auth.WithIPFSGateway("https://ipfs.io"))
+	if err != nil {
+		panic(err)
+	}
 
 	// Setup Web3Client
 	wc, err := web3.NewClientWeb3(ctx, config.PolygonProvider, cfg.APIKey, config.PolygonSmartContract, logger)
@@ -66,6 +84,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// Setup Sync Map
+	syncMap := utils.NewSyncMap(30 * time.Minute)
+	syncMap.CleaningBackground(1 * time.Hour)
 
 	// Setup repositories
 	cr := sql.NewSQLCertificationRepository(*conn, 5*time.Second, logger)
@@ -93,6 +115,9 @@ func main() {
 	crv := cancel.NewCredentialRevocation(ir, logger)
 	pi := publish.NewIssuerPublish(kr, ir, issuerDid, logger)
 	gi := criteria.NewIssuer(ir, kr, "", "", "", logger)
+	vbs := criteria.NewVerificationBySchemaId(ir, issuerDid, cfg.PublicHost, syncMap, logger)
+	vc := verify.NewVerificationCallback(verifier, syncMap, logger)
+	vs := criteria.NewVerificationStatus(syncMap, logger)
 
 	wg := sync.WaitGroup{}
 	wg.Add(1)
@@ -100,7 +125,7 @@ func main() {
 	// Run API server
 	go func() {
 		defer wg.Done()
-		sr, err := server.NewServer(cfg.APIHost, cfg.APIPort, *cc, *co, *rc, *cbi, *bpu, *smp, *gi, *crv, *pi, cfg.WebhookSecretKey, logger, cfg.DebugMode)
+		sr, err := server.NewServer(cfg.APIHost, cfg.APIPort, *cc, *co, *rc, *cbi, *bpu, *smp, *gi, *crv, *pi, *vbs, *vc, *vs, cfg.WebhookSecretKey, logger, cfg.DebugMode)
 		if err != nil {
 			panic(err)
 		}

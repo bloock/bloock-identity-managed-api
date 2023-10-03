@@ -10,8 +10,6 @@ This is an API for those who want to create, emit and offer verifiable credentia
     - [Docker Setup Guide](#docker-setup-guide)
         - [Option 1: Pull and Run the Docker Image](#option-1-pull-and-run-the-docker-image)
         - [Option 2: Use Docker Compose with Database Containers](#option-2-use-docker-compose-with-database-containers)
-    - [Standalone Setup](#standalone-setup)
-        - [Option 3: Clone the GitHub Repository](#option-3-clone-the-github-repository)
 - [Configuration](#configuration)
     - [Variables](#variables)
     - [Configuration File](#configuration-file)
@@ -23,10 +21,9 @@ This is an API for those who want to create, emit and offer verifiable credentia
 
 ## Installation
 
-You have two primary methods to set up and run the Identity Bloock Managed API:
+You have one primary method to set up and run the Identity Bloock Managed API:
 
 1. [Docker Setup Guide](#docker-setup-guide)
-2. [Standalone Setup](#standalone-setup)
 
 Each method has its advantages and use cases.
 
@@ -174,83 +171,6 @@ If you need a more complex setup, such as using a specific database like **MySQL
 
 By following these steps, you can quickly set up the Identity Bloock Managed API with your chosen database type using the provided Docker Compose files.
 
-### Standalone Setup
-
-Running the API as a standalone application provides more control and flexibility, allowing you to customize and integrate it into your specific environment. Choose this option if you have specific requirements or if you want to modify the API's source code.
-
-### Option 3: Clone the GitHub Repository
-
-You can also run this service as a common Golang binary if you need it.
-
-#### Standalone Requirements
-
-- Makefile toolchain
-- Unix-based operating system (e.g. Debian, Arch, Mac OS X)
-- [Go](https://go.dev/) 1.20
-
-To deploy the API as a standalone application, follow these steps:
-
-1. **Clone the Repository or Download the Latest Release:**
-
-   1.1. **Clone the Repository:**
-
-    - Open your terminal and navigate to the directory where you want to clone the [repository]((https://github.com/bloock/bloock-identity-managed-api)).
-
-    - Run the following command to clone the [repository]((https://github.com/bloock/bloock-identity-managed-api)):
-
-    ```bash
-     git clone https://github.com/bloock/managed-api.git
-     ```
-
-   Instead of cloning the repository, it's recommended to download the latest release to ensure you have the most stable and up-to-date version of the Identity Bloock Managed API.
-
-   1.2 **Download the Latest Release:**
-
-    - Visit the [repository's releases page](https://github.com/bloock/bloock-identity-managed-api/releases) on GitHub.
-
-    - Look for the latest release version and select it.
-
-    - Under the Assets section, you will find downloadable files. Choose the appropriate file for your operating system (e.g., Windows, macOS, Linux).
-
-    - Download the selected release file to your local machine.
-
-2. **Navigate to the Repository:**
-
-    - Change your current directory to the cloned repository or downloaded the release file:
-
-    ```bash
-     cd managed-api
-     ```
-
-3. **Set Up Configuration:**
-
-    - Inside the repository, you'll find a `config.yaml` file.
-
-    - Open `config.yaml` in a text editor and configure the environment variables as needed, following the format described in the [Variables](#variables) section. For example:
-
-    ```yaml
-      BLOOCK_DB_CONNECTION_STRING: "file:bloock?mode=memory&cache=shared&_fk=1"
-      BLOOCK_API_KEY: "your_api_key"
-      BLOOCK_WEBHOOK_SECRET_KEY: "your_webhook_secret_key"
-      BLOOCK_PUBLIC_HOST: "https://bloock.com/"
-      BLOOCK_MANAGED_KEY_ID: "your_managed_key_id"
-      ```
-
-4. **Run the Application:**
-
-    - To run the application, execute the following command:
-
-    ```bash
-     go run cmd/main.go
-     ```
-
-   This command will start the Identity Bloock Managed API as a standalone application, and it will use the configuration provided in the config.yaml file.
-
-
-5. **Access the API:**
-
-    - After running the application, the Identity Bloock Managed API will be accessible at http://localhost:8080. You can make API requests to interact with the service.
-
 ---
 
 ## Configuration
@@ -275,17 +195,20 @@ Here are the configuration variables used by the Identity Bloock Managed API:
     - **Purpose**: The [webhook secret key](https://docs.bloock.com/webhooks/overview) is used to secure and verify incoming webhook requests. It ensures that webhook data is received from a trusted source and has not been tampered with during transmission.
     - **[Create webhook](https://docs.bloock.com/webhooks/overview)**
 - **BLOOCK_PUBLIC_HOST** (***REQUIRED***)
-    - **Description**: An endpoint URL where you want to send processed files.
-    - **Purpose**: This URL specifies the destination where processed files will be sent after successful verification. It can be configured to integrate with other systems or services that require the processed data.
+    - **Description**: Should contain the complete URL, including the protocol (`https://`) and domain or host name. It is essential to ensure that the provided URL is accessible and correctly points to you API's public endpoint. 
+    - **Purpose**: Is used to specify the public host or URL of this deployed API. Allows other software clients applications (ex: PolygonID wallet) to make HTTP requests and API calls to interact with this service.
 - **BLOOCK_LOCAL_PRIVATE_KEY** (***OPTIONAL***)
-    - **Description**: Private key for signing data.
-    - **Purpose**: If you want to sign data using your own local private key, you can specify it here. This private key is used for cryptographic operations to ensure data integrity and authenticity.
+    - **Description**: Private key associated to your identity. The key pair must be of type [BJJ](https://iden3-docs.readthedocs.io/en/latest/iden3_repos/research/publications/zkproof-standards-workshop-2/baby-jubjub/baby-jubjub.html).
+    - **Purpose**: If you want to sign data using your own local private key, you can specify it here. This private key is used for the generation of the issuer's [`did`](https://www.w3.org/TR/did-core/) and cryptographic operations to ensure data integrity and authenticity.
+    - **Conflicts**: Conflicts with `BLOOCK_MANAGED_KEY_ID`. You must specify either a local key or a managed key.
 - **BLOOCK_LOCAL_PUBLIC_KEY** (***OPTIONAL***)
-    - **Description**: Public key for verifying signed data.
-    - **Purpose**: If you're using your own local private key for signing, you should provide the corresponding public key here. The public key is used by others to verify the authenticity of data signed with the private key.
+    - **Description**: Public key associated to your identity.
+    - **Purpose**: If you're using your own local public key, you should provide the corresponding public key here.
+    - **Conflicts**: Conflicts with `BLOOCK_MANAGED_KEY_ID`. You must specify either a local key or a managed key.
 - **BLOOCK_MANAGED_KEY_ID** (***OPTIONAL***)
-    - **Description**: Public key for verifying signed data.
-    - **Purpose**: If you're using your own local private key for signing, you should provide the corresponding public key here. The public key is used by others to verify the authenticity of data signed with the private key.
+    - **Description**: Key ID (UUID format) of type [BJJ](https://iden3-docs.readthedocs.io/en/latest/iden3_repos/research/publications/zkproof-standards-workshop-2/baby-jubjub/baby-jubjub.html). 
+    - **Purpose**: If you're using your own managed key, you should provide the corresponding key id here. This managed key is used for the generation of the issuer's [`did`](https://www.w3.org/TR/did-core/) and cryptographic operations to ensure data integrity and authenticity. If you want to create a managed [BJJ](https://iden3-docs.readthedocs.io/en/latest/iden3_repos/research/publications/zkproof-standards-workshop-2/baby-jubjub/baby-jubjub.html) key with BLOOCK check the documentation [here](https://docs.bloock.com/keys/features/managed-keys). You can create either using our [SDK's](https://docs.bloock.com/keys/features/managed-keys) or [Dashboard UI](https://dashboard.bloock.com/).
+    - **Conflicts**: Conflicts with `BLOOCK_LOCAL_PRIVATE_KEY` and `BLOOCK_LOCAL_PUBLIC_KEY`. You must specify either a local key or a managed key.
 - **BLOOCK_API_HOST** (***OPTIONAL***)
     - **Description**: The API host IP address.
     - **Default**: 0.0.0.0
