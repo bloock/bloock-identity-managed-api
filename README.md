@@ -275,17 +275,20 @@ Here are the configuration variables used by the Identity Bloock Managed API:
     - **Purpose**: The [webhook secret key](https://docs.bloock.com/webhooks/overview) is used to secure and verify incoming webhook requests. It ensures that webhook data is received from a trusted source and has not been tampered with during transmission.
     - **[Create webhook](https://docs.bloock.com/webhooks/overview)**
 - **BLOOCK_PUBLIC_HOST** (***REQUIRED***)
-    - **Description**: An endpoint URL where you want to send processed files.
-    - **Purpose**: This URL specifies the destination where processed files will be sent after successful verification. It can be configured to integrate with other systems or services that require the processed data.
+    - **Description**: Should contain the complete URL, including the protocol (`https://`) and domain or host name. It is essential to ensure that the provided URL is accessible and correctly points to you API's public endpoint. 
+    - **Purpose**: Is used to specify the public host or URL of this deployed API. Allows other software clients applications (ex: PolygonID wallet) to make HTTP requests and API calls to interact with this service.
 - **BLOOCK_LOCAL_PRIVATE_KEY** (***OPTIONAL***)
-    - **Description**: Private key for signing data.
-    - **Purpose**: If you want to sign data using your own local private key, you can specify it here. This private key is used for cryptographic operations to ensure data integrity and authenticity.
+    - **Description**: Private key associated to your identity. The key pair must be of type [BJJ](https://iden3-docs.readthedocs.io/en/latest/iden3_repos/research/publications/zkproof-standards-workshop-2/baby-jubjub/baby-jubjub.html).
+    - **Purpose**: If you want to sign data using your own local private key, you can specify it here. This private key is used for the generation of the issuer's [`did`](https://www.w3.org/TR/did-core/) and cryptographic operations to ensure data integrity and authenticity.
+    - **Conflicts**: Conflicts with `BLOOCK_MANAGED_KEY_ID`. You must specify either a local key or a managed key.
 - **BLOOCK_LOCAL_PUBLIC_KEY** (***OPTIONAL***)
-    - **Description**: Public key for verifying signed data.
-    - **Purpose**: If you're using your own local private key for signing, you should provide the corresponding public key here. The public key is used by others to verify the authenticity of data signed with the private key.
+    - **Description**: Public key associated to your identity.
+    - **Purpose**: If you're using your own local public key, you should provide the corresponding public key here.
+    - **Conflicts**: Conflicts with `BLOOCK_MANAGED_KEY_ID`. You must specify either a local key or a managed key.
 - **BLOOCK_MANAGED_KEY_ID** (***OPTIONAL***)
-    - **Description**: Public key for verifying signed data.
-    - **Purpose**: If you're using your own local private key for signing, you should provide the corresponding public key here. The public key is used by others to verify the authenticity of data signed with the private key.
+    - **Description**: Key ID (UUID format) of type [BJJ](https://iden3-docs.readthedocs.io/en/latest/iden3_repos/research/publications/zkproof-standards-workshop-2/baby-jubjub/baby-jubjub.html). 
+    - **Purpose**: If you're using your own managed key, you should provide the corresponding key id here. This managed key is used for the generation of the issuer's [`did`](https://www.w3.org/TR/did-core/) and cryptographic operations to ensure data integrity and authenticity. If you want to create a managed [BJJ](https://iden3-docs.readthedocs.io/en/latest/iden3_repos/research/publications/zkproof-standards-workshop-2/baby-jubjub/baby-jubjub.html) key with BLOOCK check the documentation [here](https://docs.bloock.com/keys/features/managed-keys). You can create either using our [SDK's](https://docs.bloock.com/keys/features/managed-keys) or [Dashboard UI](https://dashboard.bloock.com/).
+    - **Conflicts**: Conflicts with `BLOOCK_LOCAL_PRIVATE_KEY` and `BLOOCK_LOCAL_PUBLIC_KEY`. You must specify either a local key or a managed key.
 - **BLOOCK_API_HOST** (***OPTIONAL***)
     - **Description**: The API host IP address.
     - **Default**: 0.0.0.0
