@@ -29,11 +29,11 @@ func (m ManagedKeyProvider) GetBjjIssuerKey(ctx context.Context) (identityV2.Iss
 	return identityV2.NewBjjIssuerKey(identityV2.IssuerKeyArgs{ManagedKey: &managedKey}), nil
 }
 
-func (m ManagedKeyProvider) GetBjjSigner(ctx context.Context) (authenticity.BjjSigner, error) {
+func (m ManagedKeyProvider) GetBjjSigner(ctx context.Context) (authenticity.Signer, error) {
 	managedKey, err := m.keyClient.LoadManagedKey(m.keyID)
 	if err != nil {
-		return authenticity.BjjSigner{}, err
+		return authenticity.Signer{}, err
 	}
 
-	return authenticity.NewBjjSigner(authenticity.SignerArgs{ManagedKey: &managedKey}), nil
+	return authenticity.NewSigner(authenticity.SignerArgs{ManagedKey: &managedKey}), nil
 }

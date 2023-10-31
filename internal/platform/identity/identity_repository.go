@@ -20,7 +20,7 @@ type IdentityRepository struct {
 
 func NewIdentityRepository(publicHost string, log zerolog.Logger) *IdentityRepository {
 	return &IdentityRepository{
-		identityClient: client.NewIdentityV2Client(publicHost),
+		identityClient: client.NewIdentityClient(publicHost),
 		logger:         log,
 	}
 }
@@ -45,7 +45,7 @@ func (i IdentityRepository) GetIssuerByKey(ctx context.Context, issuerKey identi
 	return did, nil
 }
 
-func (i IdentityRepository) CreateCredential(ctx context.Context, issuerId string, proofs []domain.ProofType, signer authenticity.BjjSigner, req request.CredentialRequest) (identityV2.CredentialReceipt, error) {
+func (i IdentityRepository) CreateCredential(ctx context.Context, issuerId string, proofs []domain.ProofType, signer authenticity.Signer, req request.CredentialRequest) (identityV2.CredentialReceipt, error) {
 	builder := i.identityClient.BuildCredential(req.SchemaId, issuerId, req.HolderDid, req.Expiration, req.Version)
 	var err error
 
@@ -64,7 +64,7 @@ func (i IdentityRepository) CreateCredential(ctx context.Context, issuerId strin
 
 	credentialReceipt, err := builder.WithProofType(proofTypes).WithSigner(signer).Build()
 	if err != nil {
-		i.logger.Error().Err(err).Msg("")
+		i.logger.Error().Err(err).Msg("Enteeeeeeeeer")
 		return identityV2.CredentialReceipt{}, err
 	}
 
@@ -86,7 +86,7 @@ func (i IdentityRepository) RevokeCredential(ctx context.Context, credential ide
 	return nil
 }
 
-func (i IdentityRepository) PublishIssuerState(ctx context.Context, issuerDid string, signer authenticity.BjjSigner) (string, error) {
+func (i IdentityRepository) PublishIssuerState(ctx context.Context, issuerDid string, signer authenticity.Signer) (string, error) {
 	stateBuilder := i.identityClient.BuildIssuerSatePublisher(issuerDid)
 	receipt, err := stateBuilder.WithSigner(signer).Build()
 	if err != nil {
@@ -98,7 +98,12 @@ func (i IdentityRepository) PublishIssuerState(ctx context.Context, issuerDid st
 }
 
 func (i IdentityRepository) GetSchema(ctx context.Context, schemaID string) (identityV2.Schema, error) {
-	return identityV2.Schema{}, nil
+	schema, err := i.identityClient.GetSchema(schemaID)
+	if err != nil {
+		i.logger.Error().Err(err).Msg("")
+		return identityV2.Schema{}, err
+	}
+	return schema, nil
 }
 
 func buildCredentialSubject(builder identityV2.CredentialBuilder, cs request.CredentialSubject) (identityV2.CredentialBuilder, error) {

@@ -32,11 +32,11 @@ func (l LocalKeyProvider) GetBjjIssuerKey(ctx context.Context) (identityV2.Issue
 	return identityV2.NewBjjIssuerKey(identityV2.IssuerKeyArgs{LocalKey: &localKey}), nil
 }
 
-func (l LocalKeyProvider) GetBjjSigner(ctx context.Context) (authenticity.BjjSigner, error) {
+func (l LocalKeyProvider) GetBjjSigner(ctx context.Context) (authenticity.Signer, error) {
 	localKey, err := l.keyClient.LoadLocalKey(key.Bjj, l.publicKey, &l.privateKey)
 	if err != nil {
-		return authenticity.BjjSigner{}, err
+		return authenticity.Signer{}, err
 	}
 
-	return authenticity.NewBjjSigner(authenticity.SignerArgs{LocalKey: &localKey}), nil
+	return authenticity.NewSigner(authenticity.SignerArgs{LocalKey: &localKey}), nil
 }

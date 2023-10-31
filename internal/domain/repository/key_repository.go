@@ -8,5 +8,5 @@ import (
 
 type KeyRepository interface {
 	LoadBjjKeyIssuer(ctx context.Context) (identityV2.IssuerKey, error)
-	LoadBjjSigner(ctx context.Context) (authenticity.BjjSigner, error)
+	LoadBjjSigner(ctx context.Context) (authenticity.Signer, error)
 }
