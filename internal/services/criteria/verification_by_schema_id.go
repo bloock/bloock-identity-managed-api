@@ -39,7 +39,7 @@ func (c VerificationBySchemaId) Get(ctx context.Context, schemaID string, proof 
 		return nil, err
 	}
 
-	_, err = c.identityRepository.GetSchema(ctx, schemaID)
+	schema, err := c.identityRepository.GetSchema(ctx, schemaID)
 	if err != nil {
 		return nil, err
 	}
@@ -72,8 +72,8 @@ func (c VerificationBySchemaId) Get(ctx context.Context, schemaID string, proof 
 	mtpProofRequest.CircuitID = string(proofCircuit)
 	mtpProofRequest.Query = map[string]interface{}{
 		"allowedIssuers": []string{c.issuerDid},
-		"context":        buildHostingContext("QmZxvtGRdjKanag3EdY3ogmotTuVWX4WhD5EZ5b5YnddQn"), //TODO schema.CidJsonLd
-		"type":           "DrivingLicense",                                                      //TODO schema.schemaType
+		"context":        schema.CidJsonLd,
+		"type":           schema.SchemaType,
 	}
 	request.Body.Scope = append(request.Body.Scope, mtpProofRequest)
 
@@ -92,8 +92,4 @@ func buildCallbackUrl(publicUrl string, sessionID uint64) (string, error) {
 	callbackUrl := fmt.Sprintf("%s%s?sessionId=%d", publicUrl, "/v1/verification/callback", sessionID)
 
 	return callbackUrl, nil
-}
-
-func buildHostingContext(jsonLdCid string) string {
-	return fmt.Sprintf("https://api.bloock.dev/hosting/v1/ipfs/%s", jsonLdCid)
 }

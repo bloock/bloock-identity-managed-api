@@ -8,5 +8,5 @@ import (
 
 type KeyProvider interface {
 	GetBjjIssuerKey(ctx context.Context) (identityV2.IssuerKey, error)
-	GetBjjSigner(ctx context.Context) (authenticity.BjjSigner, error)
+	GetBjjSigner(ctx context.Context) (authenticity.Signer, error)
 }

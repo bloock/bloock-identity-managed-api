@@ -11,9 +11,9 @@ import (
 type IdentityRepository interface {
 	CreateIssuer(ctx context.Context, issuerKey identityV2.IssuerKey, params identityV2.IssuerParams) (string, error)
 	GetIssuerByKey(ctx context.Context, issuerKey identityV2.IssuerKey, params identityV2.IssuerParams) (string, error)
-	PublishIssuerState(ctx context.Context, issuerDid string, signer authenticity.BjjSigner) (string, error)
+	PublishIssuerState(ctx context.Context, issuerDid string, signer authenticity.Signer) (string, error)
 
-	CreateCredential(ctx context.Context, issuerId string, proofs []domain.ProofType, signer authenticity.BjjSigner, req request.CredentialRequest) (identityV2.CredentialReceipt, error)
+	CreateCredential(ctx context.Context, issuerId string, proofs []domain.ProofType, signer authenticity.Signer, req request.CredentialRequest) (identityV2.CredentialReceipt, error)
 	RevokeCredential(ctx context.Context, credential identityV2.Credential) error
 
 	GetSchema(ctx context.Context, schemaID string) (identityV2.Schema, error)
