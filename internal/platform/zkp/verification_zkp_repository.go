@@ -1,11 +1,11 @@
 package zkp
 
 import (
+	"bloock-identity-managed-api/internal/platform/web3"
 	"bloock-identity-managed-api/internal/platform/zkp/loaders"
 	"bloock-identity-managed-api/internal/platform/zkp/verify"
 	"context"
 	"fmt"
-	"github.com/iden3/contracts-abi/state/go/abi"
 	"github.com/iden3/go-circuits"
 	"github.com/iden3/go-jwz"
 	"github.com/iden3/iden3comm"
@@ -18,7 +18,21 @@ type VerificationZkpRepository struct {
 	logger         zerolog.Logger
 }
 
-func NewVerificationZkpRepository(ctx context.Context, stateContract *abi.State, circuitsLoaderService *loaders.Circuits, l zerolog.Logger) (*VerificationZkpRepository, error) {
+func NewVerificationZkpRepository(ctx context.Context, circuitsLoaderService *loaders.Circuits, l zerolog.Logger) (*VerificationZkpRepository, error) {
+	l.With().Caller().Str("component", "verification-zkp-repository").Logger()
+
+	wc, err := web3.NewClientWeb3(ctx, l)
+	if err != nil {
+		l.Error().Err(err).Msg("")
+		return &VerificationZkpRepository{}, err
+	}
+
+	stateContract, err := wc.GetAbiState()
+	if err != nil {
+		l.Error().Err(err).Msg("")
+		return &VerificationZkpRepository{}, err
+	}
+
 	authV2Set, err := circuitsLoaderService.Load(circuits.AuthV2CircuitID)
 	if err != nil {
 		err = fmt.Errorf("failed upload circuits files: %w", err)

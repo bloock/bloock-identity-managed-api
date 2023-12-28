@@ -68,7 +68,7 @@ func TestSQLCredentialRepository(t *testing.T) {
 		SparseMtProof:  sparseMtProof,
 	}
 
-	cr := NewSQLCertificationRepository(*conn, 5*time.Second, zerolog.Logger{})
+	cr := NewSQLCredentialRepository(*conn, 5*time.Second, zerolog.Logger{})
 
 	t.Run("Given a credential it should be saved", func(t *testing.T) {
 		err = cr.Save(context.Background(), credential)

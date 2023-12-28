@@ -27,27 +27,21 @@ func (cc *CredentialCreate) SetCredentialID(u uuid.UUID) *CredentialCreate {
 	return cc
 }
 
-// SetAnchorID sets the "anchor_id" field.
-func (cc *CredentialCreate) SetAnchorID(i int64) *CredentialCreate {
-	cc.mutation.SetAnchorID(i)
-	return cc
-}
-
 // SetCredentialType sets the "credential_type" field.
 func (cc *CredentialCreate) SetCredentialType(s string) *CredentialCreate {
 	cc.mutation.SetCredentialType(s)
 	return cc
 }
 
-// SetHolderDid sets the "holder_did" field.
-func (cc *CredentialCreate) SetHolderDid(s string) *CredentialCreate {
-	cc.mutation.SetHolderDid(s)
+// SetIssuerDid sets the "issuer_did" field.
+func (cc *CredentialCreate) SetIssuerDid(s string) *CredentialCreate {
+	cc.mutation.SetIssuerDid(s)
 	return cc
 }
 
-// SetProofType sets the "proof_type" field.
-func (cc *CredentialCreate) SetProofType(s []string) *CredentialCreate {
-	cc.mutation.SetProofType(s)
+// SetHolderDid sets the "holder_did" field.
+func (cc *CredentialCreate) SetHolderDid(s string) *CredentialCreate {
+	cc.mutation.SetHolderDid(s)
 	return cc
 }
 
@@ -60,12 +54,6 @@ func (cc *CredentialCreate) SetCredentialData(jm json.RawMessage) *CredentialCre
 // SetSignatureProof sets the "signature_proof" field.
 func (cc *CredentialCreate) SetSignatureProof(jm json.RawMessage) *CredentialCreate {
 	cc.mutation.SetSignatureProof(jm)
-	return cc
-}
-
-// SetIntegrityProof sets the "integrity_proof" field.
-func (cc *CredentialCreate) SetIntegrityProof(jm json.RawMessage) *CredentialCreate {
-	cc.mutation.SetIntegrityProof(jm)
 	return cc
 }
 
@@ -112,15 +100,20 @@ func (cc *CredentialCreate) check() error {
 	if _, ok := cc.mutation.CredentialID(); !ok {
 		return &ValidationError{Name: "credential_id", err: errors.New(`ent: missing required field "Credential.credential_id"`)}
 	}
-	if _, ok := cc.mutation.AnchorID(); !ok {
-		return &ValidationError{Name: "anchor_id", err: errors.New(`ent: missing required field "Credential.anchor_id"`)}
-	}
 	if _, ok := cc.mutation.CredentialType(); !ok {
 		return &ValidationError{Name: "credential_type", err: errors.New(`ent: missing required field "Credential.credential_type"`)}
 	}
 	if v, ok := cc.mutation.CredentialType(); ok {
 		if err := credential.CredentialTypeValidator(v); err != nil {
 			return &ValidationError{Name: "credential_type", err: fmt.Errorf(`ent: validator failed for field "Credential.credential_type": %w`, err)}
+		}
+	}
+	if _, ok := cc.mutation.IssuerDid(); !ok {
+		return &ValidationError{Name: "issuer_did", err: errors.New(`ent: missing required field "Credential.issuer_did"`)}
+	}
+	if v, ok := cc.mutation.IssuerDid(); ok {
+		if err := credential.IssuerDidValidator(v); err != nil {
+			return &ValidationError{Name: "issuer_did", err: fmt.Errorf(`ent: validator failed for field "Credential.issuer_did": %w`, err)}
 		}
 	}
 	if _, ok := cc.mutation.HolderDid(); !ok {
@@ -167,21 +160,17 @@ func (cc *CredentialCreate) createSpec() (*Credential, *sqlgraph.CreateSpec) {
 		_spec.SetField(credential.FieldCredentialID, field.TypeUUID, value)
 		_node.CredentialID = value
 	}
-	if value, ok := cc.mutation.AnchorID(); ok {
-		_spec.SetField(credential.FieldAnchorID, field.TypeInt64, value)
-		_node.AnchorID = value
-	}
 	if value, ok := cc.mutation.CredentialType(); ok {
 		_spec.SetField(credential.FieldCredentialType, field.TypeString, value)
 		_node.CredentialType = value
 	}
+	if value, ok := cc.mutation.IssuerDid(); ok {
+		_spec.SetField(credential.FieldIssuerDid, field.TypeString, value)
+		_node.IssuerDid = value
+	}
 	if value, ok := cc.mutation.HolderDid(); ok {
 		_spec.SetField(credential.FieldHolderDid, field.TypeString, value)
 		_node.HolderDid = value
-	}
-	if value, ok := cc.mutation.ProofType(); ok {
-		_spec.SetField(credential.FieldProofType, field.TypeJSON, value)
-		_node.ProofType = value
 	}
 	if value, ok := cc.mutation.CredentialData(); ok {
 		_spec.SetField(credential.FieldCredentialData, field.TypeJSON, value)
@@ -190,10 +179,6 @@ func (cc *CredentialCreate) createSpec() (*Credential, *sqlgraph.CreateSpec) {
 	if value, ok := cc.mutation.SignatureProof(); ok {
 		_spec.SetField(credential.FieldSignatureProof, field.TypeJSON, value)
 		_node.SignatureProof = value
-	}
-	if value, ok := cc.mutation.IntegrityProof(); ok {
-		_spec.SetField(credential.FieldIntegrityProof, field.TypeJSON, value)
-		_node.IntegrityProof = value
 	}
 	if value, ok := cc.mutation.SparseMtProof(); ok {
 		_spec.SetField(credential.FieldSparseMtProof, field.TypeJSON, value)
@@ -205,11 +190,15 @@ func (cc *CredentialCreate) createSpec() (*Credential, *sqlgraph.CreateSpec) {
 // CredentialCreateBulk is the builder for creating many Credential entities in bulk.
 type CredentialCreateBulk struct {
 	config
+	err      error
 	builders []*CredentialCreate
 }
 
 // Save creates the Credential entities in the database.
 func (ccb *CredentialCreateBulk) Save(ctx context.Context) ([]*Credential, error) {
+	if ccb.err != nil {
+		return nil, ccb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ccb.builders))
 	nodes := make([]*Credential, len(ccb.builders))
 	mutators := make([]Mutator, len(ccb.builders))

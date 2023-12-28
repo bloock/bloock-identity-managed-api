@@ -1,6 +1,8 @@
 package web3
 
 import (
+	"bloock-identity-managed-api/internal/config"
+	"bloock-identity-managed-api/internal/pkg"
 	"context"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
@@ -16,8 +18,15 @@ type ClientWeb3 struct {
 	logger          zerolog.Logger
 }
 
-func NewClientWeb3(ctx context.Context, provider string, apiKey string, contractAddress string, logger zerolog.Logger) (ClientWeb3, error) {
-	headers := rpc.WithHeader("x-api-key", apiKey)
+func NewClientWeb3(ctx context.Context, logger zerolog.Logger) (ClientWeb3, error) {
+	var headers rpc.ClientOption
+	provider := config.Configuration.Blockchain.Provider
+
+	if pkg.GetApiKeyFromContext(ctx) == "" {
+		headers = rpc.WithHeader("x-api-key", pkg.GetApiKeyFromContext(ctx))
+		provider = config.PublicPolygonProvider
+	}
+
 	rpcClient, err := rpc.DialOptions(ctx, provider, headers)
 	if err != nil {
 		err = fmt.Errorf("error: connecting with provider: %s", provider)
@@ -27,7 +36,7 @@ func NewClientWeb3(ctx context.Context, provider string, apiKey string, contract
 
 	return ClientWeb3{
 		client:          ethclient.NewClient(rpcClient),
-		contractAddress: contractAddress,
+		contractAddress: config.Configuration.Blockchain.SmartContract,
 		logger:          logger,
 	}, nil
 }

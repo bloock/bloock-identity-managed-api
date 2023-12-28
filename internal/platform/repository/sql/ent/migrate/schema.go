@@ -12,13 +12,11 @@ var (
 	CredentialsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "credential_id", Type: field.TypeUUID},
-		{Name: "anchor_id", Type: field.TypeInt64},
 		{Name: "credential_type", Type: field.TypeString},
+		{Name: "issuer_did", Type: field.TypeString},
 		{Name: "holder_did", Type: field.TypeString},
-		{Name: "proof_type", Type: field.TypeJSON, Nullable: true},
 		{Name: "credential_data", Type: field.TypeJSON},
 		{Name: "signature_proof", Type: field.TypeJSON},
-		{Name: "integrity_proof", Type: field.TypeJSON, Nullable: true},
 		{Name: "sparse_mt_proof", Type: field.TypeJSON, Nullable: true},
 	}
 	// CredentialsTable holds the schema information for the "credentials" table.

@@ -1,7 +1,8 @@
-package handler
+package verification
 
 import (
 	"bloock-identity-managed-api/internal/domain"
+	api_error "bloock-identity-managed-api/internal/platform/server/error"
 	"bloock-identity-managed-api/internal/services/criteria"
 	"errors"
 	"github.com/gin-gonic/gin"
@@ -23,18 +24,18 @@ func GetVerificationStatus(verification criteria.VerificationStatus) gin.Handler
 		_, err := verification.Get(ctx, sessionId)
 		if err != nil {
 			if errors.Is(domain.ErrSessionIdNotFound, err) {
-				ctx.JSON(http.StatusNotFound, NewBadRequestAPIError(err.Error()))
+				ctx.JSON(http.StatusNotFound, api_error.NewBadRequestAPIError(err.Error()))
 				return
 			}
 			if errors.Is(domain.ErrNotVerified, err) {
-				ctx.JSON(http.StatusUnauthorized, NewUnauthorizedAPIError(err.Error()))
+				ctx.JSON(http.StatusUnauthorized, api_error.NewUnauthorizedAPIError(err.Error()))
 				return
 			}
 			if errors.Is(domain.ErrVerificationFailed, err) {
-				ctx.JSON(http.StatusUnauthorized, NewUnauthorizedAPIError(err.Error()))
+				ctx.JSON(http.StatusUnauthorized, api_error.NewUnauthorizedAPIError(err.Error()))
 				return
 			}
-			ctx.JSON(http.StatusInternalServerError, NewInternalServerAPIError(err.Error()))
+			ctx.JSON(http.StatusInternalServerError, api_error.NewInternalServerAPIError(err.Error()))
 			return
 		}
 

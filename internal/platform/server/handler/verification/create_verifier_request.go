@@ -1,7 +1,8 @@
-package handler
+package verification
 
 import (
 	"bloock-identity-managed-api/internal/domain"
+	api_error "bloock-identity-managed-api/internal/platform/server/error"
 	"bloock-identity-managed-api/internal/services/criteria"
 	"errors"
 	"github.com/gin-gonic/gin"
@@ -21,10 +22,10 @@ func GetVerification(verification criteria.VerificationBySchemaId) gin.HandlerFu
 		res, err := verification.Get(ctx, schemaID, proofType)
 		if err != nil {
 			if errors.Is(domain.ErrInvalidProofType, err) {
-				ctx.JSON(http.StatusBadRequest, NewBadRequestAPIError(err.Error()))
+				ctx.JSON(http.StatusBadRequest, api_error.NewBadRequestAPIError(err.Error()))
 				return
 			}
-			ctx.JSON(http.StatusInternalServerError, NewInternalServerAPIError(err.Error()))
+			ctx.JSON(http.StatusInternalServerError, api_error.NewInternalServerAPIError(err.Error()))
 			return
 		}
 

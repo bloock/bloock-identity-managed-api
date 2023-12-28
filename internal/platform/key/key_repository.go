@@ -1,14 +1,17 @@
 package key
 
 import (
+	"bloock-identity-managed-api/internal/config"
 	"bloock-identity-managed-api/internal/domain/repository"
+	"bloock-identity-managed-api/internal/pkg"
 	"bloock-identity-managed-api/internal/platform/key/local"
 	"bloock-identity-managed-api/internal/platform/key/managed"
 	"context"
-	"errors"
+	"github.com/bloock/bloock-sdk-go/v2/client"
 	"github.com/bloock/bloock-sdk-go/v2/entity/authenticity"
 	"github.com/bloock/bloock-sdk-go/v2/entity/identityV2"
 	"github.com/rs/zerolog"
+	"regexp"
 )
 
 type KeyRepository struct {
@@ -16,23 +19,25 @@ type KeyRepository struct {
 	logger   zerolog.Logger
 }
 
-func NewKeyRepository(localPrivateKey, localPublicKey, managedKeyID string, l zerolog.Logger) (KeyRepository, error) {
+func NewKeyRepository(ctx context.Context, key string, l zerolog.Logger) KeyRepository {
+	l.With().Caller().Str("component", "key-repository").Logger()
+
+	c := client.NewBloockClient(pkg.GetApiKeyFromContext(ctx), config.Configuration.Api.PublicHost, nil)
+
 	var keyProvider repository.KeyProvider
-	if localPrivateKey != "" && localPublicKey != "" {
-		keyProvider = local.NewLocalKeyProvider(localPublicKey, localPrivateKey)
-	} else if managedKeyID != "" {
-		keyProvider = managed.NewManagedKeyProvider(managedKeyID)
+	if isUUID(key) {
+		keyProvider = managed.NewManagedKeyProvider(key, c)
 	} else {
-		return KeyRepository{}, errors.New("no local or managed key provided")
+		keyProvider = local.NewLocalKeyProvider(key, c)
 	}
 
 	return KeyRepository{
 		provider: keyProvider,
 		logger:   l,
-	}, nil
+	}
 }
 
-func (k KeyRepository) LoadBjjKeyIssuer(ctx context.Context) (identityV2.IssuerKey, error) {
+func (k KeyRepository) LoadBjjKeyIssuer(ctx context.Context) (identityV2.IdentityKey, error) {
 	issuerKey, err := k.provider.GetBjjIssuerKey(ctx)
 	if err != nil {
 		k.logger.Error().Err(err).Msg("")
@@ -50,4 +55,10 @@ func (k KeyRepository) LoadBjjSigner(ctx context.Context) (authenticity.Signer, 
 	}
 
 	return bjjSigner, nil
+}
+
+func isUUID(s string) bool {
+	uuidPattern := regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
+
+	return uuidPattern.MatchString(s)
 }

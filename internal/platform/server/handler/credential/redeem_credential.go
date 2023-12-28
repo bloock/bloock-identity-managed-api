@@ -1,11 +1,15 @@
-package handler
+package credential
 
 import (
 	"bloock-identity-managed-api/internal/domain"
+	"bloock-identity-managed-api/internal/domain/repository"
+	api_error "bloock-identity-managed-api/internal/platform/server/error"
+	"bloock-identity-managed-api/internal/platform/zkp/loaders"
 	"bloock-identity-managed-api/internal/services/criteria"
 	"bloock-identity-managed-api/internal/services/criteria/response"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 	"io"
 	"net/http"
 )
@@ -38,10 +42,8 @@ func mapToRedeemCredentialResponse(res response.RedeemCredentialResponse) Redeem
 	}
 }
 
-func RedeemCredential(credentialRedeem criteria.CredentialRedeem) gin.HandlerFunc {
+func RedeemCredential(cr repository.CredentialRepository, cls *loaders.Circuits, l zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		proofs := ctx.QueryArray("proof")
-
 		bodyBytes, err := io.ReadAll(ctx.Request.Body)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, err.Error())
@@ -53,32 +55,40 @@ func RedeemCredential(credentialRedeem criteria.CredentialRedeem) gin.HandlerFun
 			return
 		}
 
-		res, err := credentialRedeem.Redeem(ctx, bodyString, proofs)
+		credentialService, err := criteria.NewCredentialRedeem(ctx, cr, cls, l)
 		if err != nil {
-			if errors.Is(domain.ErrInvalidProofType, err) {
-				ctx.JSON(http.StatusBadRequest, NewBadRequestAPIError(err.Error()))
-				return
-			}
-			if errors.Is(domain.ErrInvalidZkpMessage, err) {
-				ctx.JSON(http.StatusBadRequest, NewBadRequestAPIError(err.Error()))
-				return
-			}
-			if errors.Is(domain.ErrInvalidDID, err) {
-				ctx.JSON(http.StatusBadRequest, NewBadRequestAPIError(err.Error()))
-				return
-			}
-			if errors.Is(domain.ErrInvalidUUID, err) {
-				ctx.JSON(http.StatusBadRequest, NewBadRequestAPIError(err.Error()))
-				return
-			}
-			if errors.Is(domain.ErrInvalidCredentialSender, err) {
-				ctx.JSON(http.StatusBadRequest, NewBadRequestAPIError(err.Error()))
-				return
-			}
-			ctx.JSON(http.StatusInternalServerError, NewInternalServerAPIError(err.Error()))
+			badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
+			ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
 			return
 		}
 
-		ctx.JSON(http.StatusOK, mapToRedeemCredentialResponse(res.(response.RedeemCredentialResponse)))
+		res, err := credentialService.Redeem(ctx, bodyString)
+		if err != nil {
+			if errors.Is(domain.ErrInvalidZkpMessage, err) {
+				badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
+				ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
+				return
+			}
+			if errors.Is(domain.ErrInvalidDID, err) {
+				badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
+				ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
+				return
+			}
+			if errors.Is(domain.ErrInvalidUUID, err) {
+				badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
+				ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
+				return
+			}
+			if errors.Is(domain.ErrInvalidCredentialSender, err) {
+				badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
+				ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
+				return
+			}
+			serverAPIError := api_error.NewInternalServerAPIError(err.Error())
+			ctx.JSON(serverAPIError.Status, serverAPIError)
+			return
+		}
+
+		ctx.JSON(http.StatusOK, mapToRedeemCredentialResponse(res))
 	}
 }

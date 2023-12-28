@@ -1,8 +1,10 @@
 package criteria
 
 import (
+	"bloock-identity-managed-api/internal/config"
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
+	"bloock-identity-managed-api/internal/pkg"
 	"bloock-identity-managed-api/internal/services/criteria/response"
 	"context"
 	"fmt"
@@ -18,39 +20,37 @@ type CredentialOffer struct {
 	logger               zerolog.Logger
 }
 
-func NewCredentialOffer(cr repository.CredentialRepository, publicHost, issuer string, l zerolog.Logger) *CredentialOffer {
+func NewCredentialOffer(ctx context.Context, cr repository.CredentialRepository, l zerolog.Logger) (*CredentialOffer, error) {
+	issuerDid := pkg.GetIssuerDidFromContext(ctx)
+	if issuerDid == "" {
+		return &CredentialOffer{}, domain.ErrEmptyIssuerDID
+	}
+
 	return &CredentialOffer{
 		credentialRepository: cr,
-		publicHost:           publicHost,
-		issuer:               issuer,
+		publicHost:           config.Configuration.Api.PublicHost,
+		issuer:               issuerDid,
 		logger:               l,
-	}
+	}, nil
 }
 
-func (c CredentialOffer) Get(ctx context.Context, credentialId string, proofs []string) (interface{}, error) {
+func (c CredentialOffer) Get(ctx context.Context, credentialId string) (response.GetCredentialOfferResponse, error) {
 	credentialUUID, err := uuid.Parse(credentialId)
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
-		return nil, domain.ErrInvalidUUID
-	}
-
-	for _, p := range proofs {
-		if _, err = domain.NewProofType(p); err != nil {
-			c.logger.Error().Err(err).Msg("")
-			return nil, err
-		}
+		return response.GetCredentialOfferResponse{}, domain.ErrInvalidUUID
 	}
 
 	credential, err := c.credentialRepository.GetCredentialById(ctx, credentialUUID)
 	if err != nil {
-		return nil, err
+		return response.GetCredentialOfferResponse{}, err
 	}
 
-	url := fmt.Sprintf("%s/v1/claims/redeem%s", strings.TrimSuffix(c.publicHost, "/"), getQueryProofs(proofs))
+	url := fmt.Sprintf("%s/v1/credentials/redeem", strings.TrimSuffix(c.publicHost, "/"))
 	id, err := uuid.NewUUID()
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
-		return nil, domain.ErrInvalidUUID
+		return response.GetCredentialOfferResponse{}, domain.ErrInvalidUUID
 	}
 
 	return response.GetCredentialOfferResponse{
@@ -66,15 +66,4 @@ func (c CredentialOffer) Get(ctx context.Context, credentialId string, proofs []
 		Typ:  "application/iden3comm-plain-json",
 		Type: "https://iden3-communication.io/credentials/1.0/offer",
 	}, nil
-}
-
-func getQueryProofs(proofs []string) string {
-	var uri string
-	if len(proofs) == 0 {
-		return uri
-	}
-	queryString := strings.Join(proofs, "&proof=")
-	uri = "?proof=" + queryString
-
-	return uri
 }

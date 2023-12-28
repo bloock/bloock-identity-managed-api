@@ -1,6 +1,7 @@
 package action
 
 import (
+	"bloock-identity-managed-api/internal/domain/repository"
 	"bloock-identity-managed-api/internal/services/update"
 	"context"
 	"encoding/base64"
@@ -15,14 +16,14 @@ type SparseMtProofConfirmedEvent struct {
 }
 
 type SparseMtProofConfirmed struct {
-	updateSparseMtProofService update.SparseMtProofUpdate
-	logger                     zerolog.Logger
+	credentialRepository repository.CredentialRepository
+	logger               zerolog.Logger
 }
 
-func NewSparseMtProofConfirmed(sp update.SparseMtProofUpdate, l zerolog.Logger) SparseMtProofConfirmed {
+func NewSparseMtProofConfirmed(cr repository.CredentialRepository, l zerolog.Logger) SparseMtProofConfirmed {
 	return SparseMtProofConfirmed{
-		updateSparseMtProofService: sp,
-		logger:                     l,
+		credentialRepository: cr,
+		logger:               l,
 	}
 }
 
@@ -31,6 +32,8 @@ func (s SparseMtProofConfirmed) EventType() string {
 }
 
 func (s SparseMtProofConfirmed) Run(ctx context.Context, event BloockEvent) error {
+	credentialService := update.NewSparseMtProofUpdate(s.credentialRepository, s.logger)
+
 	dataEventBytes, err := json.Marshal(event.Data)
 	if err != nil {
 		s.logger.Error().Err(err).Msg("")
@@ -55,5 +58,5 @@ func (s SparseMtProofConfirmed) Run(ctx context.Context, event BloockEvent) erro
 		return err
 	}
 
-	return s.updateSparseMtProofService.Update(ctx, dataEvent.CredentialID, sparseMtProof)
+	return credentialService.Update(ctx, dataEvent.CredentialID, sparseMtProof)
 }

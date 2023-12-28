@@ -1,7 +1,12 @@
 package request
 
 type CreateIssuerRequest struct {
-	DidMetadata DidMetadataRequest
+	Key             string
+	DidMetadata     DidMetadataRequest
+	Name            string
+	Description     string
+	Image           string
+	PublishInterval int64
 }
 
 type DidMetadataRequest struct {

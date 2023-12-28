@@ -1,11 +1,14 @@
-package handler
+package credential
 
 import (
 	"bloock-identity-managed-api/internal/domain"
+	"bloock-identity-managed-api/internal/domain/repository"
+	api_error "bloock-identity-managed-api/internal/platform/server/error"
 	"bloock-identity-managed-api/internal/services/create"
 	"bloock-identity-managed-api/internal/services/create/request"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 	"net/http"
 )
 
@@ -32,13 +35,18 @@ func mapToCreateCredentialResponse(id string) CreateCredentialResponse {
 	}
 }
 
-func CreateCredential(credential create.Credential) gin.HandlerFunc {
+func CreateCredential(cr repository.CredentialRepository, l zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		proofs := ctx.QueryArray("proof")
-
 		var req CreateCredentialRequest
 		if err := ctx.ShouldBind(&req); err != nil {
-			ctx.JSON(http.StatusBadRequest, NewBadRequestAPIError(err.Error()))
+			ctx.JSON(http.StatusBadRequest, api_error.NewBadRequestAPIError(err.Error()))
+			return
+		}
+
+		credentialService, err := create.NewCredential(ctx, cr, l)
+		if err != nil {
+			badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
+			ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
 			return
 		}
 
@@ -49,24 +57,25 @@ func CreateCredential(credential create.Credential) gin.HandlerFunc {
 				Value: cs.Value,
 			})
 		}
-		cr := request.CredentialRequest{
+		cdr := request.CredentialRequest{
 			SchemaId:          req.SchemaId,
 			HolderDid:         req.HolderDid,
 			CredentialSubject: credentialSubject,
 			Expiration:        req.Expiration,
 			Version:           req.Version,
-			Proofs:            proofs,
 		}
-		res, err := credential.Create(ctx, cr)
+		credentialID, err := credentialService.Create(ctx, cdr)
 		if err != nil {
 			if errors.Is(domain.ErrInvalidDataType, err) {
-				ctx.JSON(http.StatusBadRequest, NewBadRequestAPIError(err.Error()))
+				badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
+				ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
 				return
 			}
-			ctx.JSON(http.StatusInternalServerError, NewInternalServerAPIError(err.Error()))
+			serverAPIError := api_error.NewInternalServerAPIError(err.Error())
+			ctx.JSON(serverAPIError.Status, serverAPIError)
 			return
 		}
 
-		ctx.JSON(http.StatusCreated, mapToCreateCredentialResponse(res.(string)))
+		ctx.JSON(http.StatusCreated, mapToCreateCredentialResponse(credentialID))
 	}
 }

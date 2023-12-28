@@ -15,4 +15,6 @@ var (
 	ErrSessionIdNotFound         = errors.New("session id not found")
 	ErrNotVerified               = errors.New("not verified")
 	ErrVerificationFailed        = errors.New("verification failed")
+	ErrEmptyIssuerDID            = errors.New("issuer did must be provided")
+	ErrEmptyIssuerKey            = errors.New("issuer key must be provided")
 )

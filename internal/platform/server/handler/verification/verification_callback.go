@@ -1,6 +1,7 @@
-package handler
+package verification
 
 import (
+	api_error "bloock-identity-managed-api/internal/platform/server/error"
 	"bloock-identity-managed-api/internal/services/verify"
 
 	"github.com/gin-gonic/gin"
@@ -28,7 +29,7 @@ func VerificationCallback(verification verify.VerificationCallback) gin.HandlerF
 
 		_, err = verification.Verify(ctx, string(bodyBytes), sessionId)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, NewInternalServerAPIError(err.Error()))
+			ctx.JSON(http.StatusInternalServerError, api_error.NewInternalServerAPIError(err.Error()))
 			return
 		}
 

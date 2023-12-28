@@ -5,6 +5,7 @@ import (
 	"bloock-identity-managed-api/internal/domain/repository"
 	"context"
 	"github.com/google/uuid"
+	"github.com/iden3/go-schema-processor/verifiable"
 	"github.com/rs/zerolog"
 )
 
@@ -20,17 +21,17 @@ func NewCredentialById(cr repository.CredentialRepository, l zerolog.Logger) *Cr
 	}
 }
 
-func (c CredentialById) Get(ctx context.Context, credentialId string) (interface{}, error) {
+func (c CredentialById) Get(ctx context.Context, credentialId string) (verifiable.W3CCredential, error) {
 	credentialUUID, err := uuid.Parse(credentialId)
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
-		return nil, domain.ErrInvalidUUID
+		return verifiable.W3CCredential{}, domain.ErrInvalidUUID
 	}
 
 	credential, err := c.credentialRepository.GetCredentialById(ctx, credentialUUID)
 	if err != nil {
-		return nil, err
+		return verifiable.W3CCredential{}, err
 	}
 
-	return credential.ParseToVerifiableCredential([]string{domain.IntegrityProofType.Str(), domain.SparseMtProofType.Str()})
+	return credential.ParseToVerifiableCredential()
 }
