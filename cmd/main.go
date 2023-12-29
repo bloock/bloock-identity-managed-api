@@ -7,13 +7,9 @@ import (
 	"bloock-identity-managed-api/internal/platform/repository/sql/connection"
 	"bloock-identity-managed-api/internal/platform/server"
 	"bloock-identity-managed-api/internal/platform/utils"
-	"bloock-identity-managed-api/internal/platform/zkp/loaders"
 	"bloock-identity-managed-api/internal/services/create"
 	"bloock-identity-managed-api/internal/services/create/request"
 	"context"
-	auth "github.com/iden3/go-iden3-auth/v2"
-	verificationLoader "github.com/iden3/go-iden3-auth/v2/loaders"
-	"github.com/iden3/go-iden3-auth/v2/pubsignals"
 	"github.com/rs/zerolog"
 	"os"
 	"sync"
@@ -49,22 +45,6 @@ func main() {
 		panic(err)
 	}
 
-	// Setup circuits loaders
-	cls := loaders.NewCircuits("./internal/platform/zkp/credentials/circuits")
-	verificationKeyLoader := verificationLoader.FSKeyLoader{Dir: "./internal/platform/zkp/credentials/keys"}
-
-	// Setup resolvers
-	resolver := utils.NewBloockNodeResolver(cfg.Blockchain.Provider, cfg.Bloock.ApiKey, cfg.Blockchain.SmartContract)
-	resolvers := map[string]pubsignals.StateResolver{
-		cfg.Blockchain.ResolverPrefix: resolver,
-	}
-
-	// Setup verifier
-	verifier, err := auth.NewVerifier(verificationKeyLoader, resolvers, auth.WithIPFSGateway("https://ipfs.io"))
-	if err != nil {
-		panic(err)
-	}
-
 	// Setup Sync Map
 	syncMap := utils.NewSyncMap(30 * time.Minute)
 	syncMap.CleaningBackground(1 * time.Hour)
@@ -78,7 +58,7 @@ func main() {
 	// Run API server
 	go func() {
 		defer wg.Done()
-		sr, err := server.NewServer(cr, cls, cfg.Bloock.WebhookSecretKey, logger)
+		sr, err := server.NewServer(cr, syncMap, cfg.Bloock.WebhookSecretKey, logger)
 		if err != nil {
 			panic(err)
 		}

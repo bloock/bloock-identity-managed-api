@@ -2,18 +2,20 @@ package verification
 
 import (
 	api_error "bloock-identity-managed-api/internal/platform/server/error"
+	"bloock-identity-managed-api/internal/platform/utils"
 	"bloock-identity-managed-api/internal/services/verify"
+	"github.com/rs/zerolog"
 
 	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
 )
 
-type VerificationCallbackResponse struct {
+type CallbackVerificationResponse struct {
 	Success bool `json:"success"`
 }
 
-func VerificationCallback(verification verify.VerificationCallback) gin.HandlerFunc {
+func CallbackVerification(sym *utils.SyncMap, l zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		sessionId := ctx.Query("sessionId")
 		if sessionId == "" {
@@ -27,12 +29,20 @@ func VerificationCallback(verification verify.VerificationCallback) gin.HandlerF
 			return
 		}
 
-		_, err = verification.Verify(ctx, string(bodyBytes), sessionId)
+		verificationService, err := verify.NewVerificationCallback(ctx, sym, l)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, api_error.NewInternalServerAPIError(err.Error()))
+			serverAPIError := api_error.NewInternalServerAPIError(err.Error())
+			ctx.JSON(serverAPIError.Status, serverAPIError)
 			return
 		}
 
-		ctx.JSON(http.StatusOK, VerificationCallbackResponse{Success: true})
+		err = verificationService.Verify(ctx, string(bodyBytes), sessionId)
+		if err != nil {
+			serverAPIError := api_error.NewInternalServerAPIError(err.Error())
+			ctx.JSON(serverAPIError.Status, serverAPIError)
+			return
+		}
+
+		ctx.JSON(http.StatusOK, CallbackVerificationResponse{Success: true})
 	}
 }

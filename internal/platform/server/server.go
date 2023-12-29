@@ -10,7 +10,7 @@ import (
 	"bloock-identity-managed-api/internal/platform/server/handler/issuer"
 	"bloock-identity-managed-api/internal/platform/server/handler/verification"
 	"bloock-identity-managed-api/internal/platform/server/middleware"
-	"bloock-identity-managed-api/internal/platform/zkp/loaders"
+	"bloock-identity-managed-api/internal/platform/utils"
 	"fmt"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
@@ -24,8 +24,7 @@ type Server struct {
 	logger zerolog.Logger
 }
 
-func NewServer(cr repository.CredentialRepository, cls *loaders.Circuits, webhookSecretKey string, l zerolog.Logger) (*Server, error) {
-
+func NewServer(cr repository.CredentialRepository, sym *utils.SyncMap, webhookSecretKey string, l zerolog.Logger) (*Server, error) {
 	l = l.With().Str("layer", "infrastructure").Str("component", "gin").Logger()
 	gin.DefaultWriter = l.With().Str("level", "info").Logger()
 	gin.DefaultErrorWriter = l.With().Str("level", "error").Logger()
@@ -57,14 +56,14 @@ func NewServer(cr repository.CredentialRepository, cls *loaders.Circuits, webhoo
 	v1.POST("/issuers/state/publish", middleware.AuthMiddleware(), middleware.IssuerMiddleware(l), issuer.PublishIssuerState(l))
 
 	v1.POST("/credentials", middleware.AuthMiddleware(), middleware.IssuerMiddleware(l), credential.CreateCredential(cr, l))
-	v1.POST("/credentials/redeem", credential.RedeemCredential(cr, cls, l))
+	v1.POST("/credentials/redeem", credential.RedeemCredential(cr, l))
 	v1.GET("/credentials/:id/offer", middleware.AuthMiddleware(), middleware.IssuerMiddleware(l), credential.GetCredentialOffer(cr, l))
 	v1.GET("/credentials/:id", credential.GetCredentialById(cr, l))
 	v1.PUT("/credentials/:id/revocation", middleware.AuthMiddleware(), middleware.IssuerMiddleware(l), credential.RevokeCredential(cr, l))
 
-	v1.GET("/schemas/:id/verification", verification.GetVerification(vbs))
-	v1.POST("/verification/callback", verification.VerificationCallback(vc))
-	v1.GET("/verification/status", verification.GetVerificationStatus(vs))
+	v1.POST("/verifications", verification.CreateVerification(sym, l))
+	v1.POST("/verifications/callback", verification.CallbackVerification(sym, l))
+	v1.GET("/verifications/status", verification.GetVerificationStatus(sym, l))
 
 	actionHandler := action.NewActionHandle()
 	sparseMtProof := action.NewSparseMtProofConfirmed(cr, l)

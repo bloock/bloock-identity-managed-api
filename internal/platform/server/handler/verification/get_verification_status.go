@@ -3,9 +3,11 @@ package verification
 import (
 	"bloock-identity-managed-api/internal/domain"
 	api_error "bloock-identity-managed-api/internal/platform/server/error"
+	"bloock-identity-managed-api/internal/platform/utils"
 	"bloock-identity-managed-api/internal/services/criteria"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 	"net/http"
 )
 
@@ -13,7 +15,7 @@ type GetVerificationStatusResponse struct {
 	Success bool `json:"success"`
 }
 
-func GetVerificationStatus(verification criteria.VerificationStatus) gin.HandlerFunc {
+func GetVerificationStatus(sym *utils.SyncMap, l zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		sessionId := ctx.Query("sessionId")
 		if sessionId == "" {
@@ -21,21 +23,27 @@ func GetVerificationStatus(verification criteria.VerificationStatus) gin.Handler
 			return
 		}
 
-		_, err := verification.Get(ctx, sessionId)
+		verificationStatus := criteria.NewVerificationStatus(sym, l)
+
+		err := verificationStatus.Get(ctx, sessionId)
 		if err != nil {
 			if errors.Is(domain.ErrSessionIdNotFound, err) {
-				ctx.JSON(http.StatusNotFound, api_error.NewBadRequestAPIError(err.Error()))
+				notFoundAPIError := api_error.NewAPIError(http.StatusNotFound, err.Error())
+				ctx.JSON(notFoundAPIError.Status, notFoundAPIError)
 				return
 			}
 			if errors.Is(domain.ErrNotVerified, err) {
-				ctx.JSON(http.StatusUnauthorized, api_error.NewUnauthorizedAPIError(err.Error()))
+				serverUnauthorized := api_error.NewUnauthorizedAPIError(err.Error())
+				ctx.JSON(serverUnauthorized.Status, serverUnauthorized)
 				return
 			}
 			if errors.Is(domain.ErrVerificationFailed, err) {
-				ctx.JSON(http.StatusUnauthorized, api_error.NewUnauthorizedAPIError(err.Error()))
+				serverUnauthorized := api_error.NewUnauthorizedAPIError(err.Error())
+				ctx.JSON(serverUnauthorized.Status, serverUnauthorized)
 				return
 			}
-			ctx.JSON(http.StatusInternalServerError, api_error.NewInternalServerAPIError(err.Error()))
+			serverAPIError := api_error.NewInternalServerAPIError(err.Error())
+			ctx.JSON(serverAPIError.Status, serverAPIError)
 			return
 		}
 

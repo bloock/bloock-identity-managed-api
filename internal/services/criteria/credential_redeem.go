@@ -4,7 +4,6 @@ import (
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
 	"bloock-identity-managed-api/internal/platform/zkp"
-	"bloock-identity-managed-api/internal/platform/zkp/loaders"
 	"bloock-identity-managed-api/internal/services/criteria/response"
 	"context"
 	"encoding/json"
@@ -22,8 +21,8 @@ type CredentialRedeem struct {
 	logger                 zerolog.Logger
 }
 
-func NewCredentialRedeem(ctx context.Context, cr repository.CredentialRepository, cls *loaders.Circuits, l zerolog.Logger) (*CredentialRedeem, error) {
-	vr, err := zkp.NewVerificationZkpRepository(ctx, cls, l)
+func NewCredentialRedeem(ctx context.Context, cr repository.CredentialRepository, l zerolog.Logger) (*CredentialRedeem, error) {
+	vr, err := zkp.NewVerificationZkpRepository(ctx, l)
 	if err != nil {
 		return &CredentialRedeem{}, err
 	}
@@ -36,12 +35,11 @@ func NewCredentialRedeem(ctx context.Context, cr repository.CredentialRepository
 }
 
 func (c CredentialRedeem) Redeem(ctx context.Context, body string) (response.RedeemCredentialResponse, error) {
-	manager := c.verificationRepository.PackageManager()
-	basicMessage, err := manager.UnpackWithType(packers.MediaTypeZKPMessage, []byte(body))
+	basicMessage, err := c.verificationRepository.DecodeJWZ(ctx, body)
 	if err != nil {
-		c.logger.Error().Err(err).Msg("")
-		return response.RedeemCredentialResponse{}, domain.ErrInvalidZkpMessage
+		return response.RedeemCredentialResponse{}, err
 	}
+
 	issuerDID, subjectDID, err := c.validateBasicMessage(basicMessage)
 	if err != nil {
 		return response.RedeemCredentialResponse{}, err

@@ -4,7 +4,6 @@ import (
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
 	api_error "bloock-identity-managed-api/internal/platform/server/error"
-	"bloock-identity-managed-api/internal/platform/zkp/loaders"
 	"bloock-identity-managed-api/internal/services/criteria"
 	"bloock-identity-managed-api/internal/services/criteria/response"
 	"errors"
@@ -42,7 +41,7 @@ func mapToRedeemCredentialResponse(res response.RedeemCredentialResponse) Redeem
 	}
 }
 
-func RedeemCredential(cr repository.CredentialRepository, cls *loaders.Circuits, l zerolog.Logger) gin.HandlerFunc {
+func RedeemCredential(cr repository.CredentialRepository, l zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		bodyBytes, err := io.ReadAll(ctx.Request.Body)
 		if err != nil {
@@ -55,7 +54,7 @@ func RedeemCredential(cr repository.CredentialRepository, cls *loaders.Circuits,
 			return
 		}
 
-		credentialService, err := criteria.NewCredentialRedeem(ctx, cr, cls, l)
+		credentialService, err := criteria.NewCredentialRedeem(ctx, cr, l)
 		if err != nil {
 			badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
 			ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
