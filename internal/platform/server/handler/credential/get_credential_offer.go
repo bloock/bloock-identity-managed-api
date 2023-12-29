@@ -63,6 +63,11 @@ func GetCredentialOffer(cr repository.CredentialRepository, l zerolog.Logger) gi
 		}
 
 		credentialService, err := criteria.NewCredentialOffer(ctx, cr, l)
+		if err != nil {
+			badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
+			ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
+			return
+		}
 
 		offer, err := credentialService.Get(ctx, credentialId)
 		if err != nil {

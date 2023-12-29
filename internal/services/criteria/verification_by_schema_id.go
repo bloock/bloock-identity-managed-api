@@ -4,6 +4,7 @@ import (
 	"bloock-identity-managed-api/internal/config"
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
+	"bloock-identity-managed-api/internal/pkg"
 	"bloock-identity-managed-api/internal/platform/identity"
 	"bloock-identity-managed-api/internal/platform/utils"
 	"context"
@@ -19,24 +20,30 @@ import (
 type CreateVerification struct {
 	identityRepository repository.IdentityRepository
 	publicUrl          string
+	issuer             string
 	syncMap            *utils.SyncMap
 	logger             zerolog.Logger
 }
 
-func NewCreateVerification(ctx context.Context, syncMap *utils.SyncMap, l zerolog.Logger) *CreateVerification {
+func NewCreateVerification(ctx context.Context, syncMap *utils.SyncMap, l zerolog.Logger) (*CreateVerification, error) {
+	issuerDid := pkg.GetIssuerDidFromContext(ctx)
+	if issuerDid == "" {
+		return &CreateVerification{}, domain.ErrEmptyIssuerDID
+	}
+
 	return &CreateVerification{
 		identityRepository: identity.NewIdentityRepository(ctx, l),
 		publicUrl:          config.Configuration.Api.PublicHost,
+		issuer:             issuerDid,
 		syncMap:            syncMap,
 		logger:             l,
-	}
+	}, nil
 }
 
-func (c CreateVerification) Create(ctx context.Context, zkr interface{}, issuerDid string) ([]byte, error) {
+func (c CreateVerification) Create(ctx context.Context, verificationJSON []byte) ([]byte, error) {
 	var zkRequest protocol.ZeroKnowledgeProofRequest
 
-	jsonBytes, _ := json.Marshal(zkr)
-	if err := json.Unmarshal(jsonBytes, &zkRequest); err != nil {
+	if err := json.Unmarshal(verificationJSON, &zkRequest); err != nil {
 		c.logger.Error().Err(err).Msg("")
 		return nil, domain.ErrInvalidVerificationRequest
 	}
@@ -53,7 +60,7 @@ func (c CreateVerification) Create(ctx context.Context, zkr interface{}, issuerD
 		return nil, err
 	}
 
-	request := auth.CreateAuthorizationRequest("verification request", issuerDid, callbackUrl)
+	request := auth.CreateAuthorizationRequest("verification request", c.issuer, callbackUrl)
 
 	randomUUID := uuid.New().String()
 	request.ID = randomUUID

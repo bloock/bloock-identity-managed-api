@@ -8,25 +8,26 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
-	"net/http"
+	"io"
 )
-
-type CreateVerificationRequest struct {
-	ZKRequest interface{} `json:"verification_json" binding:"required"`
-	IssuerDid string      `json:"issuer_did" binding:"required"`
-}
 
 func CreateVerification(sym *utils.SyncMap, l zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var req CreateVerificationRequest
-		if err := ctx.ShouldBind(&req); err != nil {
-			ctx.JSON(http.StatusBadRequest, api_error.NewBadRequestAPIError(err.Error()))
+		verificationJSON, err := io.ReadAll(ctx.Request.Body)
+		if err != nil {
+			badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
+			ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
 			return
 		}
 
-		verificationService := criteria.NewCreateVerification(ctx, sym, l)
+		verificationService, err := criteria.NewCreateVerification(ctx, sym, l)
+		if err != nil {
+			badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
+			ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
+			return
+		}
 
-		request, err := verificationService.Create(ctx, req.ZKRequest, req.IssuerDid)
+		request, err := verificationService.Create(ctx, verificationJSON)
 		if err != nil {
 			if errors.Is(domain.ErrInvalidVerificationRequest, err) {
 				badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())

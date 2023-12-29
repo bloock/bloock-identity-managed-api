@@ -32,7 +32,7 @@ func (p DidMethod) ToBloockMethod() identityV2.Method {
 }
 
 func GetIssuerParams(method, blockchain, network string) (identityV2.DidParams, error) {
-	params := identityV2.DidParams{}
+	params := identityV2.NewDidParams()
 	if method != "" && blockchain != "" && network != "" {
 		m, err := NewDidMethod(method)
 		if err != nil {

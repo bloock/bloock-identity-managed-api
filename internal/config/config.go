@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	PublicPolygonProvider = "https://polygon-rpc.com"
+	PublicPolygonProvider = "https://polygon-mumbai.infura.io/v3/2IaPG8cEELd8sDCXUaIYTeSpAAF"
 )
 
 type APIConfig struct {
@@ -31,13 +31,13 @@ type DBConfig struct {
 }
 
 type BloockConfig struct {
-	ApiHost          string `mapstructure:"api_host" default:"https://api.bloock.dev"`
+	ApiHost          string `mapstructure:"api_host" default:"https://api.bloock.com"`
 	ApiKey           string `mapstructure:"api_key"`
 	WebhookSecretKey string `mapstructure:"webhook_secret_key"`
 }
 
 type BlockchainConfig struct {
-	SmartContract  string `mapstructure:"smart_contract" default:"134B1BE34911E39A8397ec6289782989729807a4"`
+	SmartContract  string `mapstructure:"smart_contract" default:"0x134B1BE34911E39A8397ec6289782989729807a4"`
 	Provider       string `mapstructure:"provider" default:"https://polygon.bloock.dev"`
 	ResolverPrefix string `mapstructure:"resolver_prefix" default:"polygon:mumbai"`
 }
