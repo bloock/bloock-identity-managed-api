@@ -73,7 +73,7 @@ type Config struct {
 
 var Configuration = Config{}
 
-func InitConfig(logger zerolog.Logger, issuerDid string) (*Config, error) {
+func InitConfig(logger zerolog.Logger) (*Config, error) {
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("bloock")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
@@ -99,8 +99,6 @@ func InitConfig(logger zerolog.Logger, issuerDid string) (*Config, error) {
 
 	bloock.ApiHost = Configuration.Bloock.ApiHost
 	bloock.DisableAnalytics = true
-
-	Configuration.Issuer.IssuerDid = issuerDid
 
 	return &Configuration, nil
 }

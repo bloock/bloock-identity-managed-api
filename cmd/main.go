@@ -21,14 +21,14 @@ func main() {
 
 	ctx := context.Background()
 
-	// Setup issuer
-	issuerDid, err := createIssuer(ctx, logger)
+	// Setup configuration
+	cfg, err := config.InitConfig(logger)
 	if err != nil {
 		panic(err)
 	}
 
-	// Setup configuration
-	cfg, err := config.InitConfig(logger, issuerDid)
+	// Setup issuer
+	err = createIssuer(ctx, logger, cfg)
 	if err != nil {
 		panic(err)
 	}
@@ -70,10 +70,7 @@ func main() {
 	wg.Wait()
 }
 
-func createIssuer(ctx context.Context, logger zerolog.Logger) (string, error) {
-	var issuerDid string
-	var err error
-
+func createIssuer(ctx context.Context, logger zerolog.Logger, cfg *config.Config) error {
 	if config.Configuration.Issuer.Key.Key != "" {
 		ctxValue := context.WithValue(ctx, pkg.ApiKeyContextKey, config.Configuration.Bloock.ApiKey)
 		createIssuerService := create.NewIssuer(ctxValue, config.Configuration.Issuer.Key.Key, logger)
@@ -84,10 +81,12 @@ func createIssuer(ctx context.Context, logger zerolog.Logger) (string, error) {
 			Image:           config.Configuration.Issuer.Image,
 			PublishInterval: config.Configuration.Issuer.PublishInterval,
 		}
-		issuerDid, err = createIssuerService.Create(ctxValue, req)
+		issuerDid, err := createIssuerService.Create(ctxValue, req)
 		if err != nil {
-			return "", err
+			return err
 		}
+		cfg.Issuer.IssuerDid = issuerDid
 	}
-	return issuerDid, nil
+
+	return nil
 }
