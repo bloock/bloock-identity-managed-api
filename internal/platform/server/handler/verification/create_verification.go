@@ -20,12 +20,7 @@ func CreateVerification(sym *utils.SyncMap, l zerolog.Logger) gin.HandlerFunc {
 			return
 		}
 
-		verificationService, err := criteria.NewCreateVerification(ctx, sym, l)
-		if err != nil {
-			badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
-			ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
-			return
-		}
+		verificationService := criteria.NewCreateVerification(ctx, sym, l)
 
 		request, err := verificationService.Create(ctx, verificationJSON)
 		if err != nil {

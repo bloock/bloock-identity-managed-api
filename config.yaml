@@ -28,3 +28,6 @@ issuer:
     method: ""
     blockchain: ""
     network: ""
+
+verification:
+  expiration: ""

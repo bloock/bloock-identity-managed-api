@@ -26,7 +26,7 @@ func NewClientWeb3(ctx context.Context, logger zerolog.Logger) (ClientWeb3, erro
 
 	if pkg.GetApiKeyFromContext(ctx) == "" {
 		headers = rpc.WithHeader("x-api-key", pkg.GetApiKeyFromContext(ctx))
-		provider = config.PublicPolygonProvider
+		provider = config.Configuration.Blockchain.PublicProvider
 	}
 
 	rpcClient, err := rpc.DialOptions(ctx, provider, headers)
