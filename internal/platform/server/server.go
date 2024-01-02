@@ -61,7 +61,7 @@ func NewServer(cr repository.CredentialRepository, sym *utils.SyncMap, webhookSe
 	v1.GET("/credentials/:id", credential.GetCredentialById(cr, l))
 	v1.PUT("/credentials/:id/revocation", middleware.AuthMiddleware(), middleware.IssuerMiddleware(l), credential.RevokeCredential(cr, l))
 
-	v1.POST("/verifications", middleware.AuthMiddleware(), middleware.IssuerMiddleware(l), verification.CreateVerification(sym, l))
+	v1.POST("/verifications", verification.CreateVerification(sym, l))
 	v1.POST("/verifications/callback", verification.CallbackVerification(sym, l))
 	v1.GET("/verifications/status", verification.GetVerificationStatus(sym, l))
 

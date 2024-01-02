@@ -11,10 +11,6 @@ import (
 	"strings"
 )
 
-const (
-	PublicPolygonProvider = "https://polygon-mumbai.infura.io/v3/2IaPG8cEELd8sDCXUaIYTeSpAAF"
-)
-
 type APIConfig struct {
 	Host       string `mapstructure:"host" default:"0.0.0.0"`
 	Port       string `mapstructure:"port" default:"8080"`
@@ -40,6 +36,7 @@ type BlockchainConfig struct {
 	SmartContract  string `mapstructure:"smart_contract" default:"0x134B1BE34911E39A8397ec6289782989729807a4"`
 	Provider       string `mapstructure:"provider" default:"https://polygon.bloock.dev"`
 	ResolverPrefix string `mapstructure:"resolver_prefix" default:"polygon:mumbai"`
+	PublicProvider string `mapstructure:"public_provider" default:"https://polygon-mumbai-pokt.nodies.app"`
 }
 
 type IssuerConfig struct {
@@ -62,13 +59,18 @@ type KeyConfig struct {
 	Key string `mapstructure:"key"`
 }
 
+type VerificationConfig struct {
+	Expiration int `mapstructure:"expiration" default:"60"`
+}
+
 type Config struct {
-	Api        APIConfig
-	Auth       AuthConfig
-	Db         DBConfig
-	Bloock     BloockConfig
-	Blockchain BlockchainConfig
-	Issuer     IssuerConfig
+	Api          APIConfig
+	Auth         AuthConfig
+	Db           DBConfig
+	Bloock       BloockConfig
+	Blockchain   BlockchainConfig
+	Issuer       IssuerConfig
+	Verification VerificationConfig
 }
 
 var Configuration = Config{}

@@ -46,8 +46,9 @@ func main() {
 	}
 
 	// Setup Sync Map
-	syncMap := utils.NewSyncMap(30 * time.Minute)
-	syncMap.CleaningBackground(1 * time.Hour)
+	expiration := config.Configuration.Verification.Expiration
+	syncMap := utils.NewSyncMap(time.Duration(expiration) * time.Minute)
+	syncMap.CleaningBackground(time.Duration(expiration) * time.Minute)
 
 	// Setup repositories
 	cr := sql.NewSQLCredentialRepository(*conn, 5*time.Second, logger)

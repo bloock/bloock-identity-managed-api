@@ -4,7 +4,6 @@ import (
 	"bloock-identity-managed-api/internal/config"
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
-	"bloock-identity-managed-api/internal/pkg"
 	"bloock-identity-managed-api/internal/platform/identity"
 	"bloock-identity-managed-api/internal/platform/utils"
 	"context"
@@ -20,24 +19,17 @@ import (
 type CreateVerification struct {
 	identityRepository repository.IdentityRepository
 	publicUrl          string
-	issuer             string
 	syncMap            *utils.SyncMap
 	logger             zerolog.Logger
 }
 
-func NewCreateVerification(ctx context.Context, syncMap *utils.SyncMap, l zerolog.Logger) (*CreateVerification, error) {
-	issuerDid := pkg.GetIssuerDidFromContext(ctx)
-	if issuerDid == "" {
-		return &CreateVerification{}, domain.ErrEmptyIssuerDID
-	}
-
+func NewCreateVerification(ctx context.Context, syncMap *utils.SyncMap, l zerolog.Logger) *CreateVerification {
 	return &CreateVerification{
 		identityRepository: identity.NewIdentityRepository(ctx, l),
 		publicUrl:          config.Configuration.Api.PublicHost,
-		issuer:             issuerDid,
 		syncMap:            syncMap,
 		logger:             l,
-	}, nil
+	}
 }
 
 func (c CreateVerification) Create(ctx context.Context, verificationJSON []byte) ([]byte, error) {
@@ -60,7 +52,7 @@ func (c CreateVerification) Create(ctx context.Context, verificationJSON []byte)
 		return nil, err
 	}
 
-	request := auth.CreateAuthorizationRequest("verification request", c.issuer, callbackUrl)
+	request := auth.CreateAuthorizationRequest("verification request", "Checker", callbackUrl)
 
 	randomUUID := uuid.New().String()
 	request.ID = randomUUID
