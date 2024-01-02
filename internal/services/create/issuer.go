@@ -3,6 +3,9 @@ package create
 import (
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
+	"bloock-identity-managed-api/internal/platform/identity"
+	keyRepo "bloock-identity-managed-api/internal/platform/key"
+	"bloock-identity-managed-api/internal/services/create/request"
 	"context"
 	"github.com/rs/zerolog"
 )
@@ -13,33 +16,33 @@ type Issuer struct {
 	logger             zerolog.Logger
 }
 
-func NewIssuer(kr repository.KeyRepository, ir repository.IdentityRepository, l zerolog.Logger) *Issuer {
+func NewIssuer(ctx context.Context, key string, l zerolog.Logger) *Issuer {
 	return &Issuer{
-		keyRepository:      kr,
-		identityRepository: ir,
+		keyRepository:      keyRepo.NewKeyRepository(ctx, key, l),
+		identityRepository: identity.NewIdentityRepository(ctx, l),
 		logger:             l,
 	}
 }
 
-func (i Issuer) Create(ctx context.Context, didMethod, didBlockchain, didNetwork string) (interface{}, error) {
-	params, err := domain.GetIssuerParams(didMethod, didBlockchain, didNetwork)
+func (i Issuer) Create(ctx context.Context, req request.CreateIssuerRequest) (string, error) {
+	params, err := domain.GetIssuerParams(req.DidMetadata.Method, req.DidMetadata.Blockchain, req.DidMetadata.Network)
 	if err != nil {
 		i.logger.Error().Err(err).Msg("")
-		return nil, err
+		return "", err
 	}
 
 	issuerKey, err := i.keyRepository.LoadBjjKeyIssuer(ctx)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	issuerDid, err := i.identityRepository.GetIssuerByKey(ctx, issuerKey, params)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	if issuerDid != "" {
 		return issuerDid, nil
 	}
 
-	return i.identityRepository.CreateIssuer(ctx, issuerKey, params)
+	return i.identityRepository.CreateIssuer(ctx, issuerKey, params, req.Name, req.Description, req.Image, req.PublishInterval)
 }

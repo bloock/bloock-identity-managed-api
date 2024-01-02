@@ -3,6 +3,7 @@ package criteria
 import (
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
+	"bloock-identity-managed-api/internal/platform/zkp"
 	"bloock-identity-managed-api/internal/services/criteria/response"
 	"context"
 	"encoding/json"
@@ -20,58 +21,62 @@ type CredentialRedeem struct {
 	logger                 zerolog.Logger
 }
 
-func NewCredentialRedeem(cr repository.CredentialRepository, vr repository.VerificationZkpRepository, l zerolog.Logger) *CredentialRedeem {
+func NewCredentialRedeem(ctx context.Context, cr repository.CredentialRepository, l zerolog.Logger) (*CredentialRedeem, error) {
+	vr, err := zkp.NewVerificationZkpRepository(ctx, l)
+	if err != nil {
+		return &CredentialRedeem{}, err
+	}
+
 	return &CredentialRedeem{
 		credentialRepository:   cr,
 		verificationRepository: vr,
 		logger:                 l,
-	}
+	}, nil
 }
 
-func (c CredentialRedeem) Redeem(ctx context.Context, body string, proofs []string) (interface{}, error) {
-	manager := c.verificationRepository.PackageManager()
-	basicMessage, err := manager.UnpackWithType(packers.MediaTypeZKPMessage, []byte(body))
+func (c CredentialRedeem) Redeem(ctx context.Context, body string) (response.RedeemCredentialResponse, error) {
+	basicMessage, err := c.verificationRepository.DecodeJWZ(ctx, body)
 	if err != nil {
-		c.logger.Error().Err(err).Msg("")
-		return nil, domain.ErrInvalidZkpMessage
+		return response.RedeemCredentialResponse{}, err
 	}
+
 	issuerDID, subjectDID, err := c.validateBasicMessage(basicMessage)
 	if err != nil {
-		return nil, err
+		return response.RedeemCredentialResponse{}, err
 	}
 
 	fetchRequestBody := &protocol.CredentialFetchRequestMessageBody{}
 	err = json.Unmarshal(basicMessage.Body, fetchRequestBody)
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
-		return nil, domain.ErrInvalidZkpMessage
+		return response.RedeemCredentialResponse{}, domain.ErrInvalidZkpMessage
 	}
 	credentialUUID, err := uuid.Parse(fetchRequestBody.ID)
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
-		return nil, domain.ErrInvalidUUID
+		return response.RedeemCredentialResponse{}, domain.ErrInvalidUUID
 	}
 
 	credential, err := c.credentialRepository.GetCredentialById(ctx, credentialUUID)
 	if err != nil {
-		return nil, err
+		return response.RedeemCredentialResponse{}, err
 	}
 	if credential.HolderDid != subjectDID.String() {
 		err = domain.ErrInvalidCredentialSender
 		c.logger.Error().Err(err).Msg("")
-		return nil, err
+		return response.RedeemCredentialResponse{}, err
 	}
 
-	vc, err := credential.ParseToVerifiableCredential(proofs)
+	vc, err := credential.ParseToVerifiableCredential()
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
-		return nil, err
+		return response.RedeemCredentialResponse{}, err
 	}
 
 	id, err := uuid.NewUUID()
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
-		return nil, domain.ErrInvalidUUID
+		return response.RedeemCredentialResponse{}, domain.ErrInvalidUUID
 	}
 
 	return response.RedeemCredentialResponse{

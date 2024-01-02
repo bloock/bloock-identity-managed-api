@@ -7,6 +7,6 @@ import (
 )
 
 type KeyProvider interface {
-	GetBjjIssuerKey(ctx context.Context) (identityV2.IssuerKey, error)
+	GetBjjIssuerKey(ctx context.Context) (identityV2.IdentityKey, error)
 	GetBjjSigner(ctx context.Context) (authenticity.Signer, error)
 }

@@ -1,10 +1,30 @@
-BLOOCK_DB_CONNECTION_STRING: "file:bloock?mode=memory&cache=shared&_fk=1"
-BLOOCK_API_KEY: ""
-BLOOCK_WEBHOOK_SECRET_KEY: ""
-BLOOCK_PUBLIC_HOST: ""
-BLOOCK_LOCAL_PRIVATE_KEY: ""
-BLOOCK_LOCAL_PUBLIC_KEY: ""
-BLOOCK_MANAGED_KEY_ID: ""
-BLOOCK_API_HOST: "0.0.0.0"
-BLOOCK_API_PORT: "8080"
-BLOOCK_API_DEBUG_MODE: false
+api:
+  host: "0.0.0.0"
+  port: 8080
+  debug_mode: false
+  public_host: ""
+
+db:
+  connection_string: "file:bloock?mode=memory&cache=shared&_fk=1"
+
+bloock:
+  api_host: ""
+  api_key: ""
+  webhook_secret_key: ""
+
+blockchain:
+  smart_contract: ""
+  provider: ""
+  resolver_prefix: ""
+
+issuer:
+  name: ""
+  description: ""
+  image: ""
+  publish_interval: ""
+  key:
+    key: ""
+  did_metadata:
+    method: ""
+    blockchain: ""
+    network: ""

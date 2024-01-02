@@ -12,21 +12,20 @@ type ManagedKeyProvider struct {
 	keyID     string
 }
 
-func NewManagedKeyProvider(keyID string) ManagedKeyProvider {
-
+func NewManagedKeyProvider(keyID string, client client.BloockClient) ManagedKeyProvider {
 	return ManagedKeyProvider{
-		keyClient: client.NewKeyClient(),
+		keyClient: client.KeyClient,
 		keyID:     keyID,
 	}
 }
 
-func (m ManagedKeyProvider) GetBjjIssuerKey(ctx context.Context) (identityV2.IssuerKey, error) {
+func (m ManagedKeyProvider) GetBjjIssuerKey(ctx context.Context) (identityV2.IdentityKey, error) {
 	managedKey, err := m.keyClient.LoadManagedKey(m.keyID)
 	if err != nil {
 		return nil, err
 	}
 
-	return identityV2.NewBjjIssuerKey(identityV2.IssuerKeyArgs{ManagedKey: &managedKey}), nil
+	return identityV2.NewBjjIdentityKey(identityV2.IssuerKeyArgs{ManagedKey: &managedKey}), nil
 }
 
 func (m ManagedKeyProvider) GetBjjSigner(ctx context.Context) (authenticity.Signer, error) {
@@ -35,5 +34,5 @@ func (m ManagedKeyProvider) GetBjjSigner(ctx context.Context) (authenticity.Sign
 		return authenticity.Signer{}, err
 	}
 
-	return authenticity.NewSigner(authenticity.SignerArgs{ManagedKey: &managedKey}), nil
+	return authenticity.NewSignerWithManagedKey(managedKey, nil), nil
 }

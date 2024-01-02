@@ -1,8 +1,11 @@
 package criteria
 
 import (
+	"bloock-identity-managed-api/internal/config"
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
+	"bloock-identity-managed-api/internal/pkg"
+	"bloock-identity-managed-api/internal/platform/identity"
 	"bloock-identity-managed-api/internal/platform/utils"
 	"context"
 	"encoding/json"
@@ -14,40 +17,41 @@ import (
 	"strconv"
 )
 
-type VerificationBySchemaId struct {
+type CreateVerification struct {
 	identityRepository repository.IdentityRepository
-	issuerDid          string
 	publicUrl          string
+	issuer             string
 	syncMap            *utils.SyncMap
 	logger             zerolog.Logger
 }
 
-func NewVerificationBySchemaId(ir repository.IdentityRepository, issuerDid, publicUrl string, syncMap *utils.SyncMap, l zerolog.Logger) *VerificationBySchemaId {
-	return &VerificationBySchemaId{
-		identityRepository: ir,
-		issuerDid:          issuerDid,
-		publicUrl:          publicUrl,
+func NewCreateVerification(ctx context.Context, syncMap *utils.SyncMap, l zerolog.Logger) (*CreateVerification, error) {
+	issuerDid := pkg.GetIssuerDidFromContext(ctx)
+	if issuerDid == "" {
+		return &CreateVerification{}, domain.ErrEmptyIssuerDID
+	}
+
+	return &CreateVerification{
+		identityRepository: identity.NewIdentityRepository(ctx, l),
+		publicUrl:          config.Configuration.Api.PublicHost,
+		issuer:             issuerDid,
 		syncMap:            syncMap,
 		logger:             l,
-	}
+	}, nil
 }
 
-func (c VerificationBySchemaId) Get(ctx context.Context, schemaID string, proof string) (interface{}, error) {
-	proofType, err := domain.NewProofType(proof)
-	if err != nil {
-		c.logger.Error().Err(err).Msg("")
-		return nil, err
-	}
+func (c CreateVerification) Create(ctx context.Context, verificationJSON []byte) ([]byte, error) {
+	var zkRequest protocol.ZeroKnowledgeProofRequest
 
-	schema, err := c.identityRepository.GetSchema(ctx, schemaID)
-	if err != nil {
-		return nil, err
+	if err := json.Unmarshal(verificationJSON, &zkRequest); err != nil {
+		c.logger.Error().Err(err).Msg("")
+		return nil, domain.ErrInvalidVerificationRequest
 	}
 
 	sessionID, err := utils.RandInt64()
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
-		return "", err
+		return nil, err
 	}
 
 	callbackUrl, err := buildCallbackUrl(c.publicUrl, sessionID)
@@ -55,27 +59,13 @@ func (c VerificationBySchemaId) Get(ctx context.Context, schemaID string, proof 
 		c.logger.Error().Err(err).Msg("")
 		return nil, err
 	}
-	proofCircuit, err := proofType.VerificationCircuitProof()
-	if err != nil {
-		c.logger.Error().Err(err).Msg("")
-		return nil, err
-	}
 
-	request := auth.CreateAuthorizationRequest("credential request", c.issuerDid, callbackUrl)
+	request := auth.CreateAuthorizationRequest("verification request", c.issuer, callbackUrl)
 
 	randomUUID := uuid.New().String()
 	request.ID = randomUUID
 	request.ThreadID = randomUUID
-
-	var mtpProofRequest protocol.ZeroKnowledgeProofRequest
-	mtpProofRequest.ID = utils.RandInt32()
-	mtpProofRequest.CircuitID = string(proofCircuit)
-	mtpProofRequest.Query = map[string]interface{}{
-		"allowedIssuers": []string{c.issuerDid},
-		"context":        schema.CidJsonLd,
-		"type":           schema.SchemaType,
-	}
-	request.Body.Scope = append(request.Body.Scope, mtpProofRequest)
+	request.Body.Scope = append(request.Body.Scope, zkRequest)
 
 	c.syncMap.Store(strconv.FormatUint(sessionID, 10), request)
 
@@ -89,7 +79,7 @@ func (c VerificationBySchemaId) Get(ctx context.Context, schemaID string, proof 
 }
 
 func buildCallbackUrl(publicUrl string, sessionID uint64) (string, error) {
-	callbackUrl := fmt.Sprintf("%s%s?sessionId=%d", publicUrl, "/v1/verification/callback", sessionID)
+	callbackUrl := fmt.Sprintf("%s%s?sessionId=%d", publicUrl, "/v1/verifications/callback", sessionID)
 
 	return callbackUrl, nil
 }

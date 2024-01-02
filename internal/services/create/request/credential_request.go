@@ -6,7 +6,6 @@ type CredentialRequest struct {
 	CredentialSubject []CredentialSubject
 	Expiration        int64
 	Version           int32
-	Proofs            []string
 }
 
 type CredentialSubject struct {

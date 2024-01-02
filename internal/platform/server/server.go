@@ -1,16 +1,18 @@
 package server
 
 import (
+	"bloock-identity-managed-api/internal/config"
+	"bloock-identity-managed-api/internal/domain/repository"
 	handler2 "bloock-identity-managed-api/internal/platform/events/handler"
 	"bloock-identity-managed-api/internal/platform/events/handler/action"
 	"bloock-identity-managed-api/internal/platform/server/handler"
-	"bloock-identity-managed-api/internal/services/cancel"
-	"bloock-identity-managed-api/internal/services/create"
-	"bloock-identity-managed-api/internal/services/criteria"
-	"bloock-identity-managed-api/internal/services/publish"
-	"bloock-identity-managed-api/internal/services/update"
-	"bloock-identity-managed-api/internal/services/verify"
+	"bloock-identity-managed-api/internal/platform/server/handler/credential"
+	"bloock-identity-managed-api/internal/platform/server/handler/issuer"
+	"bloock-identity-managed-api/internal/platform/server/handler/verification"
+	"bloock-identity-managed-api/internal/platform/server/middleware"
+	"bloock-identity-managed-api/internal/platform/utils"
 	"fmt"
+	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 )
@@ -19,15 +21,16 @@ type Server struct {
 	host   string
 	port   string
 	engine *gin.Engine
-	debug  bool
 	logger zerolog.Logger
 }
 
-func NewServer(host string, port string, c create.Credential, co criteria.CredentialOffer, rc criteria.CredentialRedeem, cbi criteria.CredentialById, bpu update.IntegrityProofUpdate, smp update.SparseMtProofUpdate,
-	gi criteria.Issuer, crv cancel.CredentialRevocation, pi publish.IssuerPublish, vbs criteria.VerificationBySchemaId, vc verify.VerificationCallback, vs criteria.VerificationStatus,
-	webhookSecretKey string, logger zerolog.Logger, debug bool) (*Server, error) {
+func NewServer(cr repository.CredentialRepository, sym *utils.SyncMap, webhookSecretKey string, l zerolog.Logger) (*Server, error) {
+	l = l.With().Str("layer", "infrastructure").Str("component", "gin").Logger()
+	gin.DefaultWriter = l.With().Str("level", "info").Logger()
+	gin.DefaultErrorWriter = l.With().Str("level", "error").Logger()
+
 	router := gin.Default()
-	if debug {
+	if config.Configuration.Api.DebugMode {
 		gin.SetMode(gin.DebugMode)
 	} else {
 		gin.SetMode(gin.ReleaseMode)
@@ -36,38 +39,44 @@ func NewServer(host string, port string, c create.Credential, co criteria.Creden
 		return nil, err
 	}
 
+	router.Use(middleware.ErrorMiddleware())
+	router.Use(logger.SetLogger(
+		logger.WithSkipPath([]string{"/health"}),
+		logger.WithUTC(true),
+		logger.WithLogger(func(c *gin.Context, _ zerolog.Logger) zerolog.Logger {
+			return l
+		}),
+	))
+
 	v1 := router.Group("/v1")
+	v1.GET("health", handler.Health())
 
-	v1.GET("/issuers", handler.GetIssuer(gi))
-	v1.POST("/issuers/state/publish", handler.PublishIssuerState(pi))
+	v1.POST("/issuers", middleware.AuthMiddleware(), issuer.CreateIssuer(l))
+	v1.GET("/issuers", issuer.GetIssuer())
+	v1.POST("/issuers/state/publish", middleware.AuthMiddleware(), middleware.IssuerMiddleware(l), issuer.PublishIssuerState(l))
 
-	v1.POST("/claims", handler.CreateCredential(c))
-	v1.POST("/claims/redeem", handler.RedeemCredential(rc))
+	v1.POST("/credentials", middleware.AuthMiddleware(), middleware.IssuerMiddleware(l), credential.CreateCredential(cr, l))
+	v1.POST("/credentials/redeem", credential.RedeemCredential(cr, l))
+	v1.GET("/credentials/:id/offer", middleware.AuthMiddleware(), middleware.IssuerMiddleware(l), credential.GetCredentialOffer(cr, l))
+	v1.GET("/credentials/:id", credential.GetCredentialById(cr, l))
+	v1.PUT("/credentials/:id/revocation", middleware.AuthMiddleware(), middleware.IssuerMiddleware(l), credential.RevokeCredential(cr, l))
 
-	v1.GET("/claims/:id/offer", handler.GetCredentialOffer(co))
-	v1.GET("/claims/:id", handler.GetCredentialById(cbi))
-	v1.PUT("/claims/:id/revoke", handler.RevokeCredential(cbi, crv))
-
-	v1.GET("/schemas/:id/verification", handler.GetVerification(vbs))
-	v1.POST("/verification/callback", handler.VerificationCallback(vc))
-	v1.GET("/verification/status", handler.GetVerificationStatus(vs))
+	v1.POST("/verifications", middleware.AuthMiddleware(), middleware.IssuerMiddleware(l), verification.CreateVerification(sym, l))
+	v1.POST("/verifications/callback", verification.CallbackVerification(sym, l))
+	v1.GET("/verifications/status", verification.GetVerificationStatus(sym, l))
 
 	actionHandler := action.NewActionHandle()
+	sparseMtProof := action.NewSparseMtProofConfirmed(cr, l)
 
-	integrityProof := action.NewIntegrityProofConfirmed(bpu, logger)
-	sparseMtProof := action.NewSparseMtProofConfirmed(smp, logger)
-
-	actionHandler.Register(integrityProof.EventType(), integrityProof)
 	actionHandler.Register(sparseMtProof.EventType(), sparseMtProof)
 
 	router.POST("/bloock-events", handler2.BloockWebhook(webhookSecretKey, actionHandler))
 
 	return &Server{
-		host:   host,
-		port:   port,
+		host:   config.Configuration.Api.Host,
+		port:   config.Configuration.Api.Port,
 		engine: router,
-		debug:  debug,
-		logger: logger,
+		logger: l,
 	}, nil
 }
 

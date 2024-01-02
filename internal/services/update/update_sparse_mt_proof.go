@@ -12,14 +12,12 @@ import (
 
 type SparseMtProofUpdate struct {
 	credentialRepository repository.CredentialRepository
-	identityRepository   repository.IdentityRepository
 	logger               zerolog.Logger
 }
 
-func NewSparseMtProofUpdate(cr repository.CredentialRepository, ir repository.IdentityRepository, l zerolog.Logger) *SparseMtProofUpdate {
+func NewSparseMtProofUpdate(cr repository.CredentialRepository, l zerolog.Logger) *SparseMtProofUpdate {
 	return &SparseMtProofUpdate{
 		credentialRepository: cr,
-		identityRepository:   ir,
 		logger:               l,
 	}
 }

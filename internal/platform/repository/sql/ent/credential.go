@@ -20,20 +20,16 @@ type Credential struct {
 	ID int `json:"id,omitempty"`
 	// CredentialID holds the value of the "credential_id" field.
 	CredentialID uuid.UUID `json:"credential_id,omitempty"`
-	// AnchorID holds the value of the "anchor_id" field.
-	AnchorID int64 `json:"anchor_id,omitempty"`
 	// CredentialType holds the value of the "credential_type" field.
 	CredentialType string `json:"credential_type,omitempty"`
+	// IssuerDid holds the value of the "issuer_did" field.
+	IssuerDid string `json:"issuer_did,omitempty"`
 	// HolderDid holds the value of the "holder_did" field.
 	HolderDid string `json:"holder_did,omitempty"`
-	// ProofType holds the value of the "proof_type" field.
-	ProofType []string `json:"proof_type,omitempty"`
 	// CredentialData holds the value of the "credential_data" field.
 	CredentialData json.RawMessage `json:"credential_data,omitempty"`
 	// SignatureProof holds the value of the "signature_proof" field.
 	SignatureProof json.RawMessage `json:"signature_proof,omitempty"`
-	// IntegrityProof holds the value of the "integrity_proof" field.
-	IntegrityProof json.RawMessage `json:"integrity_proof,omitempty"`
 	// SparseMtProof holds the value of the "sparse_mt_proof" field.
 	SparseMtProof json.RawMessage `json:"sparse_mt_proof,omitempty"`
 	selectValues  sql.SelectValues
@@ -44,11 +40,11 @@ func (*Credential) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case credential.FieldProofType, credential.FieldCredentialData, credential.FieldSignatureProof, credential.FieldIntegrityProof, credential.FieldSparseMtProof:
+		case credential.FieldCredentialData, credential.FieldSignatureProof, credential.FieldSparseMtProof:
 			values[i] = new([]byte)
-		case credential.FieldID, credential.FieldAnchorID:
+		case credential.FieldID:
 			values[i] = new(sql.NullInt64)
-		case credential.FieldCredentialType, credential.FieldHolderDid:
+		case credential.FieldCredentialType, credential.FieldIssuerDid, credential.FieldHolderDid:
 			values[i] = new(sql.NullString)
 		case credential.FieldCredentialID:
 			values[i] = new(uuid.UUID)
@@ -79,31 +75,23 @@ func (c *Credential) assignValues(columns []string, values []any) error {
 			} else if value != nil {
 				c.CredentialID = *value
 			}
-		case credential.FieldAnchorID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field anchor_id", values[i])
-			} else if value.Valid {
-				c.AnchorID = value.Int64
-			}
 		case credential.FieldCredentialType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field credential_type", values[i])
 			} else if value.Valid {
 				c.CredentialType = value.String
 			}
+		case credential.FieldIssuerDid:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field issuer_did", values[i])
+			} else if value.Valid {
+				c.IssuerDid = value.String
+			}
 		case credential.FieldHolderDid:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field holder_did", values[i])
 			} else if value.Valid {
 				c.HolderDid = value.String
-			}
-		case credential.FieldProofType:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field proof_type", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &c.ProofType); err != nil {
-					return fmt.Errorf("unmarshal field proof_type: %w", err)
-				}
 			}
 		case credential.FieldCredentialData:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -119,14 +107,6 @@ func (c *Credential) assignValues(columns []string, values []any) error {
 			} else if value != nil && len(*value) > 0 {
 				if err := json.Unmarshal(*value, &c.SignatureProof); err != nil {
 					return fmt.Errorf("unmarshal field signature_proof: %w", err)
-				}
-			}
-		case credential.FieldIntegrityProof:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field integrity_proof", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &c.IntegrityProof); err != nil {
-					return fmt.Errorf("unmarshal field integrity_proof: %w", err)
 				}
 			}
 		case credential.FieldSparseMtProof:
@@ -176,26 +156,20 @@ func (c *Credential) String() string {
 	builder.WriteString("credential_id=")
 	builder.WriteString(fmt.Sprintf("%v", c.CredentialID))
 	builder.WriteString(", ")
-	builder.WriteString("anchor_id=")
-	builder.WriteString(fmt.Sprintf("%v", c.AnchorID))
-	builder.WriteString(", ")
 	builder.WriteString("credential_type=")
 	builder.WriteString(c.CredentialType)
 	builder.WriteString(", ")
+	builder.WriteString("issuer_did=")
+	builder.WriteString(c.IssuerDid)
+	builder.WriteString(", ")
 	builder.WriteString("holder_did=")
 	builder.WriteString(c.HolderDid)
-	builder.WriteString(", ")
-	builder.WriteString("proof_type=")
-	builder.WriteString(fmt.Sprintf("%v", c.ProofType))
 	builder.WriteString(", ")
 	builder.WriteString("credential_data=")
 	builder.WriteString(fmt.Sprintf("%v", c.CredentialData))
 	builder.WriteString(", ")
 	builder.WriteString("signature_proof=")
 	builder.WriteString(fmt.Sprintf("%v", c.SignatureProof))
-	builder.WriteString(", ")
-	builder.WriteString("integrity_proof=")
-	builder.WriteString(fmt.Sprintf("%v", c.IntegrityProof))
 	builder.WriteString(", ")
 	builder.WriteString("sparse_mt_proof=")
 	builder.WriteString(fmt.Sprintf("%v", c.SparseMtProof))

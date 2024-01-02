@@ -7,6 +7,6 @@ import (
 )
 
 type KeyRepository interface {
-	LoadBjjKeyIssuer(ctx context.Context) (identityV2.IssuerKey, error)
+	LoadBjjKeyIssuer(ctx context.Context) (identityV2.IdentityKey, error)
 	LoadBjjSigner(ctx context.Context) (authenticity.Signer, error)
 }

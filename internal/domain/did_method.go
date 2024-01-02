@@ -31,20 +31,20 @@ func (p DidMethod) ToBloockMethod() identityV2.Method {
 	}
 }
 
-func GetIssuerParams(method, blockchain, network string) (identityV2.IssuerParams, error) {
-	params := identityV2.NewIssuerParams()
+func GetIssuerParams(method, blockchain, network string) (identityV2.DidParams, error) {
+	params := identityV2.NewDidParams()
 	if method != "" && blockchain != "" && network != "" {
 		m, err := NewDidMethod(method)
 		if err != nil {
-			return identityV2.IssuerParams{}, err
+			return identityV2.DidParams{}, err
 		}
 		b, err := NewDidBlockchain(blockchain)
 		if err != nil {
-			return identityV2.IssuerParams{}, err
+			return identityV2.DidParams{}, err
 		}
 		n, err := NewDidNetwork(network)
 		if err != nil {
-			return identityV2.IssuerParams{}, err
+			return identityV2.DidParams{}, err
 		}
 		params.Method = m.ToBloockMethod()
 		params.Blockchain = b.ToBloockBlockchain()

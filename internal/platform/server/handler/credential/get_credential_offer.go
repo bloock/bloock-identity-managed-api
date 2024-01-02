@@ -1,11 +1,14 @@
-package handler
+package credential
 
 import (
 	"bloock-identity-managed-api/internal/domain"
+	"bloock-identity-managed-api/internal/domain/repository"
+	api_error "bloock-identity-managed-api/internal/platform/server/error"
 	"bloock-identity-managed-api/internal/services/criteria"
 	"bloock-identity-managed-api/internal/services/criteria/response"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 	"net/http"
 )
 
@@ -51,31 +54,33 @@ func mapToCredentialOfferResponse(r response.GetCredentialOfferResponse) Credent
 	return res
 }
 
-func GetCredentialOffer(credentialOffer criteria.CredentialOffer) gin.HandlerFunc {
+func GetCredentialOffer(cr repository.CredentialRepository, l zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		proofs := ctx.QueryArray("proof")
-
 		credentialId := ctx.Param("id")
 		if credentialId == "" {
 			ctx.JSON(http.StatusBadRequest, "empty credential id")
 			return
 		}
 
-		res, err := credentialOffer.Get(ctx, credentialId, proofs)
+		credentialService, err := criteria.NewCredentialOffer(ctx, cr, l)
 		if err != nil {
-			if errors.Is(domain.ErrInvalidProofType, err) {
-				ctx.JSON(http.StatusBadRequest, NewBadRequestAPIError(err.Error()))
-				return
-			}
-			if errors.Is(domain.ErrInvalidUUID, err) {
-				ctx.JSON(http.StatusBadRequest, NewBadRequestAPIError(err.Error()))
-				return
-			}
-			ctx.JSON(http.StatusInternalServerError, NewInternalServerAPIError(err.Error()))
+			badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
+			ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
 			return
 		}
-		claim := res.(response.GetCredentialOfferResponse)
 
-		ctx.JSON(http.StatusOK, mapToCredentialOfferResponse(claim))
+		offer, err := credentialService.Get(ctx, credentialId)
+		if err != nil {
+			if errors.Is(domain.ErrInvalidUUID, err) {
+				badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
+				ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
+				return
+			}
+			serverAPIError := api_error.NewInternalServerAPIError(err.Error())
+			ctx.JSON(serverAPIError.Status, serverAPIError)
+			return
+		}
+
+		ctx.JSON(http.StatusOK, mapToCredentialOfferResponse(offer))
 	}
 }

@@ -1,7 +1,11 @@
 package publish
 
 import (
+	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
+	"bloock-identity-managed-api/internal/pkg"
+	"bloock-identity-managed-api/internal/platform/identity"
+	"bloock-identity-managed-api/internal/platform/key"
 	"context"
 	"github.com/rs/zerolog"
 )
@@ -13,19 +17,28 @@ type IssuerPublish struct {
 	logger             zerolog.Logger
 }
 
-func NewIssuerPublish(kr repository.KeyRepository, ir repository.IdentityRepository, issuer string, l zerolog.Logger) *IssuerPublish {
-	return &IssuerPublish{
-		keyRepository:      kr,
-		identityRepository: ir,
-		issuer:             issuer,
-		logger:             l,
+func NewIssuerPublish(ctx context.Context, l zerolog.Logger) (*IssuerPublish, error) {
+	issuerDid := pkg.GetIssuerDidFromContext(ctx)
+	if issuerDid == "" {
+		return &IssuerPublish{}, domain.ErrEmptyIssuerDID
 	}
+	issuerKey := pkg.GetIssuerKeyFromContext(ctx)
+	if issuerKey == "" {
+		return &IssuerPublish{}, domain.ErrEmptyIssuerKey
+	}
+
+	return &IssuerPublish{
+		keyRepository:      key.NewKeyRepository(ctx, issuerKey, l),
+		identityRepository: identity.NewIdentityRepository(ctx, l),
+		issuer:             issuerDid,
+		logger:             l,
+	}, nil
 }
 
-func (i IssuerPublish) Publish(ctx context.Context) (interface{}, error) {
+func (i IssuerPublish) Publish(ctx context.Context) (string, error) {
 	bjjSigner, err := i.keyRepository.LoadBjjSigner(ctx)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	return i.identityRepository.PublishIssuerState(ctx, i.issuer, bjjSigner)

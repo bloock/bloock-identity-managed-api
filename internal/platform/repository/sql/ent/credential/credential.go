@@ -13,20 +13,16 @@ const (
 	FieldID = "id"
 	// FieldCredentialID holds the string denoting the credential_id field in the database.
 	FieldCredentialID = "credential_id"
-	// FieldAnchorID holds the string denoting the anchor_id field in the database.
-	FieldAnchorID = "anchor_id"
 	// FieldCredentialType holds the string denoting the credential_type field in the database.
 	FieldCredentialType = "credential_type"
+	// FieldIssuerDid holds the string denoting the issuer_did field in the database.
+	FieldIssuerDid = "issuer_did"
 	// FieldHolderDid holds the string denoting the holder_did field in the database.
 	FieldHolderDid = "holder_did"
-	// FieldProofType holds the string denoting the proof_type field in the database.
-	FieldProofType = "proof_type"
 	// FieldCredentialData holds the string denoting the credential_data field in the database.
 	FieldCredentialData = "credential_data"
 	// FieldSignatureProof holds the string denoting the signature_proof field in the database.
 	FieldSignatureProof = "signature_proof"
-	// FieldIntegrityProof holds the string denoting the integrity_proof field in the database.
-	FieldIntegrityProof = "integrity_proof"
 	// FieldSparseMtProof holds the string denoting the sparse_mt_proof field in the database.
 	FieldSparseMtProof = "sparse_mt_proof"
 	// Table holds the table name of the credential in the database.
@@ -37,13 +33,11 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldCredentialID,
-	FieldAnchorID,
 	FieldCredentialType,
+	FieldIssuerDid,
 	FieldHolderDid,
-	FieldProofType,
 	FieldCredentialData,
 	FieldSignatureProof,
-	FieldIntegrityProof,
 	FieldSparseMtProof,
 }
 
@@ -60,6 +54,8 @@ func ValidColumn(column string) bool {
 var (
 	// CredentialTypeValidator is a validator for the "credential_type" field. It is called by the builders before save.
 	CredentialTypeValidator func(string) error
+	// IssuerDidValidator is a validator for the "issuer_did" field. It is called by the builders before save.
+	IssuerDidValidator func(string) error
 	// HolderDidValidator is a validator for the "holder_did" field. It is called by the builders before save.
 	HolderDidValidator func(string) error
 )
@@ -77,14 +73,14 @@ func ByCredentialID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCredentialID, opts...).ToFunc()
 }
 
-// ByAnchorID orders the results by the anchor_id field.
-func ByAnchorID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldAnchorID, opts...).ToFunc()
-}
-
 // ByCredentialType orders the results by the credential_type field.
 func ByCredentialType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCredentialType, opts...).ToFunc()
+}
+
+// ByIssuerDid orders the results by the issuer_did field.
+func ByIssuerDid(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIssuerDid, opts...).ToFunc()
 }
 
 // ByHolderDid orders the results by the holder_did field.

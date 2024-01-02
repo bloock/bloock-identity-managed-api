@@ -59,14 +59,14 @@ func CredentialID(v uuid.UUID) predicate.Credential {
 	return predicate.Credential(sql.FieldEQ(FieldCredentialID, v))
 }
 
-// AnchorID applies equality check predicate on the "anchor_id" field. It's identical to AnchorIDEQ.
-func AnchorID(v int64) predicate.Credential {
-	return predicate.Credential(sql.FieldEQ(FieldAnchorID, v))
-}
-
 // CredentialType applies equality check predicate on the "credential_type" field. It's identical to CredentialTypeEQ.
 func CredentialType(v string) predicate.Credential {
 	return predicate.Credential(sql.FieldEQ(FieldCredentialType, v))
+}
+
+// IssuerDid applies equality check predicate on the "issuer_did" field. It's identical to IssuerDidEQ.
+func IssuerDid(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldEQ(FieldIssuerDid, v))
 }
 
 // HolderDid applies equality check predicate on the "holder_did" field. It's identical to HolderDidEQ.
@@ -112,46 +112,6 @@ func CredentialIDLT(v uuid.UUID) predicate.Credential {
 // CredentialIDLTE applies the LTE predicate on the "credential_id" field.
 func CredentialIDLTE(v uuid.UUID) predicate.Credential {
 	return predicate.Credential(sql.FieldLTE(FieldCredentialID, v))
-}
-
-// AnchorIDEQ applies the EQ predicate on the "anchor_id" field.
-func AnchorIDEQ(v int64) predicate.Credential {
-	return predicate.Credential(sql.FieldEQ(FieldAnchorID, v))
-}
-
-// AnchorIDNEQ applies the NEQ predicate on the "anchor_id" field.
-func AnchorIDNEQ(v int64) predicate.Credential {
-	return predicate.Credential(sql.FieldNEQ(FieldAnchorID, v))
-}
-
-// AnchorIDIn applies the In predicate on the "anchor_id" field.
-func AnchorIDIn(vs ...int64) predicate.Credential {
-	return predicate.Credential(sql.FieldIn(FieldAnchorID, vs...))
-}
-
-// AnchorIDNotIn applies the NotIn predicate on the "anchor_id" field.
-func AnchorIDNotIn(vs ...int64) predicate.Credential {
-	return predicate.Credential(sql.FieldNotIn(FieldAnchorID, vs...))
-}
-
-// AnchorIDGT applies the GT predicate on the "anchor_id" field.
-func AnchorIDGT(v int64) predicate.Credential {
-	return predicate.Credential(sql.FieldGT(FieldAnchorID, v))
-}
-
-// AnchorIDGTE applies the GTE predicate on the "anchor_id" field.
-func AnchorIDGTE(v int64) predicate.Credential {
-	return predicate.Credential(sql.FieldGTE(FieldAnchorID, v))
-}
-
-// AnchorIDLT applies the LT predicate on the "anchor_id" field.
-func AnchorIDLT(v int64) predicate.Credential {
-	return predicate.Credential(sql.FieldLT(FieldAnchorID, v))
-}
-
-// AnchorIDLTE applies the LTE predicate on the "anchor_id" field.
-func AnchorIDLTE(v int64) predicate.Credential {
-	return predicate.Credential(sql.FieldLTE(FieldAnchorID, v))
 }
 
 // CredentialTypeEQ applies the EQ predicate on the "credential_type" field.
@@ -219,6 +179,71 @@ func CredentialTypeContainsFold(v string) predicate.Credential {
 	return predicate.Credential(sql.FieldContainsFold(FieldCredentialType, v))
 }
 
+// IssuerDidEQ applies the EQ predicate on the "issuer_did" field.
+func IssuerDidEQ(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldEQ(FieldIssuerDid, v))
+}
+
+// IssuerDidNEQ applies the NEQ predicate on the "issuer_did" field.
+func IssuerDidNEQ(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldNEQ(FieldIssuerDid, v))
+}
+
+// IssuerDidIn applies the In predicate on the "issuer_did" field.
+func IssuerDidIn(vs ...string) predicate.Credential {
+	return predicate.Credential(sql.FieldIn(FieldIssuerDid, vs...))
+}
+
+// IssuerDidNotIn applies the NotIn predicate on the "issuer_did" field.
+func IssuerDidNotIn(vs ...string) predicate.Credential {
+	return predicate.Credential(sql.FieldNotIn(FieldIssuerDid, vs...))
+}
+
+// IssuerDidGT applies the GT predicate on the "issuer_did" field.
+func IssuerDidGT(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldGT(FieldIssuerDid, v))
+}
+
+// IssuerDidGTE applies the GTE predicate on the "issuer_did" field.
+func IssuerDidGTE(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldGTE(FieldIssuerDid, v))
+}
+
+// IssuerDidLT applies the LT predicate on the "issuer_did" field.
+func IssuerDidLT(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldLT(FieldIssuerDid, v))
+}
+
+// IssuerDidLTE applies the LTE predicate on the "issuer_did" field.
+func IssuerDidLTE(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldLTE(FieldIssuerDid, v))
+}
+
+// IssuerDidContains applies the Contains predicate on the "issuer_did" field.
+func IssuerDidContains(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldContains(FieldIssuerDid, v))
+}
+
+// IssuerDidHasPrefix applies the HasPrefix predicate on the "issuer_did" field.
+func IssuerDidHasPrefix(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldHasPrefix(FieldIssuerDid, v))
+}
+
+// IssuerDidHasSuffix applies the HasSuffix predicate on the "issuer_did" field.
+func IssuerDidHasSuffix(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldHasSuffix(FieldIssuerDid, v))
+}
+
+// IssuerDidEqualFold applies the EqualFold predicate on the "issuer_did" field.
+func IssuerDidEqualFold(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldEqualFold(FieldIssuerDid, v))
+}
+
+// IssuerDidContainsFold applies the ContainsFold predicate on the "issuer_did" field.
+func IssuerDidContainsFold(v string) predicate.Credential {
+	return predicate.Credential(sql.FieldContainsFold(FieldIssuerDid, v))
+}
+
 // HolderDidEQ applies the EQ predicate on the "holder_did" field.
 func HolderDidEQ(v string) predicate.Credential {
 	return predicate.Credential(sql.FieldEQ(FieldHolderDid, v))
@@ -284,26 +309,6 @@ func HolderDidContainsFold(v string) predicate.Credential {
 	return predicate.Credential(sql.FieldContainsFold(FieldHolderDid, v))
 }
 
-// ProofTypeIsNil applies the IsNil predicate on the "proof_type" field.
-func ProofTypeIsNil() predicate.Credential {
-	return predicate.Credential(sql.FieldIsNull(FieldProofType))
-}
-
-// ProofTypeNotNil applies the NotNil predicate on the "proof_type" field.
-func ProofTypeNotNil() predicate.Credential {
-	return predicate.Credential(sql.FieldNotNull(FieldProofType))
-}
-
-// IntegrityProofIsNil applies the IsNil predicate on the "integrity_proof" field.
-func IntegrityProofIsNil() predicate.Credential {
-	return predicate.Credential(sql.FieldIsNull(FieldIntegrityProof))
-}
-
-// IntegrityProofNotNil applies the NotNil predicate on the "integrity_proof" field.
-func IntegrityProofNotNil() predicate.Credential {
-	return predicate.Credential(sql.FieldNotNull(FieldIntegrityProof))
-}
-
 // SparseMtProofIsNil applies the IsNil predicate on the "sparse_mt_proof" field.
 func SparseMtProofIsNil() predicate.Credential {
 	return predicate.Credential(sql.FieldIsNull(FieldSparseMtProof))
@@ -316,32 +321,15 @@ func SparseMtProofNotNil() predicate.Credential {
 
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Credential) predicate.Credential {
-	return predicate.Credential(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for _, p := range predicates {
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.Credential(sql.AndPredicates(predicates...))
 }
 
 // Or groups predicates with the OR operator between them.
 func Or(predicates ...predicate.Credential) predicate.Credential {
-	return predicate.Credential(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for i, p := range predicates {
-			if i > 0 {
-				s1.Or()
-			}
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.Credential(sql.OrPredicates(predicates...))
 }
 
 // Not applies the not operator on the given predicate.
 func Not(p predicate.Credential) predicate.Credential {
-	return predicate.Credential(func(s *sql.Selector) {
-		p(s.Not())
-	})
+	return predicate.Credential(sql.NotPredicates(p))
 }

@@ -23,8 +23,6 @@ services:
       mysql:
         condition: service_healthy
     environment:
-      BLOOCK_DB_CONNECTION_STRING: "mysql://root:admin@tcp(mysql:3306)/identity-managed"
-      BLOOCK_API_KEY: ""
-      BLOOCK_WEBHOOK_SECRET_KEY: ""
-      BLOOCK_PUBLIC_HOST: ""
-      BLOOCK_MANAGED_KEY_ID: ""
+      BLOOCK_BLOOCK_API_KEY: ""
+      BLOOCK_BLOOCK_WEBHOOK_SECRET_KEY: ""
+      BLOOCK_API_PUBLIC_HOST: ""

@@ -1,7 +1,9 @@
 package identity
 
 import (
+	"bloock-identity-managed-api/internal/config"
 	"bloock-identity-managed-api/internal/domain"
+	"bloock-identity-managed-api/internal/pkg"
 	"bloock-identity-managed-api/internal/services/create/request"
 	"context"
 	"errors"
@@ -14,19 +16,23 @@ import (
 )
 
 type IdentityRepository struct {
-	identityClient client.IdentityV2Client
+	identityClient client.IdentityClient
 	logger         zerolog.Logger
 }
 
-func NewIdentityRepository(publicHost string, log zerolog.Logger) *IdentityRepository {
+func NewIdentityRepository(ctx context.Context, l zerolog.Logger) *IdentityRepository {
+	l.With().Caller().Str("component", "identity-repository").Logger()
+
+	c := client.NewBloockClient(pkg.GetApiKeyFromContext(ctx), config.Configuration.Api.PublicHost, nil)
+
 	return &IdentityRepository{
-		identityClient: client.NewIdentityClient(publicHost),
-		logger:         log,
+		identityClient: c.IdentityClient,
+		logger:         l,
 	}
 }
 
-func (i IdentityRepository) CreateIssuer(ctx context.Context, issuerKey identityV2.IssuerKey, params identityV2.IssuerParams) (string, error) {
-	did, err := i.identityClient.CreateIssuer(issuerKey, params)
+func (i IdentityRepository) CreateIssuer(ctx context.Context, issuerKey identityV2.IdentityKey, params identityV2.DidParams, name, description, image string, publishInterval int64) (string, error) {
+	did, err := i.identityClient.CreateIssuer(issuerKey, params, name, description, image, publishInterval)
 	if err != nil {
 		i.logger.Error().Err(err).Msg("")
 		return "", err
@@ -35,7 +41,7 @@ func (i IdentityRepository) CreateIssuer(ctx context.Context, issuerKey identity
 	return did, nil
 }
 
-func (i IdentityRepository) GetIssuerByKey(ctx context.Context, issuerKey identityV2.IssuerKey, params identityV2.IssuerParams) (string, error) {
+func (i IdentityRepository) GetIssuerByKey(ctx context.Context, issuerKey identityV2.IdentityKey, params identityV2.DidParams) (string, error) {
 	did, err := i.identityClient.GetIssuerByKey(issuerKey, params)
 	if err != nil {
 		i.logger.Error().Err(err).Msg("")
@@ -45,7 +51,7 @@ func (i IdentityRepository) GetIssuerByKey(ctx context.Context, issuerKey identi
 	return did, nil
 }
 
-func (i IdentityRepository) CreateCredential(ctx context.Context, issuerId string, proofs []domain.ProofType, signer authenticity.Signer, req request.CredentialRequest) (identityV2.CredentialReceipt, error) {
+func (i IdentityRepository) CreateCredential(ctx context.Context, issuerId string, signer authenticity.Signer, req request.CredentialRequest) (identityV2.CredentialReceipt, error) {
 	builder := i.identityClient.BuildCredential(req.SchemaId, issuerId, req.HolderDid, req.Expiration, req.Version)
 	var err error
 
@@ -56,23 +62,18 @@ func (i IdentityRepository) CreateCredential(ctx context.Context, issuerId strin
 			return identityV2.CredentialReceipt{}, err
 		}
 	}
-	proofTypes, err := domain.MapToBloockProofTypes(proofs)
+
+	credentialReceipt, err := builder.WithSigner(signer).Build()
 	if err != nil {
 		i.logger.Error().Err(err).Msg("")
-		return identityV2.CredentialReceipt{}, err
-	}
-
-	credentialReceipt, err := builder.WithProofType(proofTypes).WithSigner(signer).Build()
-	if err != nil {
-		i.logger.Error().Err(err).Msg("Enteeeeeeeeer")
 		return identityV2.CredentialReceipt{}, err
 	}
 
 	return credentialReceipt, nil
 }
 
-func (i IdentityRepository) RevokeCredential(ctx context.Context, credential identityV2.Credential) error {
-	ok, err := i.identityClient.RevokeCredential(credential)
+func (i IdentityRepository) RevokeCredential(ctx context.Context, signer authenticity.Signer, credential identityV2.Credential) error {
+	ok, err := i.identityClient.RevokeCredential(credential, signer)
 	if err != nil {
 		i.logger.Error().Err(err).Msg("")
 		return err
@@ -87,8 +88,7 @@ func (i IdentityRepository) RevokeCredential(ctx context.Context, credential ide
 }
 
 func (i IdentityRepository) PublishIssuerState(ctx context.Context, issuerDid string, signer authenticity.Signer) (string, error) {
-	stateBuilder := i.identityClient.BuildIssuerSatePublisher(issuerDid)
-	receipt, err := stateBuilder.WithSigner(signer).Build()
+	receipt, err := i.identityClient.PublishIssuerState(issuerDid, signer)
 	if err != nil {
 		i.logger.Error().Err(err).Msg("")
 		return "", err

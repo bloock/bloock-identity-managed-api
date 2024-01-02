@@ -19,25 +19,25 @@ func NewVerificationStatus(syncMap *utils.SyncMap, l zerolog.Logger) *Verificati
 	}
 }
 
-func (v VerificationStatus) Get(ctx context.Context, sessionId string) (interface{}, error) {
+func (v VerificationStatus) Get(ctx context.Context, sessionId string) error {
 	res := v.syncMap.Load(sessionId)
 	if res == nil {
 		err := domain.ErrSessionIdNotFound
 		v.logger.Error().Err(err).Msg("")
-		return nil, err
+		return err
 	}
 
 	isVerified, ok := res.(bool)
 	if !ok {
 		err := domain.ErrNotVerified
 		v.logger.Error().Err(err).Msg("")
-		return nil, err
+		return err
 	}
 	if !isVerified {
 		err := domain.ErrVerificationFailed
 		v.logger.Error().Err(err).Msg("")
-		return nil, err
+		return err
 	}
 
-	return nil, nil
+	return nil
 }
