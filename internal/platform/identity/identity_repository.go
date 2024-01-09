@@ -23,7 +23,7 @@ type IdentityRepository struct {
 func NewIdentityRepository(ctx context.Context, l zerolog.Logger) *IdentityRepository {
 	l.With().Caller().Str("component", "identity-repository").Logger()
 
-	c := client.NewBloockClient(pkg.GetApiKeyFromContext(ctx), config.Configuration.Api.PublicHost, nil)
+	c := client.NewBloockClient(pkg.GetApiKeyFromContext(ctx), &config.Configuration.Api.PublicHost, nil)
 
 	return &IdentityRepository{
 		identityClient: c.IdentityClient,
@@ -31,8 +31,8 @@ func NewIdentityRepository(ctx context.Context, l zerolog.Logger) *IdentityRepos
 	}
 }
 
-func (i IdentityRepository) CreateIssuer(ctx context.Context, issuerKey identityV2.IdentityKey, params identityV2.DidParams, name, description, image string, publishInterval int64) (string, error) {
-	did, err := i.identityClient.CreateIssuer(issuerKey, params, name, description, image, publishInterval)
+func (i IdentityRepository) CreateIssuer(ctx context.Context, issuerKey identityV2.IdentityKey, params identityV2.DidParams, name, description, image string, publishInterval domain.PublishIntervalMinutes) (string, error) {
+	did, err := i.identityClient.CreateIssuer(issuerKey, publishInterval.Params(), params, name, description, image)
 	if err != nil {
 		i.logger.Error().Err(err).Msg("")
 		return "", err

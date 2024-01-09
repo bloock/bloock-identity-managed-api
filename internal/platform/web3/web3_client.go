@@ -21,13 +21,8 @@ type ClientWeb3 struct {
 }
 
 func NewClientWeb3(ctx context.Context, logger zerolog.Logger) (ClientWeb3, error) {
-	var headers rpc.ClientOption
+	headers := rpc.WithHeader("x-api-key", pkg.GetApiKeyFromContext(ctx))
 	provider := config.Configuration.Blockchain.Provider
-
-	if pkg.GetApiKeyFromContext(ctx) == "" {
-		headers = rpc.WithHeader("x-api-key", pkg.GetApiKeyFromContext(ctx))
-		provider = config.Configuration.Blockchain.PublicProvider
-	}
 
 	rpcClient, err := rpc.DialOptions(ctx, provider, headers)
 	if err != nil {

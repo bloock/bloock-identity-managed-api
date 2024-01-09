@@ -4,6 +4,7 @@ import (
 	"bloock-identity-managed-api/internal/config"
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
+	"bloock-identity-managed-api/internal/pkg"
 	"bloock-identity-managed-api/internal/platform/identity"
 	"bloock-identity-managed-api/internal/platform/utils"
 	"context"
@@ -17,22 +18,30 @@ import (
 )
 
 type CreateVerification struct {
-	identityRepository repository.IdentityRepository
-	publicUrl          string
-	syncMap            *utils.SyncMap
-	logger             zerolog.Logger
+	identityRepository  repository.IdentityRepository
+	publicUrl           string
+	verificationSyncMap *utils.SyncMap
+	authSyncMap         *utils.SyncMap
+	logger              zerolog.Logger
 }
 
-func NewCreateVerification(ctx context.Context, syncMap *utils.SyncMap, l zerolog.Logger) *CreateVerification {
+func NewCreateVerification(ctx context.Context, verificationSyncMap, authSyncMap *utils.SyncMap, l zerolog.Logger) *CreateVerification {
 	return &CreateVerification{
-		identityRepository: identity.NewIdentityRepository(ctx, l),
-		publicUrl:          config.Configuration.Api.PublicHost,
-		syncMap:            syncMap,
-		logger:             l,
+		identityRepository:  identity.NewIdentityRepository(ctx, l),
+		publicUrl:           config.Configuration.Api.PublicHost,
+		verificationSyncMap: verificationSyncMap,
+		authSyncMap:         authSyncMap,
+		logger:              l,
 	}
 }
 
 func (c CreateVerification) Create(ctx context.Context, verificationJSON []byte) ([]byte, error) {
+	authToken := pkg.GetApiKeyFromContext(ctx)
+	if authToken == "" {
+		err := domain.ErrEmptyApiKey
+		c.logger.Error().Err(err).Msg("")
+		return nil, err
+	}
 	var zkRequest protocol.ZeroKnowledgeProofRequest
 
 	if err := json.Unmarshal(verificationJSON, &zkRequest); err != nil {
@@ -59,7 +68,8 @@ func (c CreateVerification) Create(ctx context.Context, verificationJSON []byte)
 	request.ThreadID = randomUUID
 	request.Body.Scope = append(request.Body.Scope, zkRequest)
 
-	c.syncMap.Store(strconv.FormatUint(sessionID, 10), request)
+	c.verificationSyncMap.Store(strconv.FormatUint(sessionID, 10), request)
+	c.authSyncMap.Store(strconv.FormatUint(sessionID, 10), pkg.GetApiKeyFromContext(ctx))
 
 	requestBytes, err := json.Marshal(request)
 	if err != nil {

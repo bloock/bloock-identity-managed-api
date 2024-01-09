@@ -22,7 +22,7 @@ type KeyRepository struct {
 func NewKeyRepository(ctx context.Context, key string, l zerolog.Logger) KeyRepository {
 	l.With().Caller().Str("component", "key-repository").Logger()
 
-	c := client.NewBloockClient(pkg.GetApiKeyFromContext(ctx), config.Configuration.Api.PublicHost, nil)
+	c := client.NewBloockClient(pkg.GetApiKeyFromContext(ctx), &config.Configuration.Api.PublicHost, nil)
 
 	var keyProvider repository.KeyProvider
 	if isUUID(key) {

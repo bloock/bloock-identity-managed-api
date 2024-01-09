@@ -18,4 +18,5 @@ var (
 	ErrEmptyIssuerDID             = errors.New("issuer did must be provided")
 	ErrEmptyIssuerKey             = errors.New("issuer key must be provided")
 	ErrInvalidVerificationRequest = errors.New("invalid verification request")
+	ErrEmptyApiKey                = errors.New("api key not found")
 )

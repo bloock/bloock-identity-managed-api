@@ -6,7 +6,7 @@ type CreateIssuerRequest struct {
 	Name            string
 	Description     string
 	Image           string
-	PublishInterval int64
+	PublishInterval int
 }
 
 type DidMetadataRequest struct {

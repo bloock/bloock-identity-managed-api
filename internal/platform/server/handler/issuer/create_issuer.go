@@ -1,10 +1,12 @@
 package issuer
 
 import (
+	"bloock-identity-managed-api/internal/domain"
 	api_error "bloock-identity-managed-api/internal/platform/server/error"
 	"bloock-identity-managed-api/internal/services/create"
 	"bloock-identity-managed-api/internal/services/create/request"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -19,7 +21,7 @@ type CreateIssuerRequest struct {
 	Name            string                `form:"name"`
 	Description     string                `form:"description"`
 	Image           *multipart.FileHeader `form:"image"`
-	PublishInterval int64                 `form:"publish_interval"`
+	PublishInterval int                   `form:"publish_interval"`
 }
 
 type DidMetadata struct {
@@ -74,6 +76,11 @@ func CreateIssuer(l zerolog.Logger) gin.HandlerFunc {
 
 		issuerDid, err := createIssuerService.Create(ctx, issuerReq)
 		if err != nil {
+			if errors.Is(domain.ErrInvalidPublishIntervalMinutes, err) {
+				badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
+				ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
+				return
+			}
 			serverAPIError := api_error.NewInternalServerAPIError(err.Error())
 			ctx.JSON(serverAPIError.Status, serverAPIError)
 			return

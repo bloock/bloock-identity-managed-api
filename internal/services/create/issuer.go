@@ -44,5 +44,11 @@ func (i Issuer) Create(ctx context.Context, req request.CreateIssuerRequest) (st
 		return issuerDid, nil
 	}
 
-	return i.identityRepository.CreateIssuer(ctx, issuerKey, params, req.Name, req.Description, req.Image, req.PublishInterval)
+	publishInterval, err := domain.NewPublishIntervalMinutes(req.PublishInterval)
+	if err != nil {
+		i.logger.Error().Err(err).Msg("")
+		return "", err
+	}
+
+	return i.identityRepository.CreateIssuer(ctx, issuerKey, params, req.Name, req.Description, req.Image, publishInterval)
 }

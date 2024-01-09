@@ -4,6 +4,7 @@ import (
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
 	api_error "bloock-identity-managed-api/internal/platform/server/error"
+	"bloock-identity-managed-api/internal/platform/utils"
 	"bloock-identity-managed-api/internal/services/criteria"
 	"bloock-identity-managed-api/internal/services/criteria/response"
 	"errors"
@@ -54,7 +55,7 @@ func mapToCredentialOfferResponse(r response.GetCredentialOfferResponse) Credent
 	return res
 }
 
-func GetCredentialOffer(cr repository.CredentialRepository, l zerolog.Logger) gin.HandlerFunc {
+func GetCredentialOffer(cr repository.CredentialRepository, au *utils.SyncMap, l zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		credentialId := ctx.Param("id")
 		if credentialId == "" {
@@ -62,7 +63,7 @@ func GetCredentialOffer(cr repository.CredentialRepository, l zerolog.Logger) gi
 			return
 		}
 
-		credentialService, err := criteria.NewCredentialOffer(ctx, cr, l)
+		credentialService, err := criteria.NewCredentialOffer(ctx, cr, au, l)
 		if err != nil {
 			badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
 			ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
@@ -72,6 +73,11 @@ func GetCredentialOffer(cr repository.CredentialRepository, l zerolog.Logger) gi
 		offer, err := credentialService.Get(ctx, credentialId)
 		if err != nil {
 			if errors.Is(domain.ErrInvalidUUID, err) {
+				badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
+				ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
+				return
+			}
+			if errors.Is(domain.ErrEmptyApiKey, err) {
 				badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
 				ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
 				return

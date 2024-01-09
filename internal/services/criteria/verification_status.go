@@ -8,19 +8,19 @@ import (
 )
 
 type VerificationStatus struct {
-	syncMap *utils.SyncMap
-	logger  zerolog.Logger
+	verificationSyncMap *utils.SyncMap
+	logger              zerolog.Logger
 }
 
-func NewVerificationStatus(syncMap *utils.SyncMap, l zerolog.Logger) *VerificationStatus {
+func NewVerificationStatus(verificationSyncMap *utils.SyncMap, l zerolog.Logger) *VerificationStatus {
 	return &VerificationStatus{
-		syncMap: syncMap,
-		logger:  l,
+		verificationSyncMap: verificationSyncMap,
+		logger:              l,
 	}
 }
 
 func (v VerificationStatus) Get(ctx context.Context, sessionId string) error {
-	res := v.syncMap.Load(sessionId)
+	res := v.verificationSyncMap.Load(sessionId)
 	if res == nil {
 		err := domain.ErrSessionIdNotFound
 		v.logger.Error().Err(err).Msg("")

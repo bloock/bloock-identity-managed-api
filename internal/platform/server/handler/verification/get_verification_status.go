@@ -15,7 +15,7 @@ type GetVerificationStatusResponse struct {
 	Success bool `json:"success"`
 }
 
-func GetVerificationStatus(sym *utils.SyncMap, l zerolog.Logger) gin.HandlerFunc {
+func GetVerificationStatus(vm *utils.SyncMap, l zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		sessionId := ctx.Query("session_id")
 		if sessionId == "" {
@@ -23,7 +23,7 @@ func GetVerificationStatus(sym *utils.SyncMap, l zerolog.Logger) gin.HandlerFunc
 			return
 		}
 
-		verificationStatus := criteria.NewVerificationStatus(sym, l)
+		verificationStatus := criteria.NewVerificationStatus(vm, l)
 
 		err := verificationStatus.Get(ctx, sessionId)
 		if err != nil {

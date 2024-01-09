@@ -5,6 +5,7 @@ import (
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
 	"bloock-identity-managed-api/internal/pkg"
+	"bloock-identity-managed-api/internal/platform/utils"
 	"bloock-identity-managed-api/internal/services/criteria/response"
 	"context"
 	"fmt"
@@ -17,10 +18,11 @@ type CredentialOffer struct {
 	credentialRepository repository.CredentialRepository
 	publicHost           string
 	issuer               string
+	authSyncMap          *utils.SyncMap
 	logger               zerolog.Logger
 }
 
-func NewCredentialOffer(ctx context.Context, cr repository.CredentialRepository, l zerolog.Logger) (*CredentialOffer, error) {
+func NewCredentialOffer(ctx context.Context, cr repository.CredentialRepository, authSyncMap *utils.SyncMap, l zerolog.Logger) (*CredentialOffer, error) {
 	issuerDid := pkg.GetIssuerDidFromContext(ctx)
 	if issuerDid == "" {
 		return &CredentialOffer{}, domain.ErrEmptyIssuerDID
@@ -30,11 +32,19 @@ func NewCredentialOffer(ctx context.Context, cr repository.CredentialRepository,
 		credentialRepository: cr,
 		publicHost:           config.Configuration.Api.PublicHost,
 		issuer:               issuerDid,
+		authSyncMap:          authSyncMap,
 		logger:               l,
 	}, nil
 }
 
 func (c CredentialOffer) Get(ctx context.Context, credentialId string) (response.GetCredentialOfferResponse, error) {
+	authToken := pkg.GetApiKeyFromContext(ctx)
+	if authToken == "" {
+		err := domain.ErrEmptyApiKey
+		c.logger.Error().Err(err).Msg("")
+		return response.GetCredentialOfferResponse{}, err
+	}
+
 	credentialUUID, err := uuid.Parse(credentialId)
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
@@ -46,12 +56,15 @@ func (c CredentialOffer) Get(ctx context.Context, credentialId string) (response
 		return response.GetCredentialOfferResponse{}, err
 	}
 
-	url := fmt.Sprintf("%s/v1/credentials/redeem", strings.TrimSuffix(c.publicHost, "/"))
 	id, err := uuid.NewUUID()
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
 		return response.GetCredentialOfferResponse{}, domain.ErrInvalidUUID
 	}
+
+	url := fmt.Sprintf("%s/v1/credentials/redeem?thread_id=%s", strings.TrimSuffix(c.publicHost, "/"), id.String())
+
+	c.authSyncMap.Store(id.String(), authToken)
 
 	return response.GetCredentialOfferResponse{
 		ID:       id.String(),

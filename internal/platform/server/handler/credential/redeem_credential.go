@@ -4,6 +4,7 @@ import (
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
 	api_error "bloock-identity-managed-api/internal/platform/server/error"
+	"bloock-identity-managed-api/internal/platform/utils"
 	"bloock-identity-managed-api/internal/services/criteria"
 	"bloock-identity-managed-api/internal/services/criteria/response"
 	"errors"
@@ -41,8 +42,14 @@ func mapToRedeemCredentialResponse(res response.RedeemCredentialResponse) Redeem
 	}
 }
 
-func RedeemCredential(cr repository.CredentialRepository, l zerolog.Logger) gin.HandlerFunc {
+func RedeemCredential(cr repository.CredentialRepository, au *utils.SyncMap, l zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		threadID := ctx.Query("thread_id")
+		if threadID == "" {
+			ctx.JSON(http.StatusBadRequest, "cannot proceed with an empty thread id")
+			return
+		}
+
 		bodyBytes, err := io.ReadAll(ctx.Request.Body)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, err.Error())
@@ -54,7 +61,7 @@ func RedeemCredential(cr repository.CredentialRepository, l zerolog.Logger) gin.
 			return
 		}
 
-		credentialService, err := criteria.NewCredentialRedeem(ctx, cr, l)
+		credentialService, err := criteria.NewCredentialRedeem(ctx, cr, au, threadID, l)
 		if err != nil {
 			badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
 			ctx.JSON(badRequestAPIError.Status, badRequestAPIError)

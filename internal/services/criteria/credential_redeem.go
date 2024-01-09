@@ -3,10 +3,13 @@ package criteria
 import (
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
+	"bloock-identity-managed-api/internal/pkg"
+	"bloock-identity-managed-api/internal/platform/utils"
 	"bloock-identity-managed-api/internal/platform/zkp"
 	"bloock-identity-managed-api/internal/services/criteria/response"
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/google/uuid"
 	core "github.com/iden3/go-iden3-core"
 	"github.com/iden3/iden3comm"
@@ -21,8 +24,14 @@ type CredentialRedeem struct {
 	logger                 zerolog.Logger
 }
 
-func NewCredentialRedeem(ctx context.Context, cr repository.CredentialRepository, l zerolog.Logger) (*CredentialRedeem, error) {
-	vr, err := zkp.NewVerificationZkpRepository(ctx, l)
+func NewCredentialRedeem(ctx context.Context, cr repository.CredentialRepository, authSyncMap *utils.SyncMap, threadID string, l zerolog.Logger) (*CredentialRedeem, error) {
+	val := authSyncMap.Load(threadID)
+	token, ok := val.(string)
+	if !ok {
+		return &CredentialRedeem{}, errors.New("thread id auth token not found")
+	}
+
+	vr, err := zkp.NewVerificationZkpRepository(context.WithValue(ctx, pkg.ApiKeyContextKey, token), l)
 	if err != nil {
 		return &CredentialRedeem{}, err
 	}

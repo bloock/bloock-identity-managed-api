@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/services/create/request"
 	"context"
 	"github.com/bloock/bloock-sdk-go/v2/entity/authenticity"
@@ -8,7 +9,7 @@ import (
 )
 
 type IdentityRepository interface {
-	CreateIssuer(ctx context.Context, issuerKey identityV2.IdentityKey, params identityV2.DidParams, name, description, image string, publishInterval int64) (string, error)
+	CreateIssuer(ctx context.Context, issuerKey identityV2.IdentityKey, params identityV2.DidParams, name, description, image string, publishInterval domain.PublishIntervalMinutes) (string, error)
 	GetIssuerByKey(ctx context.Context, issuerKey identityV2.IdentityKey, params identityV2.DidParams) (string, error)
 	PublishIssuerState(ctx context.Context, issuerDid string, signer authenticity.Signer) (string, error)
 

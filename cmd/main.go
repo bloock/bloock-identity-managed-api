@@ -47,8 +47,11 @@ func main() {
 
 	// Setup Sync Map
 	expiration := config.Configuration.Verification.Expiration
-	syncMap := utils.NewSyncMap(time.Duration(expiration) * time.Minute)
-	syncMap.CleaningBackground(time.Duration(expiration) * time.Minute)
+	verificationSyncMap := utils.NewSyncMap(time.Duration(expiration) * time.Minute)
+	verificationSyncMap.CleaningBackground(time.Duration(expiration) * time.Minute)
+
+	authSyncMap := utils.NewSyncMap(time.Duration(expiration) * time.Minute)
+	authSyncMap.CleaningBackground(time.Duration(expiration) * time.Minute)
 
 	// Setup repositories
 	cr := sql.NewSQLCredentialRepository(*conn, 5*time.Second, logger)
@@ -59,7 +62,7 @@ func main() {
 	// Run API server
 	go func() {
 		defer wg.Done()
-		sr, err := server.NewServer(cr, syncMap, cfg.Bloock.WebhookSecretKey, logger)
+		sr, err := server.NewServer(cr, verificationSyncMap, authSyncMap, cfg.Bloock.WebhookSecretKey, logger)
 		if err != nil {
 			panic(err)
 		}

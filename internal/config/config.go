@@ -33,17 +33,16 @@ type BloockConfig struct {
 }
 
 type BlockchainConfig struct {
-	SmartContract  string `mapstructure:"smart_contract" default:"0x134B1BE34911E39A8397ec6289782989729807a4"`
-	Provider       string `mapstructure:"provider" default:"https://polygon.bloock.dev"`
-	ResolverPrefix string `mapstructure:"resolver_prefix" default:"polygon:mumbai"`
-	PublicProvider string `mapstructure:"public_provider" default:"https://polygon-mumbai-pokt.nodies.app"`
+	SmartContract  string `mapstructure:"smart_contract" default:"0x624ce98D2d27b20b8f8d521723Df8fC4db71D79D"`
+	Provider       string `mapstructure:"provider" default:"https://polygon.bloock.com"`
+	ResolverPrefix string `mapstructure:"resolver_prefix" default:"polygon:main"`
 }
 
 type IssuerConfig struct {
 	Name            string            `mapstructure:"name"`
 	Description     string            `mapstructure:"description"`
 	Image           string            `mapstructure:"image"`
-	PublishInterval int64             `mapstructure:"publish_interval"`
+	PublishInterval int               `mapstructure:"publish_interval"`
 	Key             KeyConfig         `mapstructure:"key"`
 	IssuerDid       string            `mapstructure:"issuer_did"`
 	DidMetadata     DidMetadataConfig `mapstructure:"did_metadata"`

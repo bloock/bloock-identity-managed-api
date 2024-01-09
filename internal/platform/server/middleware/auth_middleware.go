@@ -4,9 +4,8 @@ import (
 	"bloock-identity-managed-api/internal/config"
 	"bloock-identity-managed-api/internal/pkg"
 	api_error "bloock-identity-managed-api/internal/platform/server/error"
-	"strings"
-
 	"github.com/gin-gonic/gin"
+	"strings"
 )
 
 func AuthMiddleware() gin.HandlerFunc {

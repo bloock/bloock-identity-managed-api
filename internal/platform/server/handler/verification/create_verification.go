@@ -11,7 +11,7 @@ import (
 	"io"
 )
 
-func CreateVerification(sym *utils.SyncMap, l zerolog.Logger) gin.HandlerFunc {
+func CreateVerification(vm, am *utils.SyncMap, l zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		verificationJSON, err := io.ReadAll(ctx.Request.Body)
 		if err != nil {
@@ -20,11 +20,16 @@ func CreateVerification(sym *utils.SyncMap, l zerolog.Logger) gin.HandlerFunc {
 			return
 		}
 
-		verificationService := criteria.NewCreateVerification(ctx, sym, l)
+		verificationService := criteria.NewCreateVerification(ctx, vm, am, l)
 
 		request, err := verificationService.Create(ctx, verificationJSON)
 		if err != nil {
 			if errors.Is(domain.ErrInvalidVerificationRequest, err) {
+				badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
+				ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
+				return
+			}
+			if errors.Is(domain.ErrEmptyApiKey, err) {
 				badRequestAPIError := api_error.NewBadRequestAPIError(err.Error())
 				ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
 				return
