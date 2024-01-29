@@ -34,5 +34,5 @@ func (m ManagedKeyProvider) GetBjjSigner(ctx context.Context) (authenticity.Sign
 		return authenticity.Signer{}, err
 	}
 
-	return authenticity.NewSignerWithManagedKey(managedKey, nil), nil
+	return authenticity.NewSignerWithManagedKey(managedKey, nil, nil), nil
 }
