@@ -79,5 +79,5 @@ jobs:
         with:
           token: ${{ secrets.repo_api_token }}
           repository: bloock/managed-services-actions
-          event-type: deploy_identity_server_dev
+          event-type: deploy_identity_server_pro
           client-payload: '{"version": "${{ needs.push.outputs.version }}"}'
