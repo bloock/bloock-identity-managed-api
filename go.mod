@@ -21,7 +21,6 @@ require (
 	github.com/iden3/iden3comm v1.1.0
 	github.com/iden3/iden3comm/v2 v2.0.0
 	github.com/jackc/pgx/v5 v5.5.2
-	github.com/lib/pq v1.10.9
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/mcuadros/go-defaults v1.2.0
 	github.com/pkg/errors v0.9.1
