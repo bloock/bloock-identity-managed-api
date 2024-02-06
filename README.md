@@ -183,13 +183,16 @@ Basic configuration:
     - **Description**: Your unique [BLOOCK API key](https://docs.bloock.com/libraries/authentication/create-an-api-key).
     - **Purpose**: This [API key](https://docs.bloock.com/libraries/authentication/create-an-api-key) is required for authentication and authorization when interacting with the Bloock Identity Managed API. It allows you to securely access and use the API's features.
     - **[Create API Key](https://docs.bloock.com/libraries/authentication/create-an-api-key)**
+    - **Example**: no9rLf9dOMjXGvXQX3I96a39qYFoZknGd6YHtY3x1VPelr6M-TmTLpAF-fm1k9Zi
 - **BLOOCK_BLOOCK_WEBHOOK_SECRET_KEY** (***REQUIRED***)
     - **Description**: Your [BLOOCK webhook secret key](https://docs.bloock.com/webhooks/overview).
     - **Purpose**: The [webhook secret key](https://docs.bloock.com/webhooks/overview) is used to secure and verify incoming webhook requests. It ensures that webhook data is received from a trusted source and has not been tampered with during transmission.
     - **[Create webhook](https://docs.bloock.com/webhooks/overview)**
+    - **Example**: ew1b2d5qf7WeUOPy1u1CW6FXro6j5plS
 - **BLOOCK_API_PUBLIC_HOST** (***REQUIRED***)
     - **Description**: Should contain the complete URL, including the protocol (`https://`) and domain or host name. It is essential to ensure that the provided URL is accessible and correctly points to you API's public endpoint.
     - **Purpose**: Is used to specify the public host or URL of this deployed API. Allows other software clients applications (ex: PolygonID wallet) to make HTTP requests and API calls to interact with this service.
+    - **Example**: https://1039-94-132-61-84.ngrok-free.app
 - **BLOOCK_DB_CONNECTION_STRING** (***OPTIONAL***)
     - **Description**: Your custom database connection URL.
     - **Default**: "file:bloock?mode=memory&cache=shared&_fk=1"
@@ -216,22 +219,24 @@ In case you want to deploy an issuer with local keys (i.e. not managed by Bloock
     - **Description**: Represents a private key of type [Baby JubJub](https://docs.iden3.io/getting-started/babyjubjub/).
     - **Purpose**: This private key will be used to create your issuer. In addition, for all operations where the issuer's signature is required, the same will be used to perform such operations.
     - **Required**: If you want to use your issuer locally, you only need to omit the `issuer_key` query when executing your requests.
+    - **Example**: bf5e13dd8d9f784aee781b4de7836caa3499168514553eaa3d892911ad3c115t
 - **BLOOCK_ISSUER_PUBLISH_INTERVAL** (***REQUIRED***)
     - **Description**: This is the frequency at which the state of your local issuer will be transacted to blockchain.
     - **Purpose**: This variable will allow you to choose the time interval you want to spend to execute the transaction and the economic cost you want to assume.
     - **Options**: You must pass one of the following integers: 1, 5, 15 or 60. Representing every 1 minute, 5 minutes, 15 minutes or 60 minutes.
+    - **Example**: 1
 - **BLOOCK_ISSUER_NAME** (***OPTIONAL***)
     - **Description**: The issuer name.
     - **Purpose**: Simply to identify your issuer by name.
+    - **Example**: Test Issuer Name
 - **BLOOCK_ISSUER_DESCRIPTION** (***OPTIONAL***)
     - **Description**: The issuer description.
     - **Purpose**: Simply to add a description of you issuer.
+    - **Example**: this is my first issuer creation
 - **BLOOCK_ISSUER_IMAGE** (***OPTIONAL***)
     - **Description**: You can set up an image for you issuer. You will see that image issuer on your [Bloock management dashboard](https://dashboard.bloock.com/login).
     - **Purpose**: You will have to pass an image in base64url to be able to decode it later.
-- **BLOOCK_ISSUER_DESCRIPTION** (***OPTIONAL***)
-    - **Description**: The issuer description.
-    - **Purpose**: Simply to add a description of you issuer.
+    - **Example**: iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAEAAAAAApiSv5AAAHQklEQVR4nOydQW7luA4Afz5y_yv3rCZ-C4IiTdrpQVWtGm1bUpKCQEgi9f3nz_8E...
 
 An issuer is ultimately an identity, so creating it means having a DID. There are different [DID methods](https://www.w3.org/TR/did-core/#methods), so you can specify any supported by Bloock:
 
@@ -254,6 +259,7 @@ If you want to perform validation processes, and in case you want to validate pr
     - **Options**: Mumbai smart contract: 0x134B1BE34911E39A8397ec6289782989729807a4.
 - **BLOOCK_BLOCKCHAIN_PROVIDER** (***OPTIONAL***)
     - **Description**: The rpc provider uri endpoint.
+    - **Example**: https://polygon-mumbai.g.alchemy.com/v2/xxxxxxxxxx
 - **BLOOCK_BLOCKCHAIN_RESOLVER_PREFIX** (***OPTIONAL***)
     - **Description**: The identity resolver prefix.
     - **Options**: Mumbai prefix: polygon:mumbai
