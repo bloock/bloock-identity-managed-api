@@ -12,7 +12,6 @@ This is an API for those who want to create, emit and offer verifiable credentia
         - [Option 2: Use Docker Compose with Database Containers](#option-2-use-docker-compose-with-database-containers)
 - [Configuration](#configuration)
     - [Variables](#variables)
-    - [Configuration File](#configuration-file)
 - [Database Support](#database-support)
 - [Documentation](#documentation)
 - [License](#license)
@@ -63,10 +62,8 @@ This option is straightforward and ideal if you want to get started quickly. Fol
 
       ```txt
       BLOOCK_DB_CONNECTION_STRING=file:bloock?mode=memory&cache=shared&_fk=1
-      BLOOCK_API_KEY=your_api_key
-      BLOOCK_WEBHOOK_SECRET_KEY=your_webhook_secret_key
-      BLOOCK_PUBLIC_HOST=https://bloock.com/
-      BLOOCK_MANAGED_KEY_ID=your_managed_key_id
+      BLOOCK_BLOOCK_API_KEY=your_api_key
+      BLOOCK_BLOOCK_WEBHOOK_SECRET_KEY=your_webhook_secret_key
       ```
 
       > **NOTE:** For the **BLOOCK_DB_CONNECTION_STRING** environment variable, you have the flexibility to specify your own MySQL or PostgreSQL infrastructure. Clients can provide their connection string for their database infrastructure. See the [Database](#database-support) section for available connections.
@@ -76,7 +73,7 @@ This option is straightforward and ideal if you want to get started quickly. Fol
     - Run the following command to start the Identity Bloock Managed API container while passing the `.env` file as an environment variable source:
 
      ```bash
-     docker run --env-file .env -p 8080:8080 bloock/managed-api
+     docker run --env-file .env -p 8080:8080 bloock/identity-managed-api
      ```
 
     - This command maps the `.env` file into the container, ensuring that the API reads its configuration from the file. Viper automatically read these environment variables and make them accessible to the code.
@@ -88,7 +85,7 @@ This option is straightforward and ideal if you want to get started quickly. Fol
     - Append the `-d` flag to the docker run command as follows:
 
     ```bash
-    docker run -d --env-file config.txt -p 8080:8080 bloock/managed-api
+    docker run -d --env-file config.txt -p 8080:8080 bloock/identity-managed-api
     ```
 
    The `-d` flag tells Docker to run the container as a background process. You can continue using your terminal for other tasks while the Identity Bloock Managed API container runs silently in the background.
@@ -137,11 +134,10 @@ If you need a more complex setup, such as using a specific database like **MySQL
     - Here's an example of what your `environment` section might look like:
 
       ```yaml
-      BLOOCK_DB_CONNECTION_STRING: "file:bloock?mode=memory&cache=shared&_fk=1"
-      BLOOCK_API_KEY: "your_api_key"
-      BLOOCK_WEBHOOK_SECRET_KEY: "your_webhook_secret_key"
-      BLOOCK_PUBLIC_HOST: "https://bloock.com/"
-      BLOOCK_MANAGED_KEY_ID: "your_managed_key_id"
+      environment:
+        BLOOCK_DB_CONNECTION_STRING: "file:bloock?mode=memory&cache=shared&_fk=1"
+        BLOOCK_BLOOCK_API_KEY: "your_api_key"
+        BLOOCK_BLOOCK_WEBHOOK_SECRET_KEY: "your_webhook_secret_key"
       ```
 
 5. **Run Docker Compose:**
@@ -179,36 +175,26 @@ The Identity Bloock Managed API leverages Viper, a powerful configuration manage
 
 ### Variables
 
-Here are the configuration variables used by the Identity Bloock Managed API:
+Here are the configuration variables used by the Identity Bloock Managed API.
 
-- **BLOOCK_API_KEY** (**REQUIRED**)
+Basic configuration:
+
+- **BLOOCK_BLOOCK_API_KEY** (**REQUIRED**)
     - **Description**: Your unique [BLOOCK API key](https://docs.bloock.com/libraries/authentication/create-an-api-key).
     - **Purpose**: This [API key](https://docs.bloock.com/libraries/authentication/create-an-api-key) is required for authentication and authorization when interacting with the Bloock Identity Managed API. It allows you to securely access and use the API's features.
     - **[Create API Key](https://docs.bloock.com/libraries/authentication/create-an-api-key)**
+- **BLOOCK_BLOOCK_WEBHOOK_SECRET_KEY** (***REQUIRED***)
+    - **Description**: Your [BLOOCK webhook secret key](https://docs.bloock.com/webhooks/overview).
+    - **Purpose**: The [webhook secret key](https://docs.bloock.com/webhooks/overview) is used to secure and verify incoming webhook requests. It ensures that webhook data is received from a trusted source and has not been tampered with during transmission.
+    - **[Create webhook](https://docs.bloock.com/webhooks/overview)**
+- **BLOOCK_API_PUBLIC_HOST** (***REQUIRED***)
+    - **Description**: Should contain the complete URL, including the protocol (`https://`) and domain or host name. It is essential to ensure that the provided URL is accessible and correctly points to you API's public endpoint.
+    - **Purpose**: Is used to specify the public host or URL of this deployed API. Allows other software clients applications (ex: PolygonID wallet) to make HTTP requests and API calls to interact with this service.
 - **BLOOCK_DB_CONNECTION_STRING** (***OPTIONAL***)
     - **Description**: Your custom database connection URL.
     - **Default**: "file:bloock?mode=memory&cache=shared&_fk=1"
     - **Purpose**: This variable allows you to specify your own [database](#database-support) connection string. You can use it to connect the API to your existing database infrastructure. The format depends on the [database](#database-support) type you choose.
     - **Required**: When docker database container or your existing database infrastructure provided.
-- **BLOOCK_WEBHOOK_SECRET_KEY** (***REQUIRED***)
-    - **Description**: Your [BLOOCK webhook secret key](https://docs.bloock.com/webhooks/overview).
-    - **Purpose**: The [webhook secret key](https://docs.bloock.com/webhooks/overview) is used to secure and verify incoming webhook requests. It ensures that webhook data is received from a trusted source and has not been tampered with during transmission.
-    - **[Create webhook](https://docs.bloock.com/webhooks/overview)**
-- **BLOOCK_PUBLIC_HOST** (***REQUIRED***)
-    - **Description**: Should contain the complete URL, including the protocol (`https://`) and domain or host name. It is essential to ensure that the provided URL is accessible and correctly points to you API's public endpoint. 
-    - **Purpose**: Is used to specify the public host or URL of this deployed API. Allows other software clients applications (ex: PolygonID wallet) to make HTTP requests and API calls to interact with this service.
-- **BLOOCK_LOCAL_PRIVATE_KEY** (***OPTIONAL***)
-    - **Description**: Private key associated to your identity. The key pair must be of type [BJJ](https://iden3-docs.readthedocs.io/en/latest/iden3_repos/research/publications/zkproof-standards-workshop-2/baby-jubjub/baby-jubjub.html).
-    - **Purpose**: If you want to sign data using your own local private key, you can specify it here. This private key is used for the generation of the issuer's [`did`](https://www.w3.org/TR/did-core/) and cryptographic operations to ensure data integrity and authenticity.
-    - **Conflicts**: Conflicts with `BLOOCK_MANAGED_KEY_ID`. You must specify either a local key or a managed key.
-- **BLOOCK_LOCAL_PUBLIC_KEY** (***OPTIONAL***)
-    - **Description**: Public key associated to your identity.
-    - **Purpose**: If you're using your own local public key, you should provide the corresponding public key here.
-    - **Conflicts**: Conflicts with `BLOOCK_MANAGED_KEY_ID`. You must specify either a local key or a managed key.
-- **BLOOCK_MANAGED_KEY_ID** (***OPTIONAL***)
-    - **Description**: Key ID (UUID format) of type [BJJ](https://iden3-docs.readthedocs.io/en/latest/iden3_repos/research/publications/zkproof-standards-workshop-2/baby-jubjub/baby-jubjub.html). 
-    - **Purpose**: If you're using your own managed key, you should provide the corresponding key id here. This managed key is used for the generation of the issuer's [`did`](https://www.w3.org/TR/did-core/) and cryptographic operations to ensure data integrity and authenticity. If you want to create a managed [BJJ](https://iden3-docs.readthedocs.io/en/latest/iden3_repos/research/publications/zkproof-standards-workshop-2/baby-jubjub/baby-jubjub.html) key with BLOOCK check the documentation [here](https://docs.bloock.com/keys/features/managed-keys). You can create either using our [SDK's](https://docs.bloock.com/keys/features/managed-keys) or [Dashboard UI](https://dashboard.bloock.com/).
-    - **Conflicts**: Conflicts with `BLOOCK_LOCAL_PRIVATE_KEY` and `BLOOCK_LOCAL_PUBLIC_KEY`. You must specify either a local key or a managed key.
 - **BLOOCK_API_HOST** (***OPTIONAL***)
     - **Description**: The API host IP address.
     - **Default**: 0.0.0.0
@@ -221,30 +207,58 @@ Here are the configuration variables used by the Identity Bloock Managed API:
     - **Description**:  Enable or disable debug mode.
     - **Default**: false
     - **Purpose**: When set to true, debug mode provides more detailed log information, which can be useful for troubleshooting and debugging. Set it to false for normal operation.
+    
+Advanced configuration. Please only edit these variables if you are familiar with the Bloock digital identity protocol.
+
+In case you want to deploy an issuer with local keys (i.e. not managed by Bloock services) you must set the following variables in order to create your issuer together with the API deployment:
+
+- **BLOOCK_ISSUER_KEY_KEY** (***REQUIRED***)
+    - **Description**: Represents a private key of type [Baby JubJub](https://docs.iden3.io/getting-started/babyjubjub/).
+    - **Purpose**: This private key will be used to create your issuer. In addition, for all operations where the issuer's signature is required, the same will be used to perform such operations.
+    - **Required**: If you want to use your issuer locally, you only need to omit the `issuer_key` query when executing your requests.
+- **BLOOCK_ISSUER_PUBLISH_INTERVAL** (***REQUIRED***)
+    - **Description**: This is the frequency at which the state of your local issuer will be transacted to blockchain.
+    - **Purpose**: This variable will allow you to choose the time interval you want to spend to execute the transaction and the economic cost you want to assume.
+    - **Options**: You must pass one of the following integers: 1, 5, 15 or 60. Representing every 1 minute, 5 minutes, 15 minutes or 60 minutes.
+- **BLOOCK_ISSUER_NAME** (***OPTIONAL***)
+    - **Description**: The issuer name.
+    - **Purpose**: Simply to identify your issuer by name.
+- **BLOOCK_ISSUER_DESCRIPTION** (***OPTIONAL***)
+    - **Description**: The issuer description.
+    - **Purpose**: Simply to add a description of you issuer.
+- **BLOOCK_ISSUER_IMAGE** (***OPTIONAL***)
+    - **Description**: You can set up an image for you issuer. You will see that image issuer on your [Bloock management dashboard](https://dashboard.bloock.com/login).
+    - **Purpose**: You will have to pass an image in base64url to be able to decode it later.
+- **BLOOCK_ISSUER_DESCRIPTION** (***OPTIONAL***)
+    - **Description**: The issuer description.
+    - **Purpose**: Simply to add a description of you issuer.
+
+An issuer is ultimately an identity, so creating it means having a DID. There are different [DID methods](https://www.w3.org/TR/did-core/#methods), so you can specify any supported by Bloock:
+
+- **BLOOCK_ISSUER_DID_METADATA_METHOD** (***OPTIONAL***)
+    - **Description**: The identity did method.
+    - **Options**: polygonid, iden3
+- **BLOOCK_ISSUER_DID_METADATA_BLOCKCHAIN** (***OPTIONAL***)
+    - **Description**: The identity did blockchain.
+    - **Options**: polygon
+- **BLOOCK_ISSUER_DID_METADATA_NETWORK** (***OPTIONAL***)
+    - **Description**: The identity did network reference.
+    - **Options**: main, mumbai
+
+If you want to perform validation processes, and in case you want to validate proofs issued in a different network than the default one, you can change it by editing the following variables:
+
+> **NOTE:** For now, by default, all variables point to [Polygon's main network](https://polygonscan.com/).
+
+- **BLOOCK_BLOCKCHAIN_SMART_CONTRACT** (***OPTIONAL***)
+    - **Description**: In case you want to point e.g. to another network like Mumbai (test network) you have to update the smart contract.
+    - **Options**: Mumbai smart contract: 0x134B1BE34911E39A8397ec6289782989729807a4.
+- **BLOOCK_BLOCKCHAIN_PROVIDER** (***OPTIONAL***)
+    - **Description**: The rpc provider uri endpoint.
+- **BLOOCK_BLOCKCHAIN_RESOLVER_PREFIX** (***OPTIONAL***)
+    - **Description**: The identity resolver prefix.
+    - **Options**: Mumbai prefix: polygon:mumbai
 
 These configuration variables provide fine-grained control over the behavior of the Identity Bloock Managed API. You can adjust them to match your specific requirements and deployment environment.
-
-### Configuration file
-
-The configuration file should be named `config.yaml`. The service will try to locate this file in the root directory unless the BLOOCK_CONFIG_PATH is defined (i.e. `BLOOCK_CONFIG_PATH="app/conf/"`).
-
-Sample content of `config.yaml`:
-
-```yaml
-BLOOCK_API_HOST: "0.0.0.0"
-BLOOCK_API_PORT: "8080"
-BLOOCK_API_DEBUG_MODE: "false"
-
-BLOOCK_DB_CONNECTION_STRING: "file:bloock?mode=memory&cache=shared&_fk=1"
-
-BLOOCK_API_KEY: ""
-BLOOCK_WEBHOOK_SECRET_KEY: ""
-BLOOCK_PUBLIC_HOST: ""
-
-BLOOCK_LOCAL_PRIVATE_KEY: ""
-BLOOCK_LOCAL_PUBLIC_KEY: ""
-BLOOCK_MANAGED_KEY_ID: ""
-```
 
 ### Database Support
 
@@ -262,7 +276,7 @@ Replace `user`, `password`, `host`, `port`, and `database` with your MySQL datab
 - **Postgres**: For PostgreSQL database integration, use the following connection string format:
 
    ````
-   postgresql://user:password@host/database?sslmode=disable
+   postgres://user:password@host/database?sslmode=disable
    ````
 
 Similar to MySQL, replace `user`, `password`, `host`, and `database` with your PostgreSQL database details. Additionally, you can set the `sslmode` as needed. The `sslmode=disable` option is used in the example, but you can adjust it according to your PostgreSQL server's SSL requirements.
