@@ -41,7 +41,7 @@ This option is straightforward and ideal if you want to get started quickly. Fol
     - Run the following command to pull the Docker image from [DockerHub](https://hub.docker.com/r/bloock/identity-managed-api):
 
       ```bash
-      docker pull bloock/managed-api
+      docker pull bloock/identity-managed-api
       ```
 
       This command fetches the latest version of the Identity Bloock Managed API image from [DockerHub](https://hub.docker.com/r/bloock/identity-managed-api). We maintain a Docker repository with the latest releases of this repository.
