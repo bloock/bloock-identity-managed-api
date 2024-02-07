@@ -198,6 +198,10 @@ Basic configuration:
     - **Default**: "file:bloock?mode=memory&cache=shared&_fk=1"
     - **Purpose**: This variable allows you to specify your own [database](#database-support) connection string. You can use it to connect the API to your existing database infrastructure. The format depends on the [database](#database-support) type you choose.
     - **Required**: When docker database container or your existing database infrastructure provided.
+- **BLOOCK_AUTH_SECRET** (***OPTIONAL***)
+    - **Description**: If you want to add control in your API calls with Bearer Token you can add a secret here. A Bearer token is a type of token used for authentication and authorization and is used in web applications and APIs to hold user credentials and indicate authorization for requests and access.
+    - **Purpose**: The idea is that you can set a secret, which will be the same that you will have to pass in the headers of your requests in order to validate yourself.
+    - **Example**: 0tEStdP(dg5=VU4iX4+7}e((HVd^ShVm
 - **BLOOCK_API_HOST** (***OPTIONAL***)
     - **Description**: The API host IP address.
     - **Default**: 0.0.0.0
@@ -250,7 +254,7 @@ An issuer is ultimately an identity, so creating it means having a DID. There ar
     - **Description**: The identity did network reference.
     - **Options**: main, mumbai
 
-If you want to perform validation processes, and in case you want to validate proofs issued in a different network than the default one, you can change it by editing the following variables:
+If you want to perform verification processes, and in case you want to verify proofs issued in a different network than the default one, you can change it by editing the following variables:
 
 > **NOTE:** For now, by default, all variables point to [Polygon's main network](https://polygonscan.com/).
 
@@ -263,6 +267,13 @@ If you want to perform validation processes, and in case you want to validate pr
 - **BLOOCK_BLOCKCHAIN_RESOLVER_PREFIX** (***OPTIONAL***)
     - **Description**: The identity resolver prefix.
     - **Options**: Mumbai prefix: polygon:mumbai
+
+You can also edit parameters of your verification process:
+
+- **BLOOCK_VERIFICATION_EXPIRATION** (***OPTIONAL***)
+    - **Description**: You can edit how long a verification is valid for (by specifying the number in minutes), i.e. when you start a verification process by default that session id that is created has an expiration after 60 minutes. You can add more time or reduce it. More features will be added soon.
+    - **Default**: 60 minutes.
+    - **Example**: 120
 
 These configuration variables provide fine-grained control over the behavior of the Identity Bloock Managed API. You can adjust them to match your specific requirements and deployment environment.
 

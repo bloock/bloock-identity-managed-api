@@ -7,6 +7,9 @@ api:
 db:
   connection_string: "file:bloock?mode=memory&cache=shared&_fk=1"
 
+auth:
+  secret: ""
+
 bloock:
   api_host: ""
   api_key: ""
