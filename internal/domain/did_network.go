@@ -1,6 +1,6 @@
 package domain
 
-import "github.com/bloock/bloock-sdk-go/v2/entity/identityV2"
+import identityEntity "github.com/bloock/bloock-sdk-go/v2/entity/identity"
 
 type DidNetwork int32
 
@@ -29,19 +29,19 @@ func NewDidNetwork(network string) (DidNetwork, error) {
 	}
 }
 
-func (p DidNetwork) ToBloockNetwork() identityV2.NetworkId {
+func (p DidNetwork) ToBloockNetwork() identityEntity.NetworkId {
 	switch p {
 	case DidNetworkGoerli:
-		return identityV2.ListOfNetworkIds().Goerli
+		return identityEntity.ListOfNetworkIds().Goerli
 	case DidNetworkMain:
-		return identityV2.ListOfNetworkIds().Main
+		return identityEntity.ListOfNetworkIds().Main
 	case DidNetworkMumbai:
-		return identityV2.ListOfNetworkIds().Mumbai
+		return identityEntity.ListOfNetworkIds().Mumbai
 	case DidNetworkNoNetwork:
-		return identityV2.ListOfNetworkIds().NoNetwork
+		return identityEntity.ListOfNetworkIds().NoNetwork
 	case DidNetworkUnknownNetwork:
-		return identityV2.ListOfNetworkIds().UnknownNetwork
+		return identityEntity.ListOfNetworkIds().UnknownNetwork
 	default:
-		return identityV2.ListOfNetworkIds().Mumbai
+		return identityEntity.ListOfNetworkIds().Mumbai
 	}
 }

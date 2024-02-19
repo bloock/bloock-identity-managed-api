@@ -8,16 +8,17 @@ import (
 	"context"
 	"errors"
 	"github.com/bloock/bloock-sdk-go/v2/client"
-	"github.com/bloock/bloock-sdk-go/v2/entity/authenticity"
-	"github.com/bloock/bloock-sdk-go/v2/entity/identityV2"
+	identityEntity "github.com/bloock/bloock-sdk-go/v2/entity/identity"
+	"github.com/bloock/bloock-sdk-go/v2/entity/key"
 	"github.com/rs/zerolog"
 	"math"
 	"time"
 )
 
 type IdentityRepository struct {
-	identityClient client.IdentityClient
-	logger         zerolog.Logger
+	identityClient     client.IdentityClient
+	identityCoreClient client.IdentityCoreClient
+	logger             zerolog.Logger
 }
 
 func NewIdentityRepository(ctx context.Context, l zerolog.Logger) *IdentityRepository {
@@ -26,54 +27,55 @@ func NewIdentityRepository(ctx context.Context, l zerolog.Logger) *IdentityRepos
 	c := client.NewBloockClient(pkg.GetApiKeyFromContext(ctx), &config.Configuration.Api.PublicHost, nil)
 
 	return &IdentityRepository{
-		identityClient: c.IdentityClient,
-		logger:         l,
+		identityClient:     c.IdentityClient,
+		identityCoreClient: c.IdentityCoreClient,
+		logger:             l,
 	}
 }
 
-func (i IdentityRepository) CreateIssuer(ctx context.Context, issuerKey identityV2.IdentityKey, params identityV2.DidParams, name, description, image string, publishInterval domain.PublishIntervalMinutes) (string, error) {
-	did, err := i.identityClient.CreateIssuer(issuerKey, publishInterval.Params(), params, name, description, image)
+func (i IdentityRepository) CreateIssuer(ctx context.Context, issuerKey key.Key, didType identityEntity.DidType, name, description, image string, publishInterval domain.PublishIntervalMinutes) (string, error) {
+	issuer, err := i.identityClient.CreateIssuer(issuerKey, publishInterval.Params(), didType, name, description, image)
 	if err != nil {
 		i.logger.Error().Err(err).Msg("")
 		return "", err
 	}
 
-	return did, nil
+	return issuer.Did.Did, nil
 }
 
-func (i IdentityRepository) GetIssuerByKey(ctx context.Context, issuerKey identityV2.IdentityKey, params identityV2.DidParams) (string, error) {
-	did, err := i.identityClient.GetIssuerByKey(issuerKey, params)
+func (i IdentityRepository) ImportIssuer(ctx context.Context, issuerKey key.Key, didType identityEntity.DidType) (identityEntity.Issuer, error) {
+	issuer, err := i.identityClient.ImportIssuer(issuerKey, didType)
 	if err != nil {
 		i.logger.Error().Err(err).Msg("")
-		return "", err
+		return identityEntity.Issuer{}, err
 	}
 
-	return did, nil
+	return issuer, nil
 }
 
-func (i IdentityRepository) CreateCredential(ctx context.Context, issuerId string, signer authenticity.Signer, req request.CredentialRequest) (identityV2.CredentialReceipt, error) {
-	builder := i.identityClient.BuildCredential(req.SchemaId, issuerId, req.HolderDid, req.Expiration, req.Version)
+func (i IdentityRepository) CreateCredential(ctx context.Context, issuer identityEntity.Issuer, req request.CredentialRequest) (identityEntity.CredentialReceipt, error) {
+	builder := i.identityCoreClient.BuildCredential(issuer, req.SchemaId, req.HolderDid, req.Expiration, req.Version)
 	var err error
 
 	for _, attr := range req.CredentialSubject {
 		builder, err = buildCredentialSubject(builder, attr)
 		if err != nil {
 			i.logger.Error().Err(err).Msg("")
-			return identityV2.CredentialReceipt{}, err
+			return identityEntity.CredentialReceipt{}, err
 		}
 	}
 
-	credentialReceipt, err := builder.WithSigner(signer).Build()
+	credentialReceipt, err := builder.Build()
 	if err != nil {
 		i.logger.Error().Err(err).Msg("")
-		return identityV2.CredentialReceipt{}, err
+		return identityEntity.CredentialReceipt{}, err
 	}
 
 	return credentialReceipt, nil
 }
 
-func (i IdentityRepository) RevokeCredential(ctx context.Context, signer authenticity.Signer, credential identityV2.Credential) error {
-	ok, err := i.identityClient.RevokeCredential(credential, signer)
+func (i IdentityRepository) RevokeCredential(ctx context.Context, credential identityEntity.Credential, issuer identityEntity.Issuer) error {
+	ok, err := i.identityClient.RevokeCredential(credential, issuer)
 	if err != nil {
 		i.logger.Error().Err(err).Msg("")
 		return err
@@ -87,8 +89,8 @@ func (i IdentityRepository) RevokeCredential(ctx context.Context, signer authent
 	return nil
 }
 
-func (i IdentityRepository) PublishIssuerState(ctx context.Context, issuerDid string, signer authenticity.Signer) (string, error) {
-	receipt, err := i.identityClient.PublishIssuerState(issuerDid, signer)
+func (i IdentityRepository) ForcePublishIssuerState(ctx context.Context, issuer identityEntity.Issuer) (string, error) {
+	receipt, err := i.identityClient.ForcePublishIssuerState(issuer)
 	if err != nil {
 		i.logger.Error().Err(err).Msg("")
 		return "", err
@@ -97,16 +99,16 @@ func (i IdentityRepository) PublishIssuerState(ctx context.Context, issuerDid st
 	return receipt.TxHash, nil
 }
 
-func (i IdentityRepository) GetSchema(ctx context.Context, schemaID string) (identityV2.Schema, error) {
+func (i IdentityRepository) GetSchema(ctx context.Context, schemaID string) (identityEntity.Schema, error) {
 	schema, err := i.identityClient.GetSchema(schemaID)
 	if err != nil {
 		i.logger.Error().Err(err).Msg("")
-		return identityV2.Schema{}, err
+		return identityEntity.Schema{}, err
 	}
 	return schema, nil
 }
 
-func buildCredentialSubject(builder identityV2.CredentialBuilder, cs request.CredentialSubject) (identityV2.CredentialBuilder, error) {
+func buildCredentialSubject(builder identityEntity.CredentialCoreBuilder, cs request.CredentialSubject) (identityEntity.CredentialCoreBuilder, error) {
 	switch cs.Value.(type) {
 	case string:
 		return parseStringType(cs, builder), nil
@@ -120,11 +122,11 @@ func buildCredentialSubject(builder identityV2.CredentialBuilder, cs request.Cre
 	case bool:
 		return builder.WithBooleanAttribute(cs.Key, cs.Value.(bool)), nil
 	default:
-		return identityV2.CredentialBuilder{}, domain.ErrInvalidDataType
+		return identityEntity.CredentialCoreBuilder{}, domain.ErrInvalidDataType
 	}
 }
 
-func parseStringType(cs request.CredentialSubject, builder identityV2.CredentialBuilder) identityV2.CredentialBuilder {
+func parseStringType(cs request.CredentialSubject, builder identityEntity.CredentialCoreBuilder) identityEntity.CredentialCoreBuilder {
 	input := cs.Value.(string)
 	var parsedTime time.Time
 	var err error

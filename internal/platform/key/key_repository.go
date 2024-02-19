@@ -8,8 +8,7 @@ import (
 	"bloock-identity-managed-api/internal/platform/key/managed"
 	"context"
 	"github.com/bloock/bloock-sdk-go/v2/client"
-	"github.com/bloock/bloock-sdk-go/v2/entity/authenticity"
-	"github.com/bloock/bloock-sdk-go/v2/entity/identityV2"
+	"github.com/bloock/bloock-sdk-go/v2/entity/key"
 	"github.com/rs/zerolog"
 	"regexp"
 )
@@ -37,24 +36,14 @@ func NewKeyRepository(ctx context.Context, key string, l zerolog.Logger) KeyRepo
 	}
 }
 
-func (k KeyRepository) LoadBjjKeyIssuer(ctx context.Context) (identityV2.IdentityKey, error) {
-	issuerKey, err := k.provider.GetBjjIssuerKey(ctx)
+func (k KeyRepository) LoadIssuerKey(ctx context.Context) (key.Key, error) {
+	issuerKey, err := k.provider.GetIssuerKey(ctx)
 	if err != nil {
 		k.logger.Error().Err(err).Msg("")
-		return nil, err
+		return key.Key{}, err
 	}
 
 	return issuerKey, nil
-}
-
-func (k KeyRepository) LoadBjjSigner(ctx context.Context) (authenticity.Signer, error) {
-	bjjSigner, err := k.provider.GetBjjSigner(ctx)
-	if err != nil {
-		k.logger.Error().Err(err).Msg("")
-		return authenticity.Signer{}, err
-	}
-
-	return bjjSigner, nil
 }
 
 func isUUID(s string) bool {

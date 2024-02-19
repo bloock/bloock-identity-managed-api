@@ -85,6 +85,11 @@ func createIssuer(ctx context.Context, logger zerolog.Logger, cfg *config.Config
 			Image:           config.Configuration.Issuer.Image,
 			PublishInterval: config.Configuration.Issuer.PublishInterval,
 		}
+		if config.Configuration.Issuer.DidMetadata.Method != "" {
+			req.DidMetadata.Method = config.Configuration.Issuer.DidMetadata.Method
+			req.DidMetadata.Blockchain = config.Configuration.Issuer.DidMetadata.Blockchain
+			req.DidMetadata.Network = config.Configuration.Issuer.DidMetadata.Network
+		}
 		issuerDid, err := createIssuerService.Create(ctxValue, req)
 		if err != nil {
 			return err

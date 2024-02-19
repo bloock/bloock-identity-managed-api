@@ -3,10 +3,12 @@ package pkg
 import "context"
 
 const (
-	ApiKeyContextKey    = "API_KEY"
-	EnvContextKey       = "ENV"
-	IssuerDidContextKey = "ISSUER_DID"
-	IssuerKeyContextKey = "ISSUER_KEY"
+	ApiKeyContextKey        = "API_KEY"
+	EnvContextKey           = "ENV"
+	IssuerDidTypeMethod     = "ISSUER_DID_TYPE_METHOD"
+	IssuerDidTypeBlockchain = "ISSUER_DID_TYPE_BLOCKCHAIN"
+	IssuerDidTypeNetwork    = "ISSUER_DID_TYPE_NETWORK"
+	IssuerKeyContextKey     = "ISSUER_KEY"
 )
 
 func GetApiKeyFromContext(ctx context.Context) string {
@@ -17,8 +19,24 @@ func GetApiKeyFromContext(ctx context.Context) string {
 	return u
 }
 
-func GetIssuerDidFromContext(ctx context.Context) string {
-	u, ok := ctx.Value(IssuerDidContextKey).(string)
+func GetIssuerDidTypeMethodFromContext(ctx context.Context) string {
+	u, ok := ctx.Value(IssuerDidTypeMethod).(string)
+	if !ok {
+		return ""
+	}
+	return u
+}
+
+func GetIssuerDidTypeBlockchainFromContext(ctx context.Context) string {
+	u, ok := ctx.Value(IssuerDidTypeBlockchain).(string)
+	if !ok {
+		return ""
+	}
+	return u
+}
+
+func GetIssuerDidTypeNetworkFromContext(ctx context.Context) string {
+	u, ok := ctx.Value(IssuerDidTypeNetwork).(string)
 	if !ok {
 		return ""
 	}

@@ -9,6 +9,7 @@ import (
 	"bloock-identity-managed-api/internal/services/create/request"
 	"context"
 	"encoding/json"
+	identityEntity "github.com/bloock/bloock-sdk-go/v2/entity/identity"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 )
@@ -17,35 +18,46 @@ type Credential struct {
 	credentialRepository repository.CredentialRepository
 	keyRepository        repository.KeyRepository
 	identityRepository   repository.IdentityRepository
-	issuer               string
 	logger               zerolog.Logger
+	issuer               identityEntity.Issuer
+	didType              identityEntity.DidType
 }
 
 func NewCredential(ctx context.Context, cr repository.CredentialRepository, l zerolog.Logger) (*Credential, error) {
-	issuerDid := pkg.GetIssuerDidFromContext(ctx)
-	if issuerDid == "" {
-		return &Credential{}, domain.ErrEmptyIssuerDID
-	}
 	issuerKey := pkg.GetIssuerKeyFromContext(ctx)
 	if issuerKey == "" {
 		return &Credential{}, domain.ErrEmptyIssuerKey
 	}
+	method := pkg.GetIssuerDidTypeMethodFromContext(ctx)
+	blockchain := pkg.GetIssuerDidTypeBlockchainFromContext(ctx)
+	network := pkg.GetIssuerDidTypeNetworkFromContext(ctx)
+
+	didType, err := domain.GetDidType(method, blockchain, network)
+	if err != nil {
+		return &Credential{}, err
+	}
+
 	return &Credential{
 		credentialRepository: cr,
 		identityRepository:   identity.NewIdentityRepository(ctx, l),
 		keyRepository:        keyRepo.NewKeyRepository(ctx, issuerKey, l),
-		issuer:               issuerDid,
+		didType:              didType,
 		logger:               l,
 	}, nil
 }
 
 func (c Credential) Create(ctx context.Context, req request.CredentialRequest) (string, error) {
-	signer, err := c.keyRepository.LoadBjjSigner(ctx)
+	issuerKey, err := c.keyRepository.LoadIssuerKey(ctx)
 	if err != nil {
 		return "", err
 	}
 
-	credentialReceipt, err := c.identityRepository.CreateCredential(ctx, c.issuer, signer, req)
+	issuer, err := c.identityRepository.ImportIssuer(ctx, issuerKey, c.didType)
+	if err != nil {
+		return "", err
+	}
+
+	credentialReceipt, err := c.identityRepository.CreateCredential(ctx, issuer, req)
 	if err != nil {
 		return "", err
 	}
@@ -76,7 +88,7 @@ func (c Credential) Create(ctx context.Context, req request.CredentialRequest) (
 		CredentialId:   credentialUUID,
 		HolderDid:      req.HolderDid,
 		CredentialType: credentialReceipt.CredentialType,
-		IssuerDid:      c.issuer,
+		IssuerDid:      issuer.Did.Did,
 		CredentialData: credentialData,
 		SignatureProof: signatureProof,
 	}

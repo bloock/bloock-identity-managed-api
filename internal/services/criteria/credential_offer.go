@@ -5,10 +5,13 @@ import (
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
 	"bloock-identity-managed-api/internal/pkg"
+	"bloock-identity-managed-api/internal/platform/identity"
+	keyRepo "bloock-identity-managed-api/internal/platform/key"
 	"bloock-identity-managed-api/internal/platform/utils"
 	"bloock-identity-managed-api/internal/services/criteria/response"
 	"context"
 	"fmt"
+	identityEntity "github.com/bloock/bloock-sdk-go/v2/entity/identity"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 	"strings"
@@ -16,22 +19,34 @@ import (
 
 type CredentialOffer struct {
 	credentialRepository repository.CredentialRepository
+	identityRepository   repository.IdentityRepository
+	keyRepository        repository.KeyRepository
 	publicHost           string
-	issuer               string
+	didType              identityEntity.DidType
 	authSyncMap          *utils.SyncMap
 	logger               zerolog.Logger
 }
 
 func NewCredentialOffer(ctx context.Context, cr repository.CredentialRepository, authSyncMap *utils.SyncMap, l zerolog.Logger) (*CredentialOffer, error) {
-	issuerDid := pkg.GetIssuerDidFromContext(ctx)
-	if issuerDid == "" {
-		return &CredentialOffer{}, domain.ErrEmptyIssuerDID
+	issuerKey := pkg.GetIssuerKeyFromContext(ctx)
+	if issuerKey == "" {
+		return &CredentialOffer{}, domain.ErrEmptyIssuerKey
+	}
+	method := pkg.GetIssuerDidTypeMethodFromContext(ctx)
+	blockchain := pkg.GetIssuerDidTypeBlockchainFromContext(ctx)
+	network := pkg.GetIssuerDidTypeNetworkFromContext(ctx)
+
+	didType, err := domain.GetDidType(method, blockchain, network)
+	if err != nil {
+		return &CredentialOffer{}, err
 	}
 
 	return &CredentialOffer{
+		identityRepository:   identity.NewIdentityRepository(ctx, l),
+		keyRepository:        keyRepo.NewKeyRepository(ctx, issuerKey, l),
 		credentialRepository: cr,
 		publicHost:           config.Configuration.Api.PublicHost,
-		issuer:               issuerDid,
+		didType:              didType,
 		authSyncMap:          authSyncMap,
 		logger:               l,
 	}, nil
@@ -42,6 +57,16 @@ func (c CredentialOffer) Get(ctx context.Context, credentialId string) (response
 	if authToken == "" {
 		err := domain.ErrEmptyApiKey
 		c.logger.Error().Err(err).Msg("")
+		return response.GetCredentialOfferResponse{}, err
+	}
+
+	issuerKey, err := c.keyRepository.LoadIssuerKey(ctx)
+	if err != nil {
+		return response.GetCredentialOfferResponse{}, err
+	}
+
+	issuer, err := c.identityRepository.ImportIssuer(ctx, issuerKey, c.didType)
+	if err != nil {
 		return response.GetCredentialOfferResponse{}, err
 	}
 
@@ -74,7 +99,7 @@ func (c CredentialOffer) Get(ctx context.Context, credentialId string) (response
 			Description: credential.CredentialType,
 			URL:         url,
 		},
-		From: c.issuer,
+		From: issuer.Did.Did,
 		To:   credential.HolderDid,
 		Typ:  "application/iden3comm-plain-json",
 		Type: "https://iden3-communication.io/credentials/1.0/offer",

@@ -4,17 +4,17 @@ import (
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/services/create/request"
 	"context"
-	"github.com/bloock/bloock-sdk-go/v2/entity/authenticity"
-	"github.com/bloock/bloock-sdk-go/v2/entity/identityV2"
+	identityEntity "github.com/bloock/bloock-sdk-go/v2/entity/identity"
+	"github.com/bloock/bloock-sdk-go/v2/entity/key"
 )
 
 type IdentityRepository interface {
-	CreateIssuer(ctx context.Context, issuerKey identityV2.IdentityKey, params identityV2.DidParams, name, description, image string, publishInterval domain.PublishIntervalMinutes) (string, error)
-	GetIssuerByKey(ctx context.Context, issuerKey identityV2.IdentityKey, params identityV2.DidParams) (string, error)
-	PublishIssuerState(ctx context.Context, issuerDid string, signer authenticity.Signer) (string, error)
+	CreateIssuer(ctx context.Context, issuerKey key.Key, didType identityEntity.DidType, name, description, image string, publishInterval domain.PublishIntervalMinutes) (string, error)
+	ImportIssuer(ctx context.Context, issuerKey key.Key, didType identityEntity.DidType) (identityEntity.Issuer, error)
+	ForcePublishIssuerState(ctx context.Context, issuer identityEntity.Issuer) (string, error)
 
-	CreateCredential(ctx context.Context, issuerId string, signer authenticity.Signer, req request.CredentialRequest) (identityV2.CredentialReceipt, error)
-	RevokeCredential(ctx context.Context, signer authenticity.Signer, credential identityV2.Credential) error
+	CreateCredential(ctx context.Context, issuer identityEntity.Issuer, req request.CredentialRequest) (identityEntity.CredentialReceipt, error)
+	RevokeCredential(ctx context.Context, credential identityEntity.Credential, issuer identityEntity.Issuer) error
 
-	GetSchema(ctx context.Context, schemaID string) (identityV2.Schema, error)
+	GetSchema(ctx context.Context, schemaID string) (identityEntity.Schema, error)
 }

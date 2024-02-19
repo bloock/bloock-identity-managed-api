@@ -8,6 +8,7 @@ import (
 	"bloock-identity-managed-api/internal/services/create/request"
 	"context"
 	"github.com/rs/zerolog"
+	"log"
 )
 
 type Issuer struct {
@@ -25,23 +26,25 @@ func NewIssuer(ctx context.Context, key string, l zerolog.Logger) *Issuer {
 }
 
 func (i Issuer) Create(ctx context.Context, req request.CreateIssuerRequest) (string, error) {
-	params, err := domain.GetIssuerParams(req.DidMetadata.Method, req.DidMetadata.Blockchain, req.DidMetadata.Network)
+	didType, err := domain.GetDidType(req.DidMetadata.Method, req.DidMetadata.Blockchain, req.DidMetadata.Network)
 	if err != nil {
 		i.logger.Error().Err(err).Msg("")
 		return "", err
 	}
 
-	issuerKey, err := i.keyRepository.LoadBjjKeyIssuer(ctx)
+	issuerKey, err := i.keyRepository.LoadIssuerKey(ctx)
 	if err != nil {
+		log.Println("Enter Import issuer")
 		return "", err
 	}
 
-	issuerDid, err := i.identityRepository.GetIssuerByKey(ctx, issuerKey, params)
+	issuer, err := i.identityRepository.ImportIssuer(ctx, issuerKey, didType)
 	if err != nil {
+		log.Println("Enter Import issuer")
 		return "", err
 	}
-	if issuerDid != "" {
-		return issuerDid, nil
+	if issuer.Did.Did != "" {
+		return issuer.Did.Did, nil
 	}
 
 	publishInterval, err := domain.NewPublishIntervalMinutes(req.PublishInterval)
@@ -50,5 +53,5 @@ func (i Issuer) Create(ctx context.Context, req request.CreateIssuerRequest) (st
 		return "", err
 	}
 
-	return i.identityRepository.CreateIssuer(ctx, issuerKey, params, req.Name, req.Description, req.Image, publishInterval)
+	return i.identityRepository.CreateIssuer(ctx, issuerKey, didType, req.Name, req.Description, req.Image, publishInterval)
 }

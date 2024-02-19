@@ -3,8 +3,7 @@ package managed
 import (
 	"context"
 	"github.com/bloock/bloock-sdk-go/v2/client"
-	"github.com/bloock/bloock-sdk-go/v2/entity/authenticity"
-	"github.com/bloock/bloock-sdk-go/v2/entity/identityV2"
+	"github.com/bloock/bloock-sdk-go/v2/entity/key"
 )
 
 type ManagedKeyProvider struct {
@@ -19,20 +18,11 @@ func NewManagedKeyProvider(keyID string, client client.BloockClient) ManagedKeyP
 	}
 }
 
-func (m ManagedKeyProvider) GetBjjIssuerKey(ctx context.Context) (identityV2.IdentityKey, error) {
+func (m ManagedKeyProvider) GetIssuerKey(ctx context.Context) (key.Key, error) {
 	managedKey, err := m.keyClient.LoadManagedKey(m.keyID)
 	if err != nil {
-		return nil, err
+		return key.Key{}, err
 	}
 
-	return identityV2.NewBjjIdentityKey(identityV2.IssuerKeyArgs{ManagedKey: &managedKey}), nil
-}
-
-func (m ManagedKeyProvider) GetBjjSigner(ctx context.Context) (authenticity.Signer, error) {
-	managedKey, err := m.keyClient.LoadManagedKey(m.keyID)
-	if err != nil {
-		return authenticity.Signer{}, err
-	}
-
-	return authenticity.NewSignerWithManagedKey(managedKey, nil, nil), nil
+	return key.Key{ManagedKey: &managedKey}, nil
 }

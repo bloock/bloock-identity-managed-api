@@ -8,7 +8,7 @@ import (
 	"bloock-identity-managed-api/internal/platform/key"
 	"context"
 	"encoding/json"
-	"github.com/bloock/bloock-sdk-go/v2/entity/identityV2"
+	identityEntity "github.com/bloock/bloock-sdk-go/v2/entity/identity"
 	"github.com/iden3/go-schema-processor/verifiable"
 	"github.com/rs/zerolog"
 )
@@ -16,6 +16,7 @@ import (
 type CredentialRevocation struct {
 	identityRepository repository.IdentityRepository
 	keyRepository      repository.KeyRepository
+	didType            identityEntity.DidType
 	logger             zerolog.Logger
 }
 
@@ -24,16 +25,30 @@ func NewCredentialRevocation(ctx context.Context, l zerolog.Logger) (*Credential
 	if issuerKey == "" {
 		return &CredentialRevocation{}, domain.ErrEmptyIssuerKey
 	}
+	method := pkg.GetIssuerDidTypeMethodFromContext(ctx)
+	blockchain := pkg.GetIssuerDidTypeBlockchainFromContext(ctx)
+	network := pkg.GetIssuerDidTypeNetworkFromContext(ctx)
+
+	didType, err := domain.GetDidType(method, blockchain, network)
+	if err != nil {
+		return &CredentialRevocation{}, err
+	}
 
 	return &CredentialRevocation{
 		identityRepository: identity.NewIdentityRepository(ctx, l),
 		keyRepository:      key.NewKeyRepository(ctx, issuerKey, l),
+		didType:            didType,
 		logger:             l,
 	}, nil
 }
 
 func (c CredentialRevocation) Revoke(ctx context.Context, cred verifiable.W3CCredential) error {
-	bjjSigner, err := c.keyRepository.LoadBjjSigner(ctx)
+	issuerKey, err := c.keyRepository.LoadIssuerKey(ctx)
+	if err != nil {
+		return err
+	}
+
+	issuer, err := c.identityRepository.ImportIssuer(ctx, issuerKey, c.didType)
 	if err != nil {
 		return err
 	}
@@ -44,11 +59,11 @@ func (c CredentialRevocation) Revoke(ctx context.Context, cred verifiable.W3CCre
 		return err
 	}
 
-	credential, err := identityV2.NewCredentialFromJson(string(credentialBytes))
+	credential, err := identityEntity.NewCredentialFromJson(string(credentialBytes))
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
 		return err
 	}
 
-	return c.identityRepository.RevokeCredential(ctx, bjjSigner, credential)
+	return c.identityRepository.RevokeCredential(ctx, credential, issuer)
 }

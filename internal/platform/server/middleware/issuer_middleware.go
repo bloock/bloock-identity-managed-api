@@ -3,42 +3,35 @@ package middleware
 import (
 	"bloock-identity-managed-api/internal/config"
 	"bloock-identity-managed-api/internal/pkg"
-	api_error "bloock-identity-managed-api/internal/platform/server/error"
-	"bloock-identity-managed-api/internal/services/create/request"
-	"bloock-identity-managed-api/internal/services/criteria"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 )
 
 func IssuerMiddleware(l zerolog.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		issuerKey, _ := c.GetQuery("issuer_key")
+		issuerKey := config.Configuration.Issuer.Key.Key
+		method := config.Configuration.Issuer.DidMetadata.Method
+		blockchain := config.Configuration.Issuer.DidMetadata.Blockchain
+		network := config.Configuration.Issuer.DidMetadata.Network
 
-		if issuerKey != "" {
-			method, _ := c.GetQuery("method")
-			blockchain, _ := c.GetQuery("blockchain")
-			network, _ := c.GetQuery("network")
+		issuerManagedKey, _ := c.GetQuery("issuer_key")
+		if issuerManagedKey != "" {
+			issuerKey = issuerManagedKey
 
-			cm := config.Configuration.Issuer.DidMetadata
-			mr := request.DidMetadataRequest{Method: cm.Method, Blockchain: cm.Blockchain, Network: cm.Network}
+			methodQuery, _ := c.GetQuery("method")
+			blockchainQuery, _ := c.GetQuery("blockchain")
+			networkQuery, _ := c.GetQuery("network")
 			if method != "" {
-				mr.Method = method
-				mr.Blockchain = blockchain
-				mr.Network = network
+				method = methodQuery
+				blockchain = blockchainQuery
+				network = networkQuery
 			}
-			getIssuerService := criteria.NewIssuerByKey(c, issuerKey, l)
-			issuerDid, err := getIssuerService.Get(c, mr)
-			if err != nil {
-				serverAPIError := api_error.NewInternalServerAPIError(err.Error())
-				c.JSON(serverAPIError.Status, serverAPIError)
-				c.Abort()
-			}
-			c.Set(pkg.IssuerDidContextKey, issuerDid)
-			c.Set(pkg.IssuerKeyContextKey, issuerKey)
-		} else {
-			c.Set(pkg.IssuerDidContextKey, config.Configuration.Issuer.IssuerDid)
-			c.Set(pkg.IssuerKeyContextKey, config.Configuration.Issuer.Key.Key)
 		}
+
+		c.Set(pkg.IssuerDidTypeMethod, method)
+		c.Set(pkg.IssuerDidTypeBlockchain, blockchain)
+		c.Set(pkg.IssuerDidTypeNetwork, network)
+		c.Set(pkg.IssuerKeyContextKey, issuerKey)
 
 		c.Next()
 	}
