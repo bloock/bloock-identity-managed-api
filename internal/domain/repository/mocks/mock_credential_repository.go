@@ -12,7 +12,6 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/google/uuid"
-	core "github.com/iden3/go-iden3-core"
 )
 
 // MockCredentialRepository is a mock of CredentialRepository interface.
@@ -38,21 +37,6 @@ func (m *MockCredentialRepository) EXPECT() *MockCredentialRepositoryMockRecorde
 	return m.recorder
 }
 
-// FindCredentialsByAnchorId mocks base method.
-func (m *MockCredentialRepository) FindCredentialsByAnchorId(ctx context.Context, anchorId int64) ([]domain.Credential, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindCredentialsByAnchorId", ctx, anchorId)
-	ret0, _ := ret[0].([]domain.Credential)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindCredentialsByAnchorId indicates an expected call of FindCredentialsByAnchorId.
-func (mr *MockCredentialRepositoryMockRecorder) FindCredentialsByAnchorId(ctx, anchorId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindCredentialsByAnchorId", reflect.TypeOf((*MockCredentialRepository)(nil).FindCredentialsByAnchorId), ctx, anchorId)
-}
-
 // GetCredentialById mocks base method.
 func (m *MockCredentialRepository) GetCredentialById(ctx context.Context, id uuid.UUID) (domain.Credential, error) {
 	m.ctrl.T.Helper()
@@ -68,21 +52,6 @@ func (mr *MockCredentialRepositoryMockRecorder) GetCredentialById(ctx, id interf
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCredentialById", reflect.TypeOf((*MockCredentialRepository)(nil).GetCredentialById), ctx, id)
 }
 
-// GetCredentialByIssuerAndId mocks base method.
-func (m *MockCredentialRepository) GetCredentialByIssuerAndId(ctx context.Context, issuer *core.DID, id uuid.UUID) (domain.Credential, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCredentialByIssuerAndId", ctx, issuer, id)
-	ret0, _ := ret[0].(domain.Credential)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetCredentialByIssuerAndId indicates an expected call of GetCredentialByIssuerAndId.
-func (mr *MockCredentialRepositoryMockRecorder) GetCredentialByIssuerAndId(ctx, issuer, id interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCredentialByIssuerAndId", reflect.TypeOf((*MockCredentialRepository)(nil).GetCredentialByIssuerAndId), ctx, issuer, id)
-}
-
 // Save mocks base method.
 func (m *MockCredentialRepository) Save(ctx context.Context, c domain.Credential) error {
 	m.ctrl.T.Helper()
@@ -95,20 +64,6 @@ func (m *MockCredentialRepository) Save(ctx context.Context, c domain.Credential
 func (mr *MockCredentialRepositoryMockRecorder) Save(ctx, c interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Save", reflect.TypeOf((*MockCredentialRepository)(nil).Save), ctx, c)
-}
-
-// UpdateIntegrityProof mocks base method.
-func (m *MockCredentialRepository) UpdateIntegrityProof(ctx context.Context, id uuid.UUID, integrityProof json.RawMessage) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateIntegrityProof", ctx, id, integrityProof)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// UpdateIntegrityProof indicates an expected call of UpdateIntegrityProof.
-func (mr *MockCredentialRepositoryMockRecorder) UpdateIntegrityProof(ctx, id, integrityProof interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateIntegrityProof", reflect.TypeOf((*MockCredentialRepository)(nil).UpdateIntegrityProof), ctx, id, integrityProof)
 }
 
 // UpdateSignatureProof mocks base method.
