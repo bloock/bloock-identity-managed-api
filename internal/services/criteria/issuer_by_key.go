@@ -1,13 +1,13 @@
 package criteria
 
 import (
-	"bloock-identity-managed-api/internal/config"
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
 	"bloock-identity-managed-api/internal/platform/identity"
 	keyRepo "bloock-identity-managed-api/internal/platform/key"
 	"bloock-identity-managed-api/internal/services/create/request"
 	"context"
+	identityEntity "github.com/bloock/bloock-sdk-go/v2/entity/identity"
 	"github.com/rs/zerolog"
 )
 
@@ -25,25 +25,22 @@ func NewIssuerByKey(ctx context.Context, key string, l zerolog.Logger) *IssuerBy
 	}
 }
 
-func (c IssuerByKey) Get(ctx context.Context, req request.DidMetadataRequest) (string, error) {
-	params, err := domain.GetIssuerParams(req.Method, req.Blockchain, req.Network)
+func (c IssuerByKey) Get(ctx context.Context, req request.DidMetadataRequest) (identityEntity.Issuer, error) {
+	params, err := domain.GetDidType(req.Method, req.Blockchain, req.Network)
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
-		return "", err
+		return identityEntity.Issuer{}, err
 	}
 
-	issuerKey, err := c.keyRepository.LoadBjjKeyIssuer(ctx)
+	issuerKey, err := c.keyRepository.LoadIssuerKey(ctx)
 	if err != nil {
-		return "", err
+		return identityEntity.Issuer{}, err
 	}
 
-	issuerDid, err := c.identityRepository.GetIssuerByKey(ctx, issuerKey, params)
+	issuer, err := c.identityRepository.ImportIssuer(ctx, issuerKey, params)
 	if err != nil {
-		return "", nil
-	}
-	if issuerDid == "" {
-		return config.Configuration.Issuer.IssuerDid, nil
+		return identityEntity.Issuer{}, nil
 	}
 
-	return issuerDid, nil
+	return issuer, nil
 }

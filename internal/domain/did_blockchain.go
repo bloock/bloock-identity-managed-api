@@ -1,6 +1,6 @@
 package domain
 
-import "github.com/bloock/bloock-sdk-go/v2/entity/identityV2"
+import identityEntity "github.com/bloock/bloock-sdk-go/v2/entity/identity"
 
 type DidBlockchain int32
 
@@ -26,17 +26,17 @@ func NewDidBlockchain(blockchain string) (DidBlockchain, error) {
 	}
 }
 
-func (p DidBlockchain) ToBloockBlockchain() identityV2.Blockchain {
+func (p DidBlockchain) ToBloockBlockchain() identityEntity.Blockchain {
 	switch p {
 	case DidBlockchainPolygon:
-		return identityV2.ListOfBlockchains().Polygon
+		return identityEntity.ListOfBlockchains().Polygon
 	case DidBlockchainEthereum:
-		return identityV2.ListOfBlockchains().Ethereum
+		return identityEntity.ListOfBlockchains().Ethereum
 	case DidBlockchainNoChain:
-		return identityV2.ListOfBlockchains().NoChain
+		return identityEntity.ListOfBlockchains().NoChain
 	case DidBlockchainUnknownChain:
-		return identityV2.ListOfBlockchains().UnknownChain
+		return identityEntity.ListOfBlockchains().UnknownChain
 	default:
-		return identityV2.ListOfBlockchains().Polygon
+		return identityEntity.ListOfBlockchains().Polygon
 	}
 }
