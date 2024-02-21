@@ -78,6 +78,7 @@ func createIssuer(ctx context.Context, logger zerolog.Logger, cfg *config.Config
 	if config.Configuration.Issuer.Key.Key != "" {
 		ctxValue := context.WithValue(ctx, pkg.ApiKeyContextKey, config.Configuration.Bloock.ApiKey)
 		createIssuerService := create.NewIssuer(ctxValue, config.Configuration.Issuer.Key.Key, logger)
+
 		req := request.CreateIssuerRequest{
 			Key:             config.Configuration.Issuer.Key.Key,
 			Name:            config.Configuration.Issuer.Name,
@@ -85,11 +86,7 @@ func createIssuer(ctx context.Context, logger zerolog.Logger, cfg *config.Config
 			Image:           config.Configuration.Issuer.Image,
 			PublishInterval: config.Configuration.Issuer.PublishInterval,
 		}
-		if config.Configuration.Issuer.DidMetadata.Method != "" {
-			req.DidMetadata.Method = config.Configuration.Issuer.DidMetadata.Method
-			req.DidMetadata.Blockchain = config.Configuration.Issuer.DidMetadata.Blockchain
-			req.DidMetadata.Network = config.Configuration.Issuer.DidMetadata.Network
-		}
+
 		issuerDid, err := createIssuerService.Create(ctxValue, req)
 		if err != nil {
 			return err

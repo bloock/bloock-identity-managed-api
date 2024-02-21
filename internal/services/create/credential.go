@@ -1,6 +1,7 @@
 package create
 
 import (
+	"bloock-identity-managed-api/internal/config"
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
 	"bloock-identity-managed-api/internal/pkg"
@@ -20,7 +21,7 @@ type Credential struct {
 	identityRepository   repository.IdentityRepository
 	logger               zerolog.Logger
 	issuer               identityEntity.Issuer
-	didType              identityEntity.DidType
+	didMethod            domain.DidMethod
 }
 
 func NewCredential(ctx context.Context, cr repository.CredentialRepository, l zerolog.Logger) (*Credential, error) {
@@ -28,20 +29,17 @@ func NewCredential(ctx context.Context, cr repository.CredentialRepository, l ze
 	if issuerKey == "" {
 		return &Credential{}, domain.ErrEmptyIssuerKey
 	}
-	method := pkg.GetIssuerDidTypeMethodFromContext(ctx)
-	blockchain := pkg.GetIssuerDidTypeBlockchainFromContext(ctx)
-	network := pkg.GetIssuerDidTypeNetworkFromContext(ctx)
 
-	didType, err := domain.GetDidType(method, blockchain, network)
-	if err != nil {
-		return &Credential{}, err
+	didMethod := domain.PolygonID
+	if config.Configuration.Api.PolygonTestEnabled {
+		didMethod = domain.PolygonIDTest
 	}
 
 	return &Credential{
 		credentialRepository: cr,
 		identityRepository:   identity.NewIdentityRepository(ctx, l),
 		keyRepository:        keyRepo.NewKeyRepository(ctx, issuerKey, l),
-		didType:              didType,
+		didMethod:            didMethod,
 		logger:               l,
 	}, nil
 }
@@ -52,7 +50,7 @@ func (c Credential) Create(ctx context.Context, req request.CredentialRequest) (
 		return "", err
 	}
 
-	issuer, err := c.identityRepository.ImportIssuer(ctx, issuerKey, c.didType)
+	issuer, err := c.identityRepository.ImportIssuer(ctx, issuerKey, c.didMethod)
 	if err != nil {
 		return "", err
 	}

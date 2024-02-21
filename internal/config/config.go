@@ -12,10 +12,11 @@ import (
 )
 
 type APIConfig struct {
-	Host       string `mapstructure:"host" default:"0.0.0.0"`
-	Port       string `mapstructure:"port" default:"8080"`
-	DebugMode  bool   `mapstructure:"debug_mode" default:"false"`
-	PublicHost string `mapstructure:"public_host"`
+	Host               string `mapstructure:"host" default:"0.0.0.0"`
+	Port               string `mapstructure:"port" default:"8080"`
+	DebugMode          bool   `mapstructure:"debug_mode" default:"false"`
+	PublicHost         string `mapstructure:"public_host"`
+	PolygonTestEnabled bool   `mapstructure:"polygon_test_enabled" default:"false"`
 }
 
 type AuthConfig struct {
@@ -33,25 +34,18 @@ type BloockConfig struct {
 }
 
 type BlockchainConfig struct {
-	SmartContract  string `mapstructure:"smart_contract" default:"0x624ce98D2d27b20b8f8d521723Df8fC4db71D79D"`
-	Provider       string `mapstructure:"provider" default:"https://polygon.bloock.com"`
-	ResolverPrefix string `mapstructure:"resolver_prefix" default:"polygon:main"`
+	SmartContract  string
+	Provider       string
+	ResolverPrefix string
 }
 
 type IssuerConfig struct {
-	Name            string            `mapstructure:"name"`
-	Description     string            `mapstructure:"description"`
-	Image           string            `mapstructure:"image"`
-	PublishInterval int               `mapstructure:"publish_interval"`
-	Key             KeyConfig         `mapstructure:"key"`
-	IssuerDid       string            `mapstructure:"issuer_did"`
-	DidMetadata     DidMetadataConfig `mapstructure:"did_metadata"`
-}
-
-type DidMetadataConfig struct {
-	Method     string `mapstructure:"method"`
-	Blockchain string `mapstructure:"blockchain"`
-	Network    string `mapstructure:"network"`
+	Name            string    `mapstructure:"name"`
+	Description     string    `mapstructure:"description"`
+	Image           string    `mapstructure:"image"`
+	PublishInterval int       `mapstructure:"publish_interval"`
+	Key             KeyConfig `mapstructure:"key"`
+	IssuerDid       string    `mapstructure:"issuer_did"`
 }
 
 type KeyConfig struct {
@@ -100,6 +94,16 @@ func InitConfig(logger zerolog.Logger) (*Config, error) {
 
 	bloock.ApiHost = Configuration.Bloock.ApiHost
 	bloock.DisableAnalytics = true
+
+	if Configuration.Api.PolygonTestEnabled {
+		Configuration.Blockchain.Provider = "https://polygon.bloock.dev"
+		Configuration.Blockchain.SmartContract = "0x134B1BE34911E39A8397ec6289782989729807a4"
+		Configuration.Blockchain.ResolverPrefix = "polygon:mumbai"
+	} else {
+		Configuration.Blockchain.Provider = "https://polygon.bloock.com"
+		Configuration.Blockchain.SmartContract = "0x624ce98D2d27b20b8f8d521723Df8fC4db71D79D"
+		Configuration.Blockchain.ResolverPrefix = "polygon:main"
+	}
 
 	return &Configuration, nil
 }

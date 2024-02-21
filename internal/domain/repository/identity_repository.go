@@ -9,8 +9,8 @@ import (
 )
 
 type IdentityRepository interface {
-	CreateIssuer(ctx context.Context, issuerKey key.Key, didType identityEntity.DidType, name, description, image string, publishInterval domain.PublishIntervalMinutes) (string, error)
-	ImportIssuer(ctx context.Context, issuerKey key.Key, didType identityEntity.DidType) (identityEntity.Issuer, error)
+	CreateIssuer(ctx context.Context, issuerKey key.Key, didMethod domain.DidMethod, name, description, image string, publishInterval domain.PublishIntervalMinutes) (string, error)
+	ImportIssuer(ctx context.Context, issuerKey key.Key, didMethod domain.DidMethod) (identityEntity.Issuer, error)
 	ForcePublishIssuerState(ctx context.Context, issuer identityEntity.Issuer) (string, error)
 
 	CreateCredential(ctx context.Context, issuer identityEntity.Issuer, req request.CredentialRequest) (identityEntity.CredentialReceipt, error)

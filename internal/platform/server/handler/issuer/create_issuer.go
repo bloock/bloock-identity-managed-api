@@ -16,18 +16,11 @@ import (
 )
 
 type CreateIssuerRequest struct {
-	Key             string `form:"key" binding:"required"`
-	DidMetadata     DidMetadata
+	Key             string                `form:"key" binding:"required"`
 	Name            string                `form:"name"`
 	Description     string                `form:"description"`
 	Image           *multipart.FileHeader `form:"image"`
 	PublishInterval int                   `form:"publish_interval"`
-}
-
-type DidMetadata struct {
-	Method     string `form:"did_metadata.method"`
-	Blockchain string `form:"did_metadata.blockchain"`
-	Network    string `form:"did_metadata.network"`
 }
 
 type CreateIssuerResponse struct {
@@ -62,12 +55,7 @@ func CreateIssuer(l zerolog.Logger) gin.HandlerFunc {
 		createIssuerService := create.NewIssuer(ctx, req.Key, l)
 
 		issuerReq := request.CreateIssuerRequest{
-			Key: req.Key,
-			DidMetadata: request.DidMetadataRequest{
-				Method:     req.DidMetadata.Method,
-				Blockchain: req.DidMetadata.Blockchain,
-				Network:    req.DidMetadata.Network,
-			},
+			Key:             req.Key,
 			Name:            req.Name,
 			Description:     req.Description,
 			Image:           base64.URLEncoding.EncodeToString(image),
