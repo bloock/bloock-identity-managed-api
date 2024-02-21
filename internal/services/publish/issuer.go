@@ -1,20 +1,20 @@
 package publish
 
 import (
+	"bloock-identity-managed-api/internal/config"
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
 	"bloock-identity-managed-api/internal/pkg"
 	"bloock-identity-managed-api/internal/platform/identity"
 	"bloock-identity-managed-api/internal/platform/key"
 	"context"
-	identityEntity "github.com/bloock/bloock-sdk-go/v2/entity/identity"
 	"github.com/rs/zerolog"
 )
 
 type IssuerPublish struct {
 	keyRepository      repository.KeyRepository
 	identityRepository repository.IdentityRepository
-	didType            identityEntity.DidType
+	didMethod          domain.DidMethod
 	logger             zerolog.Logger
 }
 
@@ -23,19 +23,16 @@ func NewIssuerPublish(ctx context.Context, l zerolog.Logger) (*IssuerPublish, er
 	if issuerKey == "" {
 		return &IssuerPublish{}, domain.ErrEmptyIssuerKey
 	}
-	method := pkg.GetIssuerDidTypeMethodFromContext(ctx)
-	blockchain := pkg.GetIssuerDidTypeBlockchainFromContext(ctx)
-	network := pkg.GetIssuerDidTypeNetworkFromContext(ctx)
 
-	didType, err := domain.GetDidType(method, blockchain, network)
-	if err != nil {
-		return &IssuerPublish{}, err
+	didMethod := domain.PolygonID
+	if config.Configuration.Api.PolygonTestEnabled {
+		didMethod = domain.PolygonIDTest
 	}
 
 	return &IssuerPublish{
 		keyRepository:      key.NewKeyRepository(ctx, issuerKey, l),
 		identityRepository: identity.NewIdentityRepository(ctx, l),
-		didType:            didType,
+		didMethod:          didMethod,
 		logger:             l,
 	}, nil
 }
@@ -46,7 +43,7 @@ func (i IssuerPublish) Publish(ctx context.Context) (string, error) {
 		return "", err
 	}
 
-	issuer, err := i.identityRepository.ImportIssuer(ctx, issuerKey, i.didType)
+	issuer, err := i.identityRepository.ImportIssuer(ctx, issuerKey, i.didMethod)
 	if err != nil {
 		return "", err
 	}

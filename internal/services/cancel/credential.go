@@ -1,6 +1,7 @@
 package cancel
 
 import (
+	"bloock-identity-managed-api/internal/config"
 	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/domain/repository"
 	"bloock-identity-managed-api/internal/pkg"
@@ -16,7 +17,7 @@ import (
 type CredentialRevocation struct {
 	identityRepository repository.IdentityRepository
 	keyRepository      repository.KeyRepository
-	didType            identityEntity.DidType
+	didMethod          domain.DidMethod
 	logger             zerolog.Logger
 }
 
@@ -25,19 +26,16 @@ func NewCredentialRevocation(ctx context.Context, l zerolog.Logger) (*Credential
 	if issuerKey == "" {
 		return &CredentialRevocation{}, domain.ErrEmptyIssuerKey
 	}
-	method := pkg.GetIssuerDidTypeMethodFromContext(ctx)
-	blockchain := pkg.GetIssuerDidTypeBlockchainFromContext(ctx)
-	network := pkg.GetIssuerDidTypeNetworkFromContext(ctx)
 
-	didType, err := domain.GetDidType(method, blockchain, network)
-	if err != nil {
-		return &CredentialRevocation{}, err
+	didMethod := domain.PolygonID
+	if config.Configuration.Api.PolygonTestEnabled {
+		didMethod = domain.PolygonIDTest
 	}
 
 	return &CredentialRevocation{
 		identityRepository: identity.NewIdentityRepository(ctx, l),
 		keyRepository:      key.NewKeyRepository(ctx, issuerKey, l),
-		didType:            didType,
+		didMethod:          didMethod,
 		logger:             l,
 	}, nil
 }
@@ -48,7 +46,7 @@ func (c CredentialRevocation) Revoke(ctx context.Context, cred verifiable.W3CCre
 		return err
 	}
 
-	issuer, err := c.identityRepository.ImportIssuer(ctx, issuerKey, c.didType)
+	issuer, err := c.identityRepository.ImportIssuer(ctx, issuerKey, c.didMethod)
 	if err != nil {
 		return err
 	}

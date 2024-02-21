@@ -242,38 +242,19 @@ In case you want to deploy an issuer with local keys (i.e. not managed by Bloock
     - **Purpose**: You will have to pass an image in base64url to be able to decode it later.
     - **Example**: iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAEAAAAAApiSv5AAAHQklEQVR4nOydQW7luA4Afz5y_yv3rCZ-C4IiTdrpQVWtGm1bUpKCQEgi9f3nz_8E...
 
-An issuer is ultimately an identity, so creating it means having a DID. There are different [DID methods](https://www.w3.org/TR/did-core/#methods), so you can specify any supported by Bloock:
-
-- **BLOOCK_ISSUER_DID_METADATA_METHOD** (***OPTIONAL***)
-    - **Description**: The identity did method.
-    - **Options**: polygonid, iden3
-- **BLOOCK_ISSUER_DID_METADATA_BLOCKCHAIN** (***OPTIONAL***)
-    - **Description**: The identity did blockchain.
-    - **Options**: polygon
-- **BLOOCK_ISSUER_DID_METADATA_NETWORK** (***OPTIONAL***)
-    - **Description**: The identity did network reference.
-    - **Options**: main, mumbai
-
-If you want to perform verification processes, and in case you want to verify proofs issued in a different network than the default one, you can change it by editing the following variables:
-
-> **NOTE:** For now, by default, all variables point to [Polygon's main network](https://polygonscan.com/).
-
-- **BLOOCK_BLOCKCHAIN_SMART_CONTRACT** (***OPTIONAL***)
-    - **Description**: In case you want to point e.g. to another network like Mumbai (test network) you have to update the smart contract.
-    - **Options**: Mumbai smart contract: 0x134B1BE34911E39A8397ec6289782989729807a4.
-- **BLOOCK_BLOCKCHAIN_PROVIDER** (***OPTIONAL***)
-    - **Description**: The rpc provider uri endpoint.
-    - **Example**: https://polygon-mumbai.g.alchemy.com/v2/xxxxxxxxxx
-- **BLOOCK_BLOCKCHAIN_RESOLVER_PREFIX** (***OPTIONAL***)
-    - **Description**: The identity resolver prefix.
-    - **Options**: Mumbai prefix: polygon:mumbai
-
-You can also edit parameters of your verification process:
+If you want to perform verification, you can edit parameters of your verification process:
 
 - **BLOOCK_VERIFICATION_EXPIRATION** (***OPTIONAL***)
     - **Description**: You can edit how long a verification is valid for (by specifying the number in minutes), i.e. when you start a verification process by default that session id that is created has an expiration after 60 minutes. You can add more time or reduce it. More features will be added soon.
     - **Default**: 60 minutes.
     - **Example**: 120
+
+**Only for BLOOCK development environments:**
+
+- **BLOOCK_API_POLYGON_TEST_ENABLED** (***OPTIONAL***)
+    - **Description**: Boolean to activates the development environment.
+    - **Purpose**: Basically it changes all the variables concerning the Polygon ID identity protocol by referencing the Mumbai network.
+    - **Example**: false
 
 These configuration variables provide fine-grained control over the behavior of the Identity Bloock Managed API. You can adjust them to match your specific requirements and deployment environment.
 

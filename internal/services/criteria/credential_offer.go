@@ -11,7 +11,6 @@ import (
 	"bloock-identity-managed-api/internal/services/criteria/response"
 	"context"
 	"fmt"
-	identityEntity "github.com/bloock/bloock-sdk-go/v2/entity/identity"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 	"strings"
@@ -22,7 +21,7 @@ type CredentialOffer struct {
 	identityRepository   repository.IdentityRepository
 	keyRepository        repository.KeyRepository
 	publicHost           string
-	didType              identityEntity.DidType
+	didMethod            domain.DidMethod
 	authSyncMap          *utils.SyncMap
 	logger               zerolog.Logger
 }
@@ -32,13 +31,10 @@ func NewCredentialOffer(ctx context.Context, cr repository.CredentialRepository,
 	if issuerKey == "" {
 		return &CredentialOffer{}, domain.ErrEmptyIssuerKey
 	}
-	method := pkg.GetIssuerDidTypeMethodFromContext(ctx)
-	blockchain := pkg.GetIssuerDidTypeBlockchainFromContext(ctx)
-	network := pkg.GetIssuerDidTypeNetworkFromContext(ctx)
 
-	didType, err := domain.GetDidType(method, blockchain, network)
-	if err != nil {
-		return &CredentialOffer{}, err
+	didMethod := domain.PolygonID
+	if config.Configuration.Api.PolygonTestEnabled {
+		didMethod = domain.PolygonIDTest
 	}
 
 	return &CredentialOffer{
@@ -46,7 +42,7 @@ func NewCredentialOffer(ctx context.Context, cr repository.CredentialRepository,
 		keyRepository:        keyRepo.NewKeyRepository(ctx, issuerKey, l),
 		credentialRepository: cr,
 		publicHost:           config.Configuration.Api.PublicHost,
-		didType:              didType,
+		didMethod:            didMethod,
 		authSyncMap:          authSyncMap,
 		logger:               l,
 	}, nil
@@ -65,7 +61,7 @@ func (c CredentialOffer) Get(ctx context.Context, credentialId string) (response
 		return response.GetCredentialOfferResponse{}, err
 	}
 
-	issuer, err := c.identityRepository.ImportIssuer(ctx, issuerKey, c.didType)
+	issuer, err := c.identityRepository.ImportIssuer(ctx, issuerKey, c.didMethod)
 	if err != nil {
 		return response.GetCredentialOfferResponse{}, err
 	}

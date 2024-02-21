@@ -33,8 +33,8 @@ func NewIdentityRepository(ctx context.Context, l zerolog.Logger) *IdentityRepos
 	}
 }
 
-func (i IdentityRepository) CreateIssuer(ctx context.Context, issuerKey key.Key, didType identityEntity.DidType, name, description, image string, publishInterval domain.PublishIntervalMinutes) (string, error) {
-	issuer, err := i.identityClient.CreateIssuer(issuerKey, publishInterval.Params(), didType, name, description, image)
+func (i IdentityRepository) CreateIssuer(ctx context.Context, issuerKey key.Key, didMethod domain.DidMethod, name, description, image string, publishInterval domain.PublishIntervalMinutes) (string, error) {
+	issuer, err := i.identityClient.CreateIssuer(issuerKey, publishInterval.Params(), didMethod.GetBloockDidMethod(), name, description, image)
 	if err != nil {
 		i.logger.Error().Err(err).Msg("")
 		return "", err
@@ -43,8 +43,8 @@ func (i IdentityRepository) CreateIssuer(ctx context.Context, issuerKey key.Key,
 	return issuer.Did.Did, nil
 }
 
-func (i IdentityRepository) ImportIssuer(ctx context.Context, issuerKey key.Key, didType identityEntity.DidType) (identityEntity.Issuer, error) {
-	issuer, err := i.identityClient.ImportIssuer(issuerKey, didType)
+func (i IdentityRepository) ImportIssuer(ctx context.Context, issuerKey key.Key, didMethod domain.DidMethod) (identityEntity.Issuer, error) {
+	issuer, err := i.identityClient.ImportIssuer(issuerKey, didMethod.GetBloockDidMethod())
 	if err != nil {
 		i.logger.Error().Err(err).Msg("")
 		return identityEntity.Issuer{}, err

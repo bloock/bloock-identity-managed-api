@@ -3,6 +3,7 @@ api:
   port: 8080
   debug_mode: false
   public_host: ""
+  polygon_test_enabled: false
 
 db:
   connection_string: "file:bloock?mode=memory&cache=shared&_fk=1"
@@ -15,11 +16,6 @@ bloock:
   api_key: ""
   webhook_secret_key: ""
 
-blockchain:
-  smart_contract: ""
-  provider: ""
-  resolver_prefix: ""
-
 issuer:
   name: ""
   description: ""
@@ -27,10 +23,6 @@ issuer:
   publish_interval: ""
   key:
     key: ""
-  did_metadata:
-    method: ""
-    blockchain: ""
-    network: ""
 
 verification:
   expiration: ""
