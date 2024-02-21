@@ -1,4 +1,4 @@
-# Bloock Identity Managed API
+# BLOOCK Identity Managed API
 
 This is an API for those who want to create, emit and offer verifiable credentials or VC's (https://www.w3.org/TR/vc-data-model-2.0/), using bloock product's and following the principles of self-sovereign identity and privacy by default. 
 
@@ -20,7 +20,7 @@ This is an API for those who want to create, emit and offer verifiable credentia
 
 ## Installation
 
-You have one primary method to set up and run the Identity Bloock Managed API:
+You have one primary method to set up and run the Identity BLOOCK Managed API:
 
 1. [Docker Setup Guide](#docker-setup-guide)
 
@@ -44,7 +44,7 @@ This option is straightforward and ideal if you want to get started quickly. Fol
       docker pull bloock/identity-managed-api
       ```
 
-      This command fetches the latest version of the Identity Bloock Managed API image from [DockerHub](https://hub.docker.com/r/bloock/identity-managed-api). We maintain a Docker repository with the latest releases of this repository.
+      This command fetches the latest version of the Identity BLOOCK Managed API image from [DockerHub](https://hub.docker.com/r/bloock/identity-managed-api). We maintain a Docker repository with the latest releases of this repository.
 
 
 2. **Create a `.env` File:**
@@ -70,7 +70,7 @@ This option is straightforward and ideal if you want to get started quickly. Fol
 
 3. **Run the Docker Image with Environment Variables:**
 
-    - Run the following command to start the Identity Bloock Managed API container while passing the `.env` file as an environment variable source:
+    - Run the following command to start the Identity BLOOCK Managed API container while passing the `.env` file as an environment variable source:
 
      ```bash
      docker run --env-file .env -p 8080:8080 bloock/identity-managed-api
@@ -88,16 +88,16 @@ This option is straightforward and ideal if you want to get started quickly. Fol
     docker run -d --env-file config.txt -p 8080:8080 bloock/identity-managed-api
     ```
 
-   The `-d` flag tells Docker to run the container as a background process. You can continue using your terminal for other tasks while the Identity Bloock Managed API container runs silently in the background.
+   The `-d` flag tells Docker to run the container as a background process. You can continue using your terminal for other tasks while the Identity BLOOCK Managed API container runs silently in the background.
 
 
 4. **Access the API:**
 
-    - After running the Docker image, the Identity Bloock Managed API will be accessible at `http://localhost:8080`.
+    - After running the Docker image, the Identity BLOOCK Managed API will be accessible at `http://localhost:8080`.
 
     - You can now make API requests to interact with the service.
 
-By following these steps, you can quickly deploy the Identity Bloock Managed API as a Docker container with your customized configuration.
+By following these steps, you can quickly deploy the Identity BLOOCK Managed API as a Docker container with your customized configuration.
 
 ### Option 2: Use Docker Compose with Database Containers
 
@@ -158,30 +158,30 @@ If you need a more complex setup, such as using a specific database like **MySQL
     docker-compose -f docker-compose-mysql.yaml up -d
     ```
 
-   The `-d` flag tells Docker to run the container as a background process. You can continue using your terminal for other tasks while the Identity Bloock Managed API container runs silently in the background.
+   The `-d` flag tells Docker to run the container as a background process. You can continue using your terminal for other tasks while the Identity BLOOCK Managed API container runs silently in the background.
 
 
 6. **Access the API:**
 
-    - After running the Docker Compose command, the Identity Bloock Managed API will be accessible at http://localhost:8080. You can make API requests to interact with the service.
+    - After running the Docker Compose command, the Identity BLOOCK Managed API will be accessible at http://localhost:8080. You can make API requests to interact with the service.
 
-By following these steps, you can quickly set up the Identity Bloock Managed API with your chosen database type using the provided Docker Compose files.
+By following these steps, you can quickly set up the Identity BLOOCK Managed API with your chosen database type using the provided Docker Compose files.
 
 ---
 
 ## Configuration
 
-The Identity Bloock Managed API leverages Viper, a powerful configuration management library, currently supporting environment variables and a YAML configuration file.
+The Identity BLOOCK Managed API leverages Viper, a powerful configuration management library, currently supporting environment variables and a YAML configuration file.
 
 ### Variables
 
-Here are the configuration variables used by the Identity Bloock Managed API.
+Here are the configuration variables used by the Identity BLOOCK Managed API.
 
 Basic configuration:
 
 - **BLOOCK_BLOOCK_API_KEY** (**REQUIRED**)
     - **Description**: Your unique [BLOOCK API key](https://docs.bloock.com/libraries/authentication/create-an-api-key).
-    - **Purpose**: This [API key](https://docs.bloock.com/libraries/authentication/create-an-api-key) is required for authentication and authorization when interacting with the Bloock Identity Managed API. It allows you to securely access and use the API's features.
+    - **Purpose**: This [API key](https://docs.bloock.com/libraries/authentication/create-an-api-key) is required for authentication and authorization when interacting with the BLOOCK Identity Managed API. It allows you to securely access and use the API's features.
     - **[Create API Key](https://docs.bloock.com/libraries/authentication/create-an-api-key)**
     - **Example**: no9rLf9dOMjXGvXQX3I96a39qYFoZknGd6YHtY3x1VPelr6M-TmTLpAF-fm1k9Zi
 - **BLOOCK_BLOOCK_WEBHOOK_SECRET_KEY** (***REQUIRED***)
@@ -205,7 +205,7 @@ Basic configuration:
 - **BLOOCK_API_HOST** (***OPTIONAL***)
     - **Description**: The API host IP address.
     - **Default**: 0.0.0.0
-    - **Purpose**: This variable allows you to specify the IP address on which the Identity Bloock Managed API should listen for incoming requests. You can customize it based on your network configuration.
+    - **Purpose**: This variable allows you to specify the IP address on which the Identity BLOOCK Managed API should listen for incoming requests. You can customize it based on your network configuration.
 - **BLOOCK_API_PORT** (***OPTIONAL***)
     - **Description**: The API port number.
     - **Default**: 8080
@@ -215,9 +215,9 @@ Basic configuration:
     - **Default**: false
     - **Purpose**: When set to true, debug mode provides more detailed log information, which can be useful for troubleshooting and debugging. Set it to false for normal operation.
     
-Advanced configuration. Please only edit these variables if you are familiar with the Bloock digital identity protocol.
+Advanced configuration. Please only edit these variables if you are familiar with the BLOOCK digital identity protocol.
 
-In case you want to deploy an issuer with local keys (i.e. not managed by Bloock services) you must set the following variables in order to create your issuer together with the API deployment:
+In case you want to deploy an issuer with local keys (i.e. not managed by BLOOCK services) you must set the following variables in order to create your issuer together with the API deployment:
 
 - **BLOOCK_ISSUER_KEY_KEY** (***REQUIRED***)
     - **Description**: Represents a private key of type [Baby JubJub](https://docs.iden3.io/getting-started/babyjubjub/).
@@ -238,7 +238,7 @@ In case you want to deploy an issuer with local keys (i.e. not managed by Bloock
     - **Purpose**: Simply to add a description of you issuer.
     - **Example**: this is my first issuer creation
 - **BLOOCK_ISSUER_IMAGE** (***OPTIONAL***)
-    - **Description**: You can set up an image for you issuer. You will see that image issuer on your [Bloock management dashboard](https://dashboard.bloock.com/login).
+    - **Description**: You can set up an image for you issuer. You will see that image issuer on your [BLOOCK management dashboard](https://dashboard.bloock.com/login).
     - **Purpose**: You will have to pass an image in base64url to be able to decode it later.
     - **Example**: iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAEAAAAAApiSv5AAAHQklEQVR4nOydQW7luA4Afz5y_yv3rCZ-C4IiTdrpQVWtGm1bUpKCQEgi9f3nz_8E...
 
@@ -256,11 +256,11 @@ If you want to perform verification, you can edit parameters of your verificatio
     - **Purpose**: Basically it changes all the variables concerning the Polygon ID identity protocol by referencing the Mumbai network.
     - **Example**: false
 
-These configuration variables provide fine-grained control over the behavior of the Identity Bloock Managed API. You can adjust them to match your specific requirements and deployment environment.
+These configuration variables provide fine-grained control over the behavior of the Identity BLOOCK Managed API. You can adjust them to match your specific requirements and deployment environment.
 
 ### Database Support
 
-The Identity Bloock Managed API is designed to be flexible when it comes to database integration. It supports three types of relational databases: **MemDB (SQLite)**, **MySQL**, and **Postgres**. The choice of database type depends on your specific requirements and infrastructure.
+The Identity BLOOCK Managed API is designed to be flexible when it comes to database integration. It supports three types of relational databases: **MemDB (SQLite)**, **MySQL**, and **Postgres**. The choice of database type depends on your specific requirements and infrastructure.
 
 Here are the supported database types and how to configure them:
 
@@ -287,7 +287,7 @@ Similar to MySQL, replace `user`, `password`, `host`, and `database` with your P
 
 In this format, `dbname` represents the name of your SQLite database. The API will create an in-memory SQLite database with this name.
 
-If you already have an existing database infrastructure and want to use it with the Identity Bloock Managed API, you have the flexibility to provide your custom database connection string.
+If you already have an existing database infrastructure and want to use it with the Identity BLOOCK Managed API, you have the flexibility to provide your custom database connection string.
 
 `Variable: BLOOCK_DB_CONNECTION_STRING`
 
