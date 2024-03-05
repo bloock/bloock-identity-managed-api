@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	entgo.io/ent v0.12.4
-	github.com/bloock/bloock-sdk-go/v2 v2.8.0
+	github.com/bloock/bloock-sdk-go/v2 v2.8.3
 	github.com/ethereum/go-ethereum v1.11.5
 	github.com/gin-contrib/logger v0.3.0
 	github.com/gin-gonic/gin v1.9.1
