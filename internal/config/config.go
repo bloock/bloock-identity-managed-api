@@ -93,7 +93,6 @@ func InitConfig(logger zerolog.Logger) (*Config, error) {
 	defaults.SetDefaults(&Configuration)
 
 	bloock.ApiHost = Configuration.Bloock.ApiHost
-	bloock.DisableAnalytics = true
 
 	if Configuration.Api.PolygonTestEnabled {
 		Configuration.Blockchain.Provider = "https://polygon.bloock.dev"

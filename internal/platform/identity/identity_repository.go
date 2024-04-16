@@ -24,7 +24,7 @@ type IdentityRepository struct {
 func NewIdentityRepository(ctx context.Context, l zerolog.Logger) *IdentityRepository {
 	l.With().Caller().Str("component", "identity-repository").Logger()
 
-	c := client.NewBloockClient(pkg.GetApiKeyFromContext(ctx), &config.Configuration.Api.PublicHost, nil)
+	c := client.NewBloockClient(pkg.GetApiKeyFromContext(ctx), &config.Configuration.Api.PublicHost)
 
 	return &IdentityRepository{
 		identityClient:     c.IdentityClient,
