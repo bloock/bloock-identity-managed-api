@@ -253,7 +253,7 @@ If you want to perform verification, you can edit parameters of your verificatio
 
 - **BLOOCK_API_POLYGON_TEST_ENABLED** (***OPTIONAL***)
     - **Description**: Boolean to activates the development environment.
-    - **Purpose**: Basically it changes all the variables concerning the Polygon ID identity protocol by referencing the Mumbai network.
+    - **Purpose**: Basically it changes all the variables concerning the Polygon ID identity protocol by referencing the Polygon Amoy test network.
     - **Example**: false
 
 These configuration variables provide fine-grained control over the behavior of the Identity BLOOCK Managed API. You can adjust them to match your specific requirements and deployment environment.

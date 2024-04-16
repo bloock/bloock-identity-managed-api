@@ -97,8 +97,8 @@ func InitConfig(logger zerolog.Logger) (*Config, error) {
 
 	if Configuration.Api.PolygonTestEnabled {
 		Configuration.Blockchain.Provider = "https://polygon.bloock.dev"
-		Configuration.Blockchain.SmartContract = "0x134B1BE34911E39A8397ec6289782989729807a4"
-		Configuration.Blockchain.ResolverPrefix = "polygon:mumbai"
+		Configuration.Blockchain.SmartContract = "0x1a4cC30f2aA0377b0c3bc9848766D90cb4404124"
+		Configuration.Blockchain.ResolverPrefix = "polygon:amoy"
 	} else {
 		Configuration.Blockchain.Provider = "https://polygon.bloock.com"
 		Configuration.Blockchain.SmartContract = "0x624ce98D2d27b20b8f8d521723Df8fC4db71D79D"
