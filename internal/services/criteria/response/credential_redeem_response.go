@@ -1,6 +1,6 @@
 package response
 
-import "github.com/iden3/go-schema-processor/verifiable"
+import "github.com/iden3/go-schema-processor/v2/verifiable"
 
 type RedeemCredentialResponse struct {
 	ID       string

@@ -267,8 +267,8 @@ github.com/iden3/go-rapidsnark/witness/v2 v2.0.0 h1:mkY6VDfwKVJc83QGKmwVXY2LYepi
 github.com/iden3/go-rapidsnark/witness/v2 v2.0.0/go.mod h1:3JRjqUfW1hgI9hzLDO0v8z/DUkR0ZUehhYLlnIfRxnA=
 github.com/iden3/go-rapidsnark/witness/wazero v0.0.0-20230524142950-0986cf057d4e h1:WeiFCrpj5pLRtSA4Mg03yTrSZhHHqN/k5b6bwxd9/tY=
 github.com/iden3/go-rapidsnark/witness/wazero v0.0.0-20230524142950-0986cf057d4e/go.mod h1:UEBifEzw62T6VzIHJeHuUgeLg2U/J9ttf7hOwQEqnYk=
-github.com/iden3/go-schema-processor v1.3.1 h1:LJfFInfYGMOp0bTKKC17R8q4XI+VtqhFLPTEqnOIvlM=
-github.com/iden3/go-schema-processor v1.3.1/go.mod h1:NwJ1nuGdRlCFaN1/V6mS0AOAdvpLcGf4KKq0mluLG7U=
+github.com/iden3/go-schema-processor v1.2.0 h1:kcT8zfIx0U7M2j/sOXUPdTcn9hdy7WwRhR+0yQlV4nQ=
+github.com/iden3/go-schema-processor v1.2.0/go.mod h1:OoxGutmHbpU42/mYCkzYSf4nhsEZ0Ws0ouBpWxcjp0w=
 github.com/iden3/go-schema-processor/v2 v2.3.3 h1:GfChxMZHG4miA3p/5rLIrM7TGmKu/oAAXgLloYTBHSI=
 github.com/iden3/go-schema-processor/v2 v2.3.3/go.mod h1:8y/R0iQpYhyhRQ3sL4F5Aja3+1T68M6uwGQdC4pQ4X0=
 github.com/iden3/iden3comm v1.1.0 h1:feWurfGJV6YZyxi4J3U2jqQ+RUo0mo36Aoqyck1ZnHg=

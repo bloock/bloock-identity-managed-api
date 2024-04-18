@@ -5,7 +5,7 @@ import (
 	"bloock-identity-managed-api/internal/domain/repository"
 	"context"
 	"github.com/google/uuid"
-	"github.com/iden3/go-schema-processor/verifiable"
+	"github.com/iden3/go-schema-processor/v2/verifiable"
 	"github.com/rs/zerolog"
 )
 
