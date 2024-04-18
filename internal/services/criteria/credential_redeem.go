@@ -11,7 +11,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/google/uuid"
-	core "github.com/iden3/go-iden3-core"
+	"github.com/iden3/go-iden3-core/v2/w3c"
 	"github.com/iden3/iden3comm"
 	"github.com/iden3/iden3comm/packers"
 	"github.com/iden3/iden3comm/protocol"
@@ -99,31 +99,31 @@ func (c CredentialRedeem) Redeem(ctx context.Context, body string) (response.Red
 	}, nil
 }
 
-func (c CredentialRedeem) validateBasicMessage(basicMessage *iden3comm.BasicMessage) (*core.DID, *core.DID, error) {
-	didTo, err := core.ParseDID(basicMessage.To)
+func (c CredentialRedeem) validateBasicMessage(basicMessage *iden3comm.BasicMessage) (*w3c.DID, *w3c.DID, error) {
+	didTo, err := w3c.ParseDID(basicMessage.To)
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
-		return &core.DID{}, &core.DID{}, domain.ErrInvalidDID
+		return &w3c.DID{}, &w3c.DID{}, domain.ErrInvalidDID
 	}
-	didFrom, err := core.ParseDID(basicMessage.From)
+	didFrom, err := w3c.ParseDID(basicMessage.From)
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
-		return &core.DID{}, &core.DID{}, domain.ErrInvalidDID
+		return &w3c.DID{}, &w3c.DID{}, domain.ErrInvalidDID
 	}
 	_, err = uuid.Parse(basicMessage.ID)
 	if err != nil {
 		c.logger.Error().Err(err).Msg("")
-		return &core.DID{}, &core.DID{}, domain.ErrInvalidUUID
+		return &w3c.DID{}, &w3c.DID{}, domain.ErrInvalidUUID
 	}
 	if basicMessage.Type != protocol.CredentialFetchRequestMessageType && basicMessage.Type != protocol.RevocationStatusRequestMessageType {
 		err = domain.ErrInvalidZkpMessage
 		c.logger.Error().Err(err).Msg("")
-		return &core.DID{}, &core.DID{}, err
+		return &w3c.DID{}, &w3c.DID{}, err
 	}
 	if basicMessage.ID == "" {
 		err = domain.ErrInvalidZkpMessage
 		c.logger.Error().Err(err).Msg("")
-		return &core.DID{}, &core.DID{}, err
+		return &w3c.DID{}, &w3c.DID{}, err
 	}
 	return didTo, didFrom, nil
 }

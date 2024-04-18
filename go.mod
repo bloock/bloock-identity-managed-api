@@ -15,7 +15,7 @@ require (
 	github.com/iden3/go-circuits v1.0.3
 	github.com/iden3/go-circuits/v2 v2.0.0
 	github.com/iden3/go-iden3-auth/v2 v2.0.0-beta.2
-	github.com/iden3/go-iden3-core v1.0.2
+	github.com/iden3/go-iden3-core/v2 v2.1.0
 	github.com/iden3/go-jwz v1.0.0
 	github.com/iden3/go-schema-processor v1.3.1
 	github.com/iden3/iden3comm v1.1.0
@@ -60,7 +60,7 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.13.0 // indirect
 	github.com/holiman/uint256 v1.2.2-0.20230321075855-87b91420868c // indirect
-	github.com/iden3/go-iden3-core/v2 v2.0.0 // indirect
+	github.com/iden3/go-iden3-core v1.0.2 // indirect
 	github.com/iden3/go-iden3-crypto v0.0.15 // indirect
 	github.com/iden3/go-jwz/v2 v2.0.0 // indirect
 	github.com/iden3/go-merkletree-sql/v2 v2.0.4 // indirect
