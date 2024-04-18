@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"github.com/iden3/iden3comm"
+	"github.com/iden3/iden3comm/v2"
 	"github.com/iden3/iden3comm/v2/protocol"
 )
 

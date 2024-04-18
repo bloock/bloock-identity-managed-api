@@ -12,9 +12,9 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"github.com/iden3/go-iden3-core/v2/w3c"
-	"github.com/iden3/iden3comm"
-	"github.com/iden3/iden3comm/packers"
-	"github.com/iden3/iden3comm/protocol"
+	"github.com/iden3/iden3comm/v2"
+	"github.com/iden3/iden3comm/v2/packers"
+	"github.com/iden3/iden3comm/v2/protocol"
 	"github.com/rs/zerolog"
 )
 
