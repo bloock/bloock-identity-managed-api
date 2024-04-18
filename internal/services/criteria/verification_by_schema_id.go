@@ -61,7 +61,7 @@ func (c CreateVerification) Create(ctx context.Context, verificationJSON []byte)
 		return nil, err
 	}
 
-	request := auth.CreateAuthorizationRequest("verification request", "did:polygonid:polygon:mumbai:2qFroxB5kwgCxgVrNGUM6EW3khJgCdHHnKTr3VnTcp", callbackUrl)
+	request := auth.CreateAuthorizationRequest("verification request", "did:polygonid:polygon:amoy:2qbSDKkr7smskYx9Ds9PkU4ARHbwXnFsSpcfsPHo7R", callbackUrl)
 
 	randomUUID := uuid.New().String()
 	request.ID = randomUUID

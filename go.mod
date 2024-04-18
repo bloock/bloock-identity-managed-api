@@ -10,16 +10,16 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/golang/mock v1.6.0
-	github.com/google/uuid v1.3.0
-	github.com/iden3/contracts-abi/state/go/abi v1.0.0-beta.3
+	github.com/google/uuid v1.6.0
+	github.com/iden3/contracts-abi/state/go/abi v1.0.1
 	github.com/iden3/go-circuits v1.0.3
-	github.com/iden3/go-circuits/v2 v2.0.0
-	github.com/iden3/go-iden3-auth/v2 v2.0.0-beta.2
+	github.com/iden3/go-circuits/v2 v2.2.0
+	github.com/iden3/go-iden3-auth/v2 v2.2.2
 	github.com/iden3/go-iden3-core/v2 v2.1.0
 	github.com/iden3/go-jwz v1.0.0
 	github.com/iden3/go-schema-processor v1.3.1
 	github.com/iden3/iden3comm v1.1.0
-	github.com/iden3/iden3comm/v2 v2.0.0
+	github.com/iden3/iden3comm/v2 v2.3.2
 	github.com/jackc/pgx/v5 v5.5.2
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/mcuadros/go-defaults v1.2.0
@@ -34,6 +34,7 @@ require (
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/benbjohnson/clock v1.3.5 // indirect
+	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect
 	github.com/bytedance/sonic v1.10.2 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
@@ -62,7 +63,7 @@ require (
 	github.com/holiman/uint256 v1.2.2-0.20230321075855-87b91420868c // indirect
 	github.com/iden3/go-iden3-core v1.0.2 // indirect
 	github.com/iden3/go-iden3-crypto v0.0.15 // indirect
-	github.com/iden3/go-jwz/v2 v2.0.0 // indirect
+	github.com/iden3/go-jwz/v2 v2.0.2 // indirect
 	github.com/iden3/go-merkletree-sql/v2 v2.0.4 // indirect
 	github.com/iden3/go-rapidsnark/prover v0.0.10 // indirect
 	github.com/iden3/go-rapidsnark/types v0.0.3 // indirect
@@ -70,11 +71,11 @@ require (
 	github.com/iden3/go-rapidsnark/witness v0.0.6 // indirect
 	github.com/iden3/go-rapidsnark/witness/v2 v2.0.0 // indirect
 	github.com/iden3/go-rapidsnark/witness/wazero v0.0.0-20230524142950-0986cf057d4e // indirect
-	github.com/iden3/go-schema-processor/v2 v2.0.0 // indirect
+	github.com/iden3/go-schema-processor/v2 v2.3.3 // indirect
 	github.com/iden3/wasmer-go v0.0.1 // indirect
-	github.com/ipfs/boxo v0.8.0 // indirect
+	github.com/ipfs/boxo v0.12.0 // indirect
 	github.com/ipfs/go-cid v0.4.1 // indirect
-	github.com/ipfs/go-ipfs-api v0.6.0 // indirect
+	github.com/ipfs/go-ipfs-api v0.7.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
@@ -105,7 +106,7 @@ require (
 	github.com/multiformats/go-multiaddr v0.9.0 // indirect
 	github.com/multiformats/go-multibase v0.2.0 // indirect
 	github.com/multiformats/go-multicodec v0.9.0 // indirect
-	github.com/multiformats/go-multihash v0.2.2 // indirect
+	github.com/multiformats/go-multihash v0.2.3 // indirect
 	github.com/multiformats/go-multistream v0.4.1 // indirect
 	github.com/multiformats/go-varint v0.0.7 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
@@ -126,7 +127,6 @@ require (
 	github.com/tklauser/numcpus v0.6.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
-	github.com/whyrusleeping/tar-utils v0.0.0-20201201191210-20a61371de5b // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
 	golang.org/x/arch v0.6.0 // indirect
