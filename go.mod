@@ -12,12 +12,12 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.6.0
 	github.com/iden3/contracts-abi/state/go/abi v1.0.2-0.20231006071010-f511d08ca36f
-	github.com/iden3/go-circuits/v2 v2.2.0
-	github.com/iden3/go-iden3-auth/v2 v2.2.2
-	github.com/iden3/go-iden3-core/v2 v2.1.0
-	github.com/iden3/go-jwz/v2 v2.0.2
-	github.com/iden3/go-schema-processor/v2 v2.3.3
-	github.com/iden3/iden3comm/v2 v2.3.2
+	github.com/iden3/go-circuits/v2 v2.2.1
+	github.com/iden3/go-iden3-auth/v2 v2.3.3
+	github.com/iden3/go-iden3-core/v2 v2.1.1
+	github.com/iden3/go-jwz/v2 v2.0.3
+	github.com/iden3/go-schema-processor/v2 v2.3.4
+	github.com/iden3/iden3comm/v2 v2.3.3
 	github.com/jackc/pgx/v5 v5.5.2
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/mcuadros/go-defaults v1.2.0
@@ -59,7 +59,7 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.13.0 // indirect
 	github.com/holiman/uint256 v1.2.2-0.20230321075855-87b91420868c // indirect
-	github.com/iden3/go-iden3-crypto v0.0.15 // indirect
+	github.com/iden3/go-iden3-crypto v0.0.16 // indirect
 	github.com/iden3/go-merkletree-sql/v2 v2.0.4 // indirect
 	github.com/iden3/go-rapidsnark/prover v0.0.10 // indirect
 	github.com/iden3/go-rapidsnark/types v0.0.3 // indirect
