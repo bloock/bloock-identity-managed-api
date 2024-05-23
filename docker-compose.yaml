@@ -1,12 +1,15 @@
 services:
   bloock-identity-managed-api:
-    image: bloock/identity-managed-api:latest
+    build:
+      context: .
+    platform: linux/amd64
     container_name: bloock-identity-managed-api
     volumes:
       - ./config.yaml:/go/bin/config.yaml:ro
     ports:
       - 8080:8080
     environment:
-        BLOOCK_BLOOCK_API_KEY: ""
+        BLOOCK_BLOOCK_API_HOST: "https://api.bloock.dev"
+        BLOOCK_BLOOCK_API_KEY: "Fw93zvHaTu7VZeb50mfQi1C-K1iMWRJ0obFHUbvypInmz78hG-y0ZLSZKBo0H0V4"
         BLOOCK_BLOOCK_WEBHOOK_SECRET_KEY: ""
-        BLOOCK_API_PUBLIC_HOST: ""
+        BLOOCK_API_PUBLIC_HOST: "https://8418-94-132-61-84.ngrok-free.app"

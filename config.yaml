@@ -1,9 +1,9 @@
 api:
   host: "0.0.0.0"
   port: 8080
-  debug_mode: false
-  public_host: ""
-  polygon_test_enabled: false
+  debug_mode: true
+  public_host: "https://8418-94-132-61-84.ngrok-free.app"
+  polygon_test_enabled: true
 
 db:
   connection_string: "file:bloock?mode=memory&cache=shared&_fk=1"
@@ -12,8 +12,8 @@ auth:
   secret: ""
 
 bloock:
-  api_host: ""
-  api_key: ""
+  api_host: "https://api.bloock.dev"
+  api_key: "Fw93zvHaTu7VZeb50mfQi1C-K1iMWRJ0obFHUbvypInmz78hG-y0ZLSZKBo0H0V4"
   webhook_secret_key: ""
 
 issuer:

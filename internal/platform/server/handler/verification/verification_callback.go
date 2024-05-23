@@ -6,9 +6,8 @@ import (
 	"bloock-identity-managed-api/internal/platform/utils"
 	"bloock-identity-managed-api/internal/services/verify"
 	"errors"
-	"github.com/rs/zerolog"
-
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 	"io"
 	"net/http"
 )

@@ -15,6 +15,7 @@ import (
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
+	"github.com/gin-contrib/cors"
 )
 
 type Server struct {
@@ -38,7 +39,12 @@ func NewServer(cr repository.CredentialRepository, vm, au *utils.SyncMap, webhoo
 	if err := router.SetTrustedProxies(nil); err != nil {
 		return nil, err
 	}
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowOrigins = []string{"*"}
+	corsConfig.AllowHeaders = []string{"*"}
+	corsConfig.AllowCredentials = true
 
+	router.Use(cors.New(corsConfig))
 	router.Use(middleware.ErrorMiddleware())
 	router.Use(logger.SetLogger(
 		logger.WithSkipPath([]string{"/health"}),
