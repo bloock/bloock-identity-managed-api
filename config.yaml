@@ -24,5 +24,8 @@ issuer:
   key:
     key: ""
 
+verifier:
+  did:
+
 verification:
   expiration: ""

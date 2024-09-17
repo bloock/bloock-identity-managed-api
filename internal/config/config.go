@@ -48,6 +48,10 @@ type IssuerConfig struct {
 	IssuerDid       string    `mapstructure:"issuer_did"`
 }
 
+type VerifierConfig struct {
+	Did string `mapstructure:"did" default:"did:polygonid:polygon:amoy:2qbSDKkr7smskYx9Ds9PkU4ARHbwXnFsSpcfsPHo7R"`
+}
+
 type KeyConfig struct {
 	Key string `mapstructure:"key"`
 }
@@ -64,6 +68,7 @@ type Config struct {
 	Blockchain   BlockchainConfig
 	Issuer       IssuerConfig
 	Verification VerificationConfig
+	Verifier     VerifierConfig
 }
 
 var Configuration = Config{}

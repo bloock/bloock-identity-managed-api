@@ -99,7 +99,7 @@ func (z VerificationZkpRepository) DecodeJWZ(ctx context.Context, token string) 
 }
 
 func (z VerificationZkpRepository) VerifyJWZ(ctx context.Context, token string, request protocol.AuthorizationRequestMessage) error {
-	_, err := z.authVerifier.FullVerify(ctx, token, request, pubsignals.WithAcceptedStateTransitionDelay(5*time.Second))
+	_, err := z.authVerifier.FullVerify(ctx, token, request, pubsignals.WithAcceptedStateTransitionDelay(5*time.Minute))
 	if err != nil {
 		z.logger.Error().Err(err).Msg("")
 		return err
