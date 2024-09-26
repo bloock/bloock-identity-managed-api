@@ -12,10 +12,10 @@ import (
 	"bloock-identity-managed-api/internal/platform/server/middleware"
 	"bloock-identity-managed-api/internal/platform/utils"
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
-	"github.com/gin-contrib/cors"
 )
 
 type Server struct {

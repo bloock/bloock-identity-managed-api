@@ -20,6 +20,7 @@ import (
 type CreateVerification struct {
 	identityRepository  repository.IdentityRepository
 	publicUrl           string
+	verifierDid         string
 	verificationSyncMap *utils.SyncMap
 	authSyncMap         *utils.SyncMap
 	logger              zerolog.Logger
@@ -29,6 +30,7 @@ func NewCreateVerification(ctx context.Context, verificationSyncMap, authSyncMap
 	return &CreateVerification{
 		identityRepository:  identity.NewIdentityRepository(ctx, l),
 		publicUrl:           config.Configuration.Api.PublicHost,
+		verifierDid:         config.Configuration.Verifier.Did,
 		verificationSyncMap: verificationSyncMap,
 		authSyncMap:         authSyncMap,
 		logger:              l,
@@ -61,7 +63,7 @@ func (c CreateVerification) Create(ctx context.Context, verificationJSON []byte)
 		return nil, err
 	}
 
-	request := auth.CreateAuthorizationRequest("verification request", "did:polygonid:polygon:amoy:2qbSDKkr7smskYx9Ds9PkU4ARHbwXnFsSpcfsPHo7R", callbackUrl)
+	request := auth.CreateAuthorizationRequest("verification request", c.verifierDid, callbackUrl)
 
 	randomUUID := uuid.New().String()
 	request.ID = randomUUID
