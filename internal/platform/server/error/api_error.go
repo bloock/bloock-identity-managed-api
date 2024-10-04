@@ -1,6 +1,7 @@
 package api_error
 
 import (
+	"bloock-identity-managed-api/internal/config"
 	"github.com/getsentry/sentry-go"
 	"net/http"
 )
@@ -24,6 +25,8 @@ func NewUnauthorizedAPIError(message string) *APIError {
 	return &APIError{Status: http.StatusUnauthorized, Message: message}
 }
 func NewInternalServerAPIError(error error) *APIError {
-	sentry.CaptureException(error)
+	if config.Configuration.Tracing.Enabled {
+		sentry.CaptureException(error)
+	}
 	return &APIError{Status: http.StatusInternalServerError, Message: error.Error()}
 }
