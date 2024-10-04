@@ -60,6 +60,13 @@ type VerificationConfig struct {
 	Expiration int `mapstructure:"expiration" default:"60"`
 }
 
+type TracingConfig struct {
+	Enabled        bool   `mapstructure:"enabled" default:"false"`
+	TracerConnUrl  string `mapstructure:"tracer_conn_url" default:""`
+	AppEnvironment string `mapstructure:"app_environment" default:""`
+	AppVersion     string `mapstructure:"app_version" default:""`
+}
+
 type Config struct {
 	Api          APIConfig
 	Auth         AuthConfig
@@ -69,6 +76,7 @@ type Config struct {
 	Issuer       IssuerConfig
 	Verification VerificationConfig
 	Verifier     VerifierConfig
+	Tracing      TracingConfig
 }
 
 var Configuration = Config{}

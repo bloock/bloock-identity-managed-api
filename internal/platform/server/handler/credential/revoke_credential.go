@@ -44,13 +44,13 @@ func RevokeCredential(cr repository.CredentialRepository, l zerolog.Logger) gin.
 				ctx.JSON(notFoundAPIError.Status, notFoundAPIError)
 				return
 			}
-			serverAPIError := api_error.NewInternalServerAPIError(err.Error())
+			serverAPIError := api_error.NewInternalServerAPIError(err)
 			ctx.JSON(serverAPIError.Status, serverAPIError)
 			return
 		}
 
 		if err = revokeService.Revoke(ctx, cred); err != nil {
-			serverAPIError := api_error.NewInternalServerAPIError(err.Error())
+			serverAPIError := api_error.NewInternalServerAPIError(err)
 			ctx.JSON(serverAPIError.Status, serverAPIError)
 			return
 		}

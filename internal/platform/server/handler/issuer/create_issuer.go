@@ -69,7 +69,7 @@ func CreateIssuer(l zerolog.Logger) gin.HandlerFunc {
 				ctx.JSON(badRequestAPIError.Status, badRequestAPIError)
 				return
 			}
-			serverAPIError := api_error.NewInternalServerAPIError(err.Error())
+			serverAPIError := api_error.NewInternalServerAPIError(err)
 			ctx.JSON(serverAPIError.Status, serverAPIError)
 			return
 		}

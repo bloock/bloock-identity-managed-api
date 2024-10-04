@@ -33,7 +33,7 @@ func GetCredentialById(cr repository.CredentialRepository, l zerolog.Logger) gin
 				ctx.JSON(notFoundAPIError.Status, notFoundAPIError)
 				return
 			}
-			serverAPIError := api_error.NewInternalServerAPIError(err.Error())
+			serverAPIError := api_error.NewInternalServerAPIError(err)
 			ctx.JSON(serverAPIError.Status, serverAPIError)
 			return
 		}

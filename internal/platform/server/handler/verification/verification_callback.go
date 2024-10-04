@@ -32,7 +32,7 @@ func CallbackVerification(vm, au *utils.SyncMap, l zerolog.Logger) gin.HandlerFu
 
 		verificationService, err := verify.NewVerificationCallback(ctx, vm, au, sessionId, l)
 		if err != nil {
-			serverAPIError := api_error.NewInternalServerAPIError(err.Error())
+			serverAPIError := api_error.NewInternalServerAPIError(err)
 			ctx.JSON(serverAPIError.Status, serverAPIError)
 			return
 		}
@@ -44,7 +44,7 @@ func CallbackVerification(vm, au *utils.SyncMap, l zerolog.Logger) gin.HandlerFu
 				ctx.JSON(notFoundAPIError.Status, notFoundAPIError)
 				return
 			}
-			serverAPIError := api_error.NewInternalServerAPIError(err.Error())
+			serverAPIError := api_error.NewInternalServerAPIError(err)
 			ctx.JSON(serverAPIError.Status, serverAPIError)
 			return
 		}

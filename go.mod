@@ -6,6 +6,7 @@ require (
 	entgo.io/ent v0.12.4
 	github.com/bloock/bloock-sdk-go/v2 v2.8.7
 	github.com/ethereum/go-ethereum v1.13.14
+	github.com/getsentry/sentry-go v0.29.0
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-contrib/logger v0.3.0
 	github.com/gin-gonic/gin v1.9.1
@@ -96,7 +97,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
-	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
+	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mmcloughlin/addchain v0.4.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect

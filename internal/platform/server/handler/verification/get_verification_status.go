@@ -42,7 +42,7 @@ func GetVerificationStatus(vm *utils.SyncMap, l zerolog.Logger) gin.HandlerFunc 
 				ctx.JSON(serverUnauthorized.Status, serverUnauthorized)
 				return
 			}
-			serverAPIError := api_error.NewInternalServerAPIError(err.Error())
+			serverAPIError := api_error.NewInternalServerAPIError(err)
 			ctx.JSON(serverAPIError.Status, serverAPIError)
 			return
 		}

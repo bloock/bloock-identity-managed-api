@@ -29,7 +29,7 @@ func PublishIssuerState(l zerolog.Logger) gin.HandlerFunc {
 
 		txHash, err := issuerService.Publish(ctx)
 		if err != nil {
-			serverAPIError := api_error.NewInternalServerAPIError(err.Error())
+			serverAPIError := api_error.NewInternalServerAPIError(err)
 			ctx.JSON(serverAPIError.Status, serverAPIError)
 			return
 		}

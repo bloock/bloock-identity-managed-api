@@ -10,7 +10,9 @@ import (
 	"bloock-identity-managed-api/internal/services/create"
 	"bloock-identity-managed-api/internal/services/create/request"
 	"context"
+	"github.com/getsentry/sentry-go"
 	"github.com/rs/zerolog"
+	"log"
 	"os"
 	"sync"
 	"time"
@@ -25,6 +27,28 @@ func main() {
 	cfg, err := config.InitConfig(logger)
 	if err != nil {
 		panic(err)
+	}
+
+	// Initialize tracer if set
+	if config.Configuration.Tracing.Enabled {
+		options := sentry.ClientOptions{
+			Dsn:         config.Configuration.Tracing.TracerConnUrl,
+			Environment: config.Configuration.Tracing.AppEnvironment,
+			Release:     config.Configuration.Tracing.AppVersion,
+		}
+		if config.Configuration.Tracing.AppEnvironment == "production" {
+			options.EnableTracing = true
+			options.TracesSampleRate = 1.0
+			options.TracesSampler = func(ctx sentry.SamplingContext) float64 {
+				if ctx.Span.Op == "http.server" {
+					return 1.0
+				}
+				return 0.0
+			}
+		}
+		if err = sentry.Init(options); err != nil {
+			log.Fatal(err.Error())
+		}
 	}
 
 	// Setup issuer

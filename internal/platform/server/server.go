@@ -12,6 +12,7 @@ import (
 	"bloock-identity-managed-api/internal/platform/server/middleware"
 	"bloock-identity-managed-api/internal/platform/utils"
 	"fmt"
+	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
@@ -53,6 +54,9 @@ func NewServer(cr repository.CredentialRepository, vm, au *utils.SyncMap, webhoo
 			return l
 		}),
 	))
+	if config.Configuration.Tracing.Enabled {
+		router.Use(sentrygin.New(sentrygin.Options{Repanic: true}))
+	}
 
 	v1 := router.Group("/v1")
 	v1.GET("health", handler.Health())
