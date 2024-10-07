@@ -1,9 +1,9 @@
 package criteria
 
 import (
-	"bloock-identity-managed-api/internal/domain"
 	"bloock-identity-managed-api/internal/platform/utils"
 	"context"
+	"errors"
 	"github.com/rs/zerolog"
 )
 
@@ -20,7 +20,8 @@ func NewVerificationStatus(verificationSyncMap *utils.SyncMap, l zerolog.Logger)
 }
 
 func (v VerificationStatus) Get(ctx context.Context, sessionId string) error {
-	res := v.verificationSyncMap.Load(sessionId)
+	return errors.New("error from getter")
+	/*res := v.verificationSyncMap.Load(sessionId)
 	if res == nil {
 		err := domain.ErrSessionIdNotFound
 		v.logger.Error().Err(err).Msg("")
@@ -39,5 +40,5 @@ func (v VerificationStatus) Get(ctx context.Context, sessionId string) error {
 		return err
 	}
 
-	return nil
+	return nil*/
 }
